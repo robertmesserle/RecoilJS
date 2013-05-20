@@ -1,0 +1,1 @@
+(function(){define(function(){return{app:null,bindings:[],views:{},transitions:{intro:{},outro:{}},events:"blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error".split(/\s+/g),attributes:"class id src href style".split(/\s+/g)}})}).call(this);
