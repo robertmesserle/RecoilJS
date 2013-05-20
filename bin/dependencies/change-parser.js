@@ -1,1 +1,0 @@
-(function(){define(function(require){var n,e,t;return t=require("./globals"),e=require("./parser"),n=function(){function n(n,e,t,r){var i=this;this.scope=e,this.parent=t,this.root=r,n.each(function(n,e){var t;return t=$(e),i.parseNode(t)})}return n.prototype.parseNode=function(n){var e;return e=!0,this.checkAttributes(n)},n}()})}).call(this);

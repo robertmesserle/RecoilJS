@@ -13,4 +13,9 @@ exports.config =
 
   require:
     optimize:
-      name: '../lib/almond'
+      overrides:
+        name: 'lib/almond'
+        out: '../boring.js'
+        wrap:
+          startFile: 'frags/start.js'
+          endFile: 'frags/end.js'

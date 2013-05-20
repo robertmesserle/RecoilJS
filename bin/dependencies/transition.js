@@ -1,1 +1,0 @@
-(function(){define(function(require){var n,e;return e=require("./globals"),n=function(){function n(n,t,r){this.type=n,this.id=t,this.callback=r,e.transitions[this.type][this.id]=this.callback}return n}()})}).call(this);

@@ -1,1 +1,1 @@
-(function(){define(function(require){var e,t;return t=require("./globals"),e=function(){function e(e,n,r){this.type=e,this.id=n,this.callback=r,t.transitions[this.type][this.id]=this.callback}return e}()})}).call(this);
+(function(){define(function(require){var t,e;return e=require("./globals"),t=function(){function t(t,n,r){this.type=t,this.id=n,this.callback=r,e.transitions[this.type][this.id]=this.callback}return t}()})}).call(this);
