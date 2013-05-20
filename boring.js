@@ -753,10 +753,10 @@ var Base,
 
 Base = $.boring.classes.Base;
 
-$.boring.classes.TextNodeBinding = (function(_super) {
-  __extends(TextNodeBinding, _super);
+$.boring.classes.TextNode = (function(_super) {
+  __extends(TextNode, _super);
 
-  function TextNodeBinding($element, scope, parent, root) {
+  function TextNode($element, scope, parent, root) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
@@ -770,7 +770,7 @@ $.boring.classes.TextNodeBinding = (function(_super) {
     this.pushBinding();
   }
 
-  TextNodeBinding.prototype.updateValue = function() {
+  TextNode.prototype.updateValue = function() {
     var value;
 
     value = this.parseString(this.template);
@@ -779,11 +779,11 @@ $.boring.classes.TextNodeBinding = (function(_super) {
     }
   };
 
-  TextNodeBinding.prototype.update = function() {
+  TextNode.prototype.update = function() {
     return this.updateValue();
   };
 
-  return TextNodeBinding;
+  return TextNode;
 
 })(Base);
 var Base,
@@ -1018,7 +1018,7 @@ ForBinding = $.boring.classes.ForBinding;
 
 IfBinding = $.boring.classes.IfBinding;
 
-TextNode = $.boring.classes.TextNodeBinding;
+TextNode = $.boring.classes.TextNode;
 
 TextBinding = $.boring.classes.TextBinding;
 
@@ -1197,7 +1197,7 @@ Core = (function() {
   }
 
   Core.prototype.afterRender = function() {
-    return new Parser(this.$element, this, false, this.controller);
+    return new Parser(this.$element, this.controller, false, this.controller);
   };
 
   Core.prototype.checkForChanges = function() {

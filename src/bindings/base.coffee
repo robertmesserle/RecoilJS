@@ -1,10 +1,11 @@
+
 class $.boring.classes.Base
 
   constructor: ( @$element ) ->
     @logic = @$element.data( 'logic' )
     if @logic
-    	@insertPlaceholder()
-    	@unwrap()
+      @insertPlaceholder()
+      @unwrap()
     if @update then @pushBinding()
 
   pushBinding: ->

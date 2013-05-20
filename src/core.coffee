@@ -8,7 +8,7 @@ class Core
     @afterRender()
 
   afterRender: =>
-    new Parser( @$element, this, false, @controller )
+    new Parser( @$element, @controller, false, @controller )
 
   checkForChanges: ->
     setTimeout =>
