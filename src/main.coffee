@@ -1,15 +1,17 @@
-define ( require ) ->
+$         = jQuery
 
-  Core      = require './core'
-  globals   = require './globals'
+$.fn.makeBoring = ( controller ) ->
+  if globals.app then throw 'You may only have one app running at a time.'
+  $element      = $( this )
+  $.boring.globals.app   = new Core( $element, controller )
 
-  $ = jQuery
+$.makeBoring = ( id, controller ) ->
+  if $.boring.globals.app then throw 'You may only have one app running at a time.'
+  $ -> $( "[data-app='#{ id }']:first" ).makeBoring( controller )
 
-  $.fn.makeBoring = ( controller ) ->
-    if globals.app then throw 'You may only have one app running at a time.'
-    $element = $( this )
-    globals.app = new Core( $element, controller )
+$.boring =
 
-  $.makeBoring = ( id, controller ) ->
-    if globals.app then throw 'You may only have one app running at a time.'
-    $ -> $( "[data-app='#{ id }']:first" ).makeBoring( controller )
+  classes: {}
+
+  createTransition: ( type, id, callback ) ->
+    $.boring.globals.transitions[ type ][ id ] = callback

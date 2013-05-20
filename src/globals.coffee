@@ -1,5 +1,5 @@
-define ( require ) ->
-
+$.boring.globals =
+  
   app: null
 
   bindings: []

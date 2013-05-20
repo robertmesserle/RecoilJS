@@ -1,30 +1,24 @@
-define ( require ) ->
+Parser    = $.boring.classes.Parser
+globals   = $.boring.globals
 
-  require './overrides'
+class Core
 
-  globals         = require './globals'
-  Parser          = require './parser'
-  ChangeParser    = require './change-parser'
-  ComposeBinding  = require './bindings/compose'
+  constructor: ( @$element, @controller ) ->
+    if @controller.view then @$element.data( 'compose', 'controller' )
+    @afterRender()
 
-  class Core
+  afterRender: =>
+    new Parser( @$element, this, false, @controller )
 
-    constructor: ( @$element, @controller ) ->
-      @$element.data( 'compose', 'controller' )
-      @afterRender()
+  checkForChanges: ->
+    setTimeout =>
+      for binding in globals.bindings
+        binding.update()
+      @cleanBindings()
 
-    afterRender: =>
-      new Parser( @$element, this, false, @controller )
-
-    checkForChanges: ->
-      setTimeout =>
-        for binding in globals.bindings
-          binding.update()
-        @cleanBindings()
-
-    cleanBindings: ->
-      count = globals.bindings.length
-      for index in [ count - 1..0 ]
-        binding = globals.bindings[ index ]
-        element = binding.element or binding.$element.get( 0 )
-        globals.bindings.splice( index, 1 ) unless $.contains( document.body, element )
+  cleanBindings: ->
+    count = globals.bindings.length
+    for index in [ count - 1..0 ]
+      binding = globals.bindings[ index ]
+      element = binding.element or binding.$element.get( 0 )
+      globals.bindings.splice( index, 1 ) unless $.contains( document.body, element )
