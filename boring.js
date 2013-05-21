@@ -161,8 +161,8 @@ Base = (function() {
       args.push(key);
       scopeArgs.push("this.scope." + key);
     }
-    args.push('$element, $root, $parent, $data, window, document, $');
-    scopeArgs.push('this.$element, this.root, this.parent, this.scope');
+    args.push('$root, $parent, $scope');
+    scopeArgs.push('this.root, this.parent, this.scope');
     return eval("( function () {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
@@ -512,9 +512,9 @@ EventBinding = (function(_super) {
       args.push(key);
       scopeArgs.push("this.scope." + key);
     }
-    args.push('$element, $root, $parent, $data, window, document, $');
-    scopeArgs.push('this.$element, this.root, this.parent, this.scope');
-    return eval("( function ( event, $element, scope, parent, root ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
+    args.push('$root, $parent, $data');
+    scopeArgs.push('this.root, this.parent, this.scope');
+    return eval("( function ( event ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
   return EventBinding;
@@ -666,6 +666,7 @@ IfBinding = (function(_super) {
       this.value = value;
       if (this.value) {
         this.$element.insertAfter(this.$placeholder);
+        this.callback(this.$element.contents(), this.scope, this.parent, this.root);
         return this.unwrap();
       } else {
         this.wrap();
@@ -921,9 +922,7 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.update = function() {
-    if (!this.$element.is(':focus')) {
-      return this.setValue();
-    }
+    return this.setValue();
   };
 
   return ValueBinding;
@@ -1117,13 +1116,13 @@ Core = (function() {
   };
 
   Core.prototype.cleanBindings = function() {
-    var binding, count, element, index, _i, _ref, _results;
+    var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
 
     count = globals.bindings.length;
     _results = [];
     for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
       binding = globals.bindings[index];
-      element = binding.element || binding.$element.get(0);
+      element = ((_ref1 = binding.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.$element) != null ? _ref2.get(0) : void 0);
       if (!$.contains(document.body, element)) {
         _results.push(globals.bindings.splice(index, 1));
       } else {

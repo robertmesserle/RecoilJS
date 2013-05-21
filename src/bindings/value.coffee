@@ -42,4 +42,4 @@ class ValueBinding extends Base
       @updateBinding( newValue )
 
   update: ->
-    @setValue() unless @$element.is( ':focus' )
+    @setValue()

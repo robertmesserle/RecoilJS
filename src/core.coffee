@@ -17,5 +17,5 @@ class Core
     count = globals.bindings.length
     for index in [ count - 1..0 ]
       binding = globals.bindings[ index ]
-      element = binding.element or binding.$element.get( 0 )
+      element = binding.$placeholder?.get( 0 ) or binding.$element?.get( 0 )
       globals.bindings.splice( index, 1 ) unless $.contains( document.body, element )

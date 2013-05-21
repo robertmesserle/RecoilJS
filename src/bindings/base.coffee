@@ -39,8 +39,8 @@ class Base
     for key of @scope when isNaN( key )
       args.push key
       scopeArgs.push "this.scope.#{ key }"
-    args.push '$element, $root, $parent, $data, window, document, $'
-    scopeArgs.push 'this.$element, this.root, this.parent, this.scope'
+    args.push '$root, $parent, $scope'
+    scopeArgs.push 'this.root, this.parent, this.scope'
     eval """
       ( function () {
         return ( function ( #{ args.join( ',' ) } ) {
