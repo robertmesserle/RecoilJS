@@ -89,7 +89,12 @@ globals = {
     }
   })();
   return $(function() {
-    return $(document).ajaxComplete(function() {
+    $(document).ajaxComplete(function() {
+      var _ref;
+
+      return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+    });
+    return $(document).on('keydown click', function() {
       var _ref;
 
       return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
@@ -843,11 +848,14 @@ ValueBinding = (function(_super) {
     this.root = root;
     this.updateHandler = __bind(this.updateHandler, this);
     this.binding = this.$element.data('value');
-    this.updateOn = this.$element.data('update-on');
+    this.live = this.$element.data('live') != null;
     this.setValue();
     this.pushBinding();
     if (this.$element.is('select')) {
       this.updateHandler();
+    }
+    if (!this.live) {
+      this.$element.on('blur', this.updateHandler);
     }
   }
 
@@ -891,7 +899,7 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.update = function() {
-    if (this.$element.is(':focus') && this.getValue() === this.value && this.updateOn !== 'keydown') {
+    if (this.$element.is(':focus') && this.getValue() === this.value && this.live) {
       return this.updateHandler();
     } else {
       return this.setValue();

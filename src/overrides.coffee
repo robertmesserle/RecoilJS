@@ -30,3 +30,5 @@ do ->
   $ ->
     $( document ).ajaxComplete ->
       globals.app?.checkForChanges()
+    $( document ).on 'keydown click', ->
+      globals.app?.checkForChanges()

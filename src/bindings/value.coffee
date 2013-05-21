@@ -2,10 +2,11 @@ class ValueBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root  ) ->
     @binding = @$element.data( 'value' )
-    @updateOn = @$element.data( 'update-on' )
+    @live = @$element.data( 'live' )?
     @setValue()
     @pushBinding()
     @updateHandler() if @$element.is( 'select' )
+    @$element.on( 'blur', @updateHandler ) unless @live
 
   getValue: ->
     if @$element.attr( 'type' ) is 'radio'
@@ -28,7 +29,7 @@ class ValueBinding extends Base
     @updateBinding( @value )
 
   update: ->
-    if @$element.is( ':focus' ) and @getValue() is @value and @updateOn isnt 'keydown'
+    if @$element.is( ':focus' ) and @getValue() is @value and @live
       @updateHandler()
     else
       @setValue()
