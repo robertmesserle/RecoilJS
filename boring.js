@@ -843,11 +843,11 @@ ValueBinding = (function(_super) {
     this.root = root;
     this.updateHandler = __bind(this.updateHandler, this);
     this.binding = this.$element.data('value');
+    this.updateOn = this.$element.data('update-on');
     this.setValue();
-    this.bindEvents();
     this.pushBinding();
     if (this.$element.is('select')) {
-      this.$element.trigger(this.getDefaultEvents());
+      this.updateHandler();
     }
   }
 
@@ -875,54 +875,27 @@ ValueBinding = (function(_super) {
     }
   };
 
-  ValueBinding.prototype.getDefaultEvents = function() {
-    switch (this.$element.get(0).nodeName.toLowerCase()) {
-      case 'input':
-        switch (this.$element.attr('type')) {
-          case 'checkbox':
-          case 'radio':
-            return 'change';
-          default:
-            return 'keydown';
-        }
-        break;
-      case 'select':
-        return 'change';
-      default:
-        return 'blur';
-    }
-  };
-
-  ValueBinding.prototype.bindEvents = function() {
-    var event;
-
-    event = this.$element.data('update-on') || this.getDefaultEvents();
-    return this.$element.on(event, this.updateHandler);
-  };
-
   ValueBinding.prototype.updateHandler = function() {
-    var _this = this;
-
-    return setTimeout(function() {
-      var newValue;
-
-      if (_this.$element.is(':radio') && !_this.$element.is(':checked')) {
-        return;
+    if (this.$element.is(':radio') && !this.$element.is(':checked')) {
+      return;
+    }
+    this.value = (function() {
+      switch (this.$element.attr('type')) {
+        case 'checkbox':
+          return this.$element.prop('checked');
+        default:
+          return this.$element.val();
       }
-      newValue = (function() {
-        switch (this.$element.attr('type')) {
-          case 'checkbox':
-            return this.$element.prop('checked');
-          default:
-            return this.$element.val();
-        }
-      }).call(_this);
-      return _this.updateBinding(newValue);
-    });
+    }).call(this);
+    return this.updateBinding(this.value);
   };
 
   ValueBinding.prototype.update = function() {
-    return this.setValue();
+    if (this.$element.is(':focus') && this.getValue() === this.value && this.updateOn !== 'keydown') {
+      return this.updateHandler();
+    } else {
+      return this.setValue();
+    }
   };
 
   return ValueBinding;
