@@ -1,114 +1,35 @@
-(function(/*! Brunch !*/) {
-  'use strict';
+/*! BoringJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/BoringJS */
+/*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
+(function($){
 
-  var globals = typeof window !== 'undefined' ? window : global;
-  if (typeof globals.require === 'function') return;
+(function() {
+  $.fn.makeBoring = function(controller) {
+    var $element;
 
-  var modules = {};
-  var cache = {};
-
-  var has = function(object, name) {
-    return ({}).hasOwnProperty.call(object, name);
-  };
-
-  var expand = function(root, name) {
-    var results = [], parts, part;
-    if (/^\.\.?(\/|$)/.test(name)) {
-      parts = [root, name].join('/').split('/');
-    } else {
-      parts = name.split('/');
+    if (globals.app) {
+      throw 'You may only have one app running at a time.';
     }
-    for (var i = 0, length = parts.length; i < length; i++) {
-      part = parts[i];
-      if (part === '..') {
-        results.pop();
-      } else if (part !== '.' && part !== '') {
-        results.push(part);
-      }
+    $element = $(this);
+    return globals.app = new Core($element, controller);
+  };
+  $.makeBoring = function(id, controller) {
+    if (globals.app) {
+      throw 'You may only have one app running at a time.';
     }
-    return results.join('/');
+    return $(function() {
+      return $("[data-app='" + id + "']:first").makeBoring(controller);
+    });
   };
-
-  var dirname = function(path) {
-    return path.split('/').slice(0, -1).join('/');
-  };
-
-  var localRequire = function(path) {
-    return function(name) {
-      var dir = dirname(path);
-      var absolute = expand(dir, name);
-      return globals.require(absolute);
-    };
-  };
-
-  var initModule = function(name, definition) {
-    var module = {id: name, exports: {}};
-    definition(module.exports, localRequire(name), module);
-    var exports = cache[name] = module.exports;
-    return exports;
-  };
-
-  var require = function(name) {
-    var path = expand(name, '.');
-
-    if (has(cache, path)) return cache[path];
-    if (has(modules, path)) return initModule(path, modules[path]);
-
-    var dirIndex = expand(path, './index');
-    if (has(cache, dirIndex)) return cache[dirIndex];
-    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
-
-    throw new Error('Cannot find module "' + name + '"');
-  };
-
-  var define = function(bundle, fn) {
-    if (typeof bundle === 'object') {
-      for (var key in bundle) {
-        if (has(bundle, key)) {
-          modules[key] = bundle[key];
-        }
-      }
-    } else {
-      modules[bundle] = fn;
+  return $.boring = {
+    createTransition: function(type, id, callback) {
+      return globals.transitions[type][id] = callback;
     }
   };
-
-  globals.require = require;
-  globals.require.define = define;
-  globals.require.register = define;
-  globals.require.brunch = true;
 })();
 
-var $;
+var globals;
 
-$ = jQuery;
-
-$.fn.makeBoring = function(controller) {
-  var $element;
-
-  if (globals.app) {
-    throw 'You may only have one app running at a time.';
-  }
-  $element = $(this);
-  return $.boring.globals.app = new Core($element, controller);
-};
-
-$.makeBoring = function(id, controller) {
-  if ($.boring.globals.app) {
-    throw 'You may only have one app running at a time.';
-  }
-  return $(function() {
-    return $("[data-app='" + id + "']:first").makeBoring(controller);
-  });
-};
-
-$.boring = {
-  classes: {},
-  createTransition: function(type, id, callback) {
-    return $.boring.globals.transitions[type][id] = callback;
-  }
-};
-$.boring.globals = {
+globals = {
   app: null,
   bindings: [],
   views: {},
@@ -119,64 +40,66 @@ $.boring.globals = {
   events: 'blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error'.split(/\s+/g),
   attributes: 'class id src href style'.split(/\s+/g)
 };
-var elementList, globals;
-
-globals = $.boring.globals;
-
-elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
 
 (function() {
-  var originalMethod, type, _i, _len;
+  var elementList;
 
-  for (_i = 0, _len = elementList.length; _i < _len; _i++) {
-    type = elementList[_i];
-    if (type.prototype.addEventListener) {
-      originalMethod = type.prototype.addEventListener;
-      if (!originalMethod) {
-        return;
-      }
-      type.prototype.addEventListener = function(type, listener) {
-        var args;
+  elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
+  (function() {
+    var originalMethod, type, _i, _len;
 
-        args = Array.apply(null, arguments);
-        args[1] = function() {
-          var _ref;
+    for (_i = 0, _len = elementList.length; _i < _len; _i++) {
+      type = elementList[_i];
+      if (type.prototype.addEventListener) {
+        originalMethod = type.prototype.addEventListener;
+        if (!originalMethod) {
+          return;
+        }
+        type.prototype.addEventListener = function(type, listener) {
+          var args;
 
-          listener.apply(null, arguments);
-          return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+          args = Array.apply(null, arguments);
+          args[1] = function() {
+            var _ref;
+
+            listener.apply(null, arguments);
+            return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+          };
+          return originalMethod.apply(this, args);
         };
-        return originalMethod.apply(this, args);
-      };
-    }
-    if (type.prototype.attachEvent) {
-      originalMethod = type.prototype.attachEvent;
-      if (!originalMethod) {
-        return;
       }
-      type.prototype.attachEvent = function(type, listener) {
-        var args;
+      if (type.prototype.attachEvent) {
+        originalMethod = type.prototype.attachEvent;
+        if (!originalMethod) {
+          return;
+        }
+        type.prototype.attachEvent = function(type, listener) {
+          var args;
 
-        args = Array.apply(null, arguments);
-        args[1] = function() {
-          var _ref;
+          args = Array.apply(null, arguments);
+          args[1] = function() {
+            var _ref;
 
-          listener.apply(null, arguments);
-          return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+            listener.apply(null, arguments);
+            return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+          };
+          return originalMethod.apply(this, args);
         };
-        return originalMethod.apply(this, args);
-      };
+      }
     }
-  }
+  })();
+  return $(function() {
+    return $(document).ajaxComplete(function() {
+      var _ref;
+
+      return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+    });
+  });
 })();
 
-$(function() {
-  return $(document).ajaxComplete(function() {
-    var _ref;
+var Base;
 
-    return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
-  });
-});
-$.boring.classes.Base = (function() {
+Base = (function() {
   function Base($element) {
     this.$element = $element;
     this.logic = this.$element.data('logic');
@@ -293,13 +216,12 @@ $.boring.classes.Base = (function() {
   return Base;
 
 })();
-var Base,
+
+var AttributeText,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.AttributeText = (function(_super) {
+AttributeText = (function(_super) {
   __extends(AttributeText, _super);
 
   function AttributeText(attribute, $element, scope, parent, root) {
@@ -336,13 +258,12 @@ $.boring.classes.AttributeText = (function(_super) {
   return AttributeText;
 
 })(Base);
-var Base,
+
+var AttributeBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.AttributeBinding = (function(_super) {
+AttributeBinding = (function(_super) {
   __extends(AttributeBinding, _super);
 
   function AttributeBinding(attribute, $element, scope, parent, root) {
@@ -373,14 +294,13 @@ $.boring.classes.AttributeBinding = (function(_super) {
   return AttributeBinding;
 
 })(Base);
-var Base,
+
+var ComposeBinding,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.ComposeBinding = (function(_super) {
+ComposeBinding = (function(_super) {
   __extends(ComposeBinding, _super);
 
   function ComposeBinding($element, scope, parent, root, childParser) {
@@ -456,13 +376,12 @@ $.boring.classes.ComposeBinding = (function(_super) {
   return ComposeBinding;
 
 })(Base);
-var Base,
+
+var CSSBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.CSSBinding = (function(_super) {
+CSSBinding = (function(_super) {
   __extends(CSSBinding, _super);
 
   function CSSBinding($element, scope, parent, root) {
@@ -478,13 +397,12 @@ $.boring.classes.CSSBinding = (function(_super) {
   return CSSBinding;
 
 })(Base);
-var Base,
+
+var EachBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.EachBinding = (function(_super) {
+EachBinding = (function(_super) {
   __extends(EachBinding, _super);
 
   function EachBinding($element, scope, parent, root, childParser) {
@@ -554,13 +472,12 @@ $.boring.classes.EachBinding = (function(_super) {
   return EachBinding;
 
 })(Base);
-var Base,
+
+var EventBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.EventBinding = (function(_super) {
+EventBinding = (function(_super) {
   __extends(EventBinding, _super);
 
   function EventBinding(event, $element, scope, parent, root) {
@@ -583,13 +500,12 @@ $.boring.classes.EventBinding = (function(_super) {
   return EventBinding;
 
 })(Base);
-var Base,
+
+var ForBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.ForBinding = (function(_super) {
+ForBinding = (function(_super) {
   __extends(ForBinding, _super);
 
   function ForBinding($element, scope, parent, root, childParser) {
@@ -667,13 +583,12 @@ $.boring.classes.ForBinding = (function(_super) {
   return ForBinding;
 
 })(Base);
-var Base,
+
+var HTMLBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.HTMLBinding = (function(_super) {
+HTMLBinding = (function(_super) {
   __extends(HTMLBinding, _super);
 
   function HTMLBinding($element, scope, parent, root) {
@@ -703,13 +618,12 @@ $.boring.classes.HTMLBinding = (function(_super) {
   return HTMLBinding;
 
 })(Base);
-var Base,
+
+var IfBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.IfBinding = (function(_super) {
+IfBinding = (function(_super) {
   __extends(IfBinding, _super);
 
   function IfBinding($element, scope, parent, root, callback) {
@@ -747,13 +661,12 @@ $.boring.classes.IfBinding = (function(_super) {
   return IfBinding;
 
 })(Base);
-var Base,
+
+var TextNode,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.TextNode = (function(_super) {
+TextNode = (function(_super) {
   __extends(TextNode, _super);
 
   function TextNode($element, scope, parent, root) {
@@ -786,13 +699,12 @@ $.boring.classes.TextNode = (function(_super) {
   return TextNode;
 
 })(Base);
-var Base,
+
+var TextBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.TextBinding = (function(_super) {
+TextBinding = (function(_super) {
   __extends(TextBinding, _super);
 
   function TextBinding($element, scope, parent, root) {
@@ -822,13 +734,12 @@ $.boring.classes.TextBinding = (function(_super) {
   return TextBinding;
 
 })(Base);
-var Base,
+
+var UnlessBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.UnlessBinding = (function(_super) {
+UnlessBinding = (function(_super) {
   __extends(UnlessBinding, _super);
 
   function UnlessBinding($element, scope, parent, root, callback) {
@@ -866,13 +777,12 @@ $.boring.classes.UnlessBinding = (function(_super) {
   return UnlessBinding;
 
 })(Base);
-var Base,
+
+var UpdateBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.UpdateBinding = (function(_super) {
+UpdateBinding = (function(_super) {
   __extends(UpdateBinding, _super);
 
   function UpdateBinding($element, scope, parent, root) {
@@ -896,14 +806,13 @@ $.boring.classes.UpdateBinding = (function(_super) {
   return UpdateBinding;
 
 })(Base);
-var Base,
+
+var ValueBinding,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Base = $.boring.classes.Base;
-
-$.boring.classes.ValueBinding = (function(_super) {
+ValueBinding = (function(_super) {
   __extends(ValueBinding, _super);
 
   function ValueBinding($element, scope, parent, root) {
@@ -1000,35 +909,10 @@ $.boring.classes.ValueBinding = (function(_super) {
   return ValueBinding;
 
 })(Base);
-var AttributeBinding, AttributeText, CSSBinding, ComposeBinding, EachBinding, EventBinding, ForBinding, IfBinding, Parser, TextBinding, TextNode, UnlessBinding, UpdateBinding, ValueBinding;
 
-AttributeText = $.boring.classes.AttributeText;
+var Parser;
 
-AttributeBinding = $.boring.classes.AttributeBinding;
-
-ComposeBinding = $.boring.classes.ComposeBinding;
-
-CSSBinding = $.boring.classes.CSSBinding;
-
-EachBinding = $.boring.classes.EachBinding;
-
-EventBinding = $.boring.classes.EventBinding;
-
-ForBinding = $.boring.classes.ForBinding;
-
-IfBinding = $.boring.classes.IfBinding;
-
-TextNode = $.boring.classes.TextNode;
-
-TextBinding = $.boring.classes.TextBinding;
-
-UnlessBinding = $.boring.classes.UnlessBinding;
-
-UpdateBinding = $.boring.classes.UpdateBinding;
-
-ValueBinding = $.boring.classes.ValueBinding;
-
-$.boring.classes.Parser = Parser = (function() {
+Parser = (function() {
   function Parser($dom, scope, parent, root) {
     var _this = this;
 
@@ -1178,12 +1062,9 @@ $.boring.classes.Parser = Parser = (function() {
   return Parser;
 
 })();
-var Core, Parser, globals,
+
+var Core,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-Parser = $.boring.classes.Parser;
-
-globals = $.boring.globals;
 
 Core = (function() {
   function Core($element, controller) {
@@ -1235,3 +1116,4 @@ Core = (function() {
   return Core;
 
 })();
+})(jQuery);

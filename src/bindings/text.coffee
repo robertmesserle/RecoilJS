@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.TextBinding extends Base
+class TextBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root  ) ->
     @binding = @$element.data( 'text' )

@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.TextNode extends Base
+class TextNode extends Base
 
   constructor: ( @$element, @scope, @parent, @root  ) ->
     @template = @$element.text()

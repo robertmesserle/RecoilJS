@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.AttributeBinding extends Base
+class AttributeBinding extends Base
 
   constructor: ( @attribute, @$element, @scope, @parent, @root  ) ->
     @binding = @$element.data @attribute

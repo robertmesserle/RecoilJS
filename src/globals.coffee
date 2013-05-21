@@ -1,4 +1,4 @@
-$.boring.globals =
+globals =
   
   app: null
 

@@ -1,18 +1,4 @@
-AttributeText     = $.boring.classes.AttributeText
-AttributeBinding  = $.boring.classes.AttributeBinding
-ComposeBinding    = $.boring.classes.ComposeBinding
-CSSBinding        = $.boring.classes.CSSBinding
-EachBinding       = $.boring.classes.EachBinding
-EventBinding      = $.boring.classes.EventBinding
-ForBinding        = $.boring.classes.ForBinding
-IfBinding         = $.boring.classes.IfBinding
-TextNode          = $.boring.classes.TextNode
-TextBinding       = $.boring.classes.TextBinding
-UnlessBinding     = $.boring.classes.UnlessBinding
-UpdateBinding     = $.boring.classes.UpdateBinding
-ValueBinding      = $.boring.classes.ValueBinding
-
-$.boring.classes.Parser = class Parser
+class Parser
 
   constructor: ( $dom, @scope, @parent, @root ) ->
     $dom.each ( index, element ) =>

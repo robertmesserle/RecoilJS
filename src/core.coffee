@@ -1,6 +1,3 @@
-Parser    = $.boring.classes.Parser
-globals   = $.boring.globals
-
 class Core
 
   constructor: ( @$element, @controller ) ->

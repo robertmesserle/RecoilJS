@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.UpdateBinding extends Base
+class UpdateBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root  ) ->
     binding = @$element.data( 'update' )

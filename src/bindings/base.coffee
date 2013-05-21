@@ -1,5 +1,5 @@
 
-class $.boring.classes.Base
+class Base
 
   constructor: ( @$element ) ->
     @logic = @$element.data( 'logic' )

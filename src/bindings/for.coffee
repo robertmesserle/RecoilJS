@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.ForBinding extends Base
+class ForBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root, @childParser ) ->
     @binding          = @$element.data( 'for' )

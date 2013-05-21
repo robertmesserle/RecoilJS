@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.EventBinding extends Base
+class EventBinding extends Base
 
   constructor: ( event, @$element, @scope, @parent, @root ) ->
     str         = $element.data( event )

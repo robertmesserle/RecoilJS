@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.IfBinding extends Base
+class IfBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root, @callback ) ->
     @binding = @$element.data( 'if' )

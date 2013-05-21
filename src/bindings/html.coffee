@@ -1,6 +1,4 @@
-Base = $.boring.classes.Base
-
-class $.boring.classes.HTMLBinding extends Base
+class HTMLBinding extends Base
 
   constructor: ( @$element, @scope, @parent, @root  ) ->
     @binding = @$element.data( 'html' )
