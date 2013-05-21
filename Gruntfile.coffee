@@ -44,11 +44,16 @@ module.exports = ( grunt ) ->
       compile:
         files:
           'boring.min.js': [ 'boring.js' ]
+    watch:
+      scripts:
+        files: [ 'src/*.coffee', 'src/**/*.coffee' ]
+        tasks: [ 'coffee', 'concat', 'uglify', 'clean' ]
     clean: [ 'tmp' ]
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
 
   grunt.registerTask 'default', [ 'coffee', 'concat', 'uglify', 'clean' ]

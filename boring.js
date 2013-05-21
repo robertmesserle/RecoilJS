@@ -480,22 +480,42 @@ var EventBinding,
 EventBinding = (function(_super) {
   __extends(EventBinding, _super);
 
-  function EventBinding(event, $element, scope, parent, root) {
-    var csString, eventName, func, str,
+  function EventBinding(eventName, $element, scope, parent, root) {
+    var csString, func, str,
       _this = this;
 
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
-    str = $element.data(event);
+    str = $element.data(eventName);
     csString = "-> " + str;
     func = this.parseBinding(csString);
-    eventName = "" + event + ".boringjs";
+    eventName = "" + eventName + ".boringjs";
     $element.off(eventName).on(eventName, function(event) {
-      return func();
+      return func.call(_this, event);
     });
   }
+
+  EventBinding.prototype.generateFunction = function(str) {
+    var args, js, key, scopeArgs;
+
+    js = CoffeeScript.compile("do -> " + str, {
+      bare: true
+    });
+    args = [];
+    scopeArgs = [];
+    for (key in this.scope) {
+      if (!(isNaN(key))) {
+        continue;
+      }
+      args.push(key);
+      scopeArgs.push("this.scope." + key);
+    }
+    args.push('$element, $root, $parent, $data, window, document, $');
+    scopeArgs.push('this.$element, this.root, this.parent, this.scope');
+    return eval("( function ( event, $element, scope, parent, root ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
+  };
 
   return EventBinding;
 
