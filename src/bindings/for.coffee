@@ -1,6 +1,6 @@
 class ForBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras, @childParser ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras ) ->
     @binding          = @$element.data( 'for' )
     @parts            = @binding.split( ' in ' )
     @itemName         = $.trim @parts[ 0 ]
@@ -27,7 +27,7 @@ class ForBinding extends Base
         extras[ @itemName ].$total = collection.length
       else
         extras[ @itemName ] = item
-      @childParser( $item, @scope, @parent, @root, extras )
+      new Parser( $item, @scope, @parent, @root, extras )
 
   checkForChanges: ( collection ) =>
     return true unless @collection

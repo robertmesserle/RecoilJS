@@ -1123,7 +1123,7 @@ Core = (function() {
     this.controller = controller;
     this.afterRender = __bind(this.afterRender, this);
     if (this.controller.view) {
-      this.$element.data('compose', 'controller');
+      this.$element.data('compose', '$scope');
     }
     this.afterRender();
   }

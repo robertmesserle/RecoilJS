@@ -1,7 +1,6 @@
 class Core
 
   constructor: ( @$element, @controller ) ->
-    if @controller.view then @$element.data( 'compose', 'controller' )
     @afterRender()
 
   afterRender: =>

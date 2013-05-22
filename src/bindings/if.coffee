@@ -12,7 +12,7 @@ class IfBinding extends Base
       @value = value
       if @value
         @$element.insertAfter( @$placeholder )
-        @callback( @$element.contents(), @scope, @parent, @root, @extras )
+        new Parser( @$element.contents(), @scope, @parent, @root, @extras )
       else
         @$element.detach()
 

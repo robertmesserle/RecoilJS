@@ -18,20 +18,13 @@ class Parser
       new VisibleBinding( $element, @scope, @parent, @root, @extras )
     if $element.data( 'if' )?
       parseChildren = false
-      new IfBinding $element, @scope, @parent, @root, @extras, ( $element ) =>
-        new Parser( $element, @scope, @parent, @root, @extras )
-    if $element.data( 'unless' )?
-      parseChildren = false
-      new UnlessBinding $element, @scope, @parent, @root, @extras, ( $element ) =>
-        new Parser( $element, @scope, @parent, @root, @extras )
+      new IfBinding( $element, @scope, @parent, @root, @extras )
     if $element.data( 'compose' )
       parseChildren = false
-      new ComposeBinding $element, @scope, @parent, @root, @extras, ( $element, scope, parent, root, extras ) =>
-        new Parser( $element, scope, parent, root, extras )
+      new ComposeBinding $element, @scope, @parent, @root, @extras
     if $element.data( 'for' )
       parseChildren = false
-      new ForBinding $element, @scope, @parent, @root, @extras, ( $element, scope, parent, root, extras ) =>
-        new Parser( $element, scope, parent, root, extras )
+      new ForBinding $element, @scope, @parent, @root, @extras
     if $element.data( 'text' )
       parseChildren = false
       new TextBinding( $element, @scope, @parent, @root, @extras )
