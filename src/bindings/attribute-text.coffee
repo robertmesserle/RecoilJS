@@ -1,6 +1,6 @@
 class AttributeText extends Base
 
-  constructor: ( @attribute, @$element, @scope, @parent, @root  ) ->
+  constructor: ( @attribute, @$element, @scope, @parent, @root, @extras  ) ->
     @template = @attribute.nodeValue
     return if @attribute.nodeName.match( /^data/ )
     return unless @template.match( '{' )

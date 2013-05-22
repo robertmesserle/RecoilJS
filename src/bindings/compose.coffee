@@ -1,6 +1,6 @@
 class ComposeBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root = @scope, @childParser ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras = @scope, @childParser ) ->
     @binding      = @$element.data( 'compose' )
     @controller   = @parseBinding @binding
     @view         = @controller?.view

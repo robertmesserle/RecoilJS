@@ -1,8 +1,8 @@
 class ForBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @childParser ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras, @childParser ) ->
     @binding          = @$element.data( 'for' )
-    @parts            = @binding.split( 'in' )
+    @parts            = @binding.split( ' in ' )
     @itemName         = $.trim @parts[ 0 ]
     @collectionName   = $.trim @parts[ 1 ]
     @getTemplate()
@@ -14,26 +14,32 @@ class ForBinding extends Base
 
   getCollection: ->
     items = @parseBinding @collectionName
-    items?() or items
+    if typeof items is 'function' then items()
+    else items
 
   parseItems: ( collection = @getCollection() ) ->
-    @collection = JSON.stringify( collection )
     for item, index in collection
       $item   = @$template.clone().appendTo( @$element )
-      scope   = $.extend {}, @scope
+      extras  = $.extend {}, @extras
       if typeof item is 'object'
-        scope[ @itemName ] = item
-        scope[ @itemName ].$index = index
-        scope[ @itemName ].$total = collection.length
+        extras[ @itemName ] = item
+        extras[ @itemName ].$index = index
+        extras[ @itemName ].$total = collection.length
       else
-        scope[ @itemName ] = item
-      @childParser( $item, scope, @parent, @root )
+        extras[ @itemName ] = item
+      @childParser( $item, @scope, @parent, @root, extras )
+
+  checkForChanges: ( collection ) =>
+    return true unless @collection
+    return true unless collection.length is @collection.length
+    for item, index in collection or []
+      return true unless item is @collection[ index ]
+    return false
 
   updateItems: ->
     collection = @getCollection()
-    collectionString = JSON.stringify( collection )
-    return if @collection is collectionString
-    @collection = collectionString
+    return unless @checkForChanges( collection )
+    @collection = collection.slice( 0 )
     @wrap() if @logic
     @$element.empty()
     @parseItems( collection )

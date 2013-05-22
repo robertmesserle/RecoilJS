@@ -1,6 +1,6 @@
 class HTMLBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root  ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
     @binding = @$element.data( 'html' )
     @setValue()
     @pushBinding()

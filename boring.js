@@ -152,22 +152,31 @@ Base = (function() {
   };
 
   Base.prototype.generateFunction = function(str) {
-    var args, js, key, scopeArgs;
+    var argHash, args, js, key, scopeArgs, value;
 
     js = CoffeeScript.compile("do -> " + str, {
       bare: true
     });
+    argHash = {};
     args = [];
     scopeArgs = [];
     for (key in this.scope) {
-      if (!(isNaN(key))) {
-        continue;
+      if (isNaN(key)) {
+        argHash[key] = "this.scope[ '" + key + "' ]";
       }
-      args.push(key);
-      scopeArgs.push("this.scope." + key);
     }
-    args.push('$root, $parent, $scope');
-    scopeArgs.push('this.root, this.parent, this.scope');
+    for (key in this.extras) {
+      if (isNaN(key)) {
+        argHash[key] = "this.extras[ '" + key + "' ]";
+      }
+    }
+    for (key in argHash) {
+      value = argHash[key];
+      args.push(key);
+      scopeArgs.push(value);
+    }
+    args.push('$root, $parent, $scope, $extras');
+    scopeArgs.push('this.root, this.parent, this.scope, this.extras');
     return eval("( function () {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
@@ -233,12 +242,13 @@ var AttributeText,
 AttributeText = (function(_super) {
   __extends(AttributeText, _super);
 
-  function AttributeText(attribute, $element, scope, parent, root) {
+  function AttributeText(attribute, $element, scope, parent, root, extras) {
     this.attribute = attribute;
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.template = this.attribute.nodeValue;
     if (this.attribute.nodeName.match(/^data/)) {
       return;
@@ -275,12 +285,13 @@ var AttributeBinding,
 AttributeBinding = (function(_super) {
   __extends(AttributeBinding, _super);
 
-  function AttributeBinding(attribute, $element, scope, parent, root) {
+  function AttributeBinding(attribute, $element, scope, parent, root, extras) {
     this.attribute = attribute;
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.binding = this.$element.data(this.attribute);
     this.setValue();
     this.pushBinding();
@@ -312,13 +323,14 @@ var ComposeBinding,
 ComposeBinding = (function(_super) {
   __extends(ComposeBinding, _super);
 
-  function ComposeBinding($element, scope, parent, root, childParser) {
+  function ComposeBinding($element, scope, parent, root, extras, childParser) {
     var _ref;
 
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
-    this.root = root != null ? root : this.scope;
+    this.root = root;
+    this.extras = extras != null ? extras : this.scope;
     this.childParser = childParser;
     this.renderView = __bind(this.renderView, this);
     this.binding = this.$element.data('compose');
@@ -393,11 +405,12 @@ var CSSBinding,
 CSSBinding = (function(_super) {
   __extends(CSSBinding, _super);
 
-  function CSSBinding($element, scope, parent, root) {
+  function CSSBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.binding = this.$element.data('css');
     this.css = this.parseBinding(this.binding);
     this.$element.css(this.css);
@@ -408,18 +421,21 @@ CSSBinding = (function(_super) {
 })(Base);
 
 var EachBinding,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 EachBinding = (function(_super) {
   __extends(EachBinding, _super);
 
-  function EachBinding($element, scope, parent, root, childParser) {
+  function EachBinding($element, scope, parent, root, extras, childParser) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.childParser = childParser;
+    this.checkForChanges = __bind(this.checkForChanges, this);
     this.binding = this.$element.data('each');
     this.getTemplate();
     this.parseItems();
@@ -434,42 +450,65 @@ EachBinding = (function(_super) {
     var items;
 
     items = this.parseBinding(this.binding);
-    return (typeof items === "function" ? items() : void 0) || items;
+    if (typeof items === 'function') {
+      return items();
+    } else {
+      return items;
+    }
   };
 
   EachBinding.prototype.parseItems = function(items) {
-    var $item, index, item, scope, _i, _len, _ref, _results;
+    var $item, extras, index, item, _i, _len, _results;
 
     if (items == null) {
       items = this.getItems();
     }
-    _ref = this.items;
     _results = [];
-    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-      item = _ref[index];
+    for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
+      item = collection[index];
       $item = this.$template.clone().appendTo(this.$element);
-      scope = $.extend({}, this.scope);
-      scope.$index = index;
-      scope.$total = this.items.length;
-      _results.push(this.childParser($item, item, this.scope, this.root));
+      extras = $.extend({}, this.extras);
+      if (typeof item === 'object') {
+        extras[this.itemName].$index = index;
+        extras[this.itemName].$total = collection.length;
+      }
+      _results.push(this.childParser($item, item, this.scope, this.root, extras));
     }
     return _results;
   };
 
-  EachBinding.prototype.updateItems = function() {
-    var items, itemsString;
+  EachBinding.prototype.checkForChanges = function(collection) {
+    var index, item, _i, _len, _ref;
 
-    items = this.getItems();
-    itemsString = JSON.stringify(items);
-    if (this.items === itemsString) {
+    if (!this.collection) {
+      return true;
+    }
+    if (collection.length !== this.collection.length) {
+      return true;
+    }
+    _ref = collection || [];
+    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+      item = _ref[index];
+      if (item !== this.collection[index]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  EachBinding.prototype.updateItems = function() {
+    var collection;
+
+    collection = this.getCollection();
+    if (!this.checkForChanges(collection)) {
       return;
     }
-    this.items = itemsString;
+    this.collection = collection.slice(0);
     if (this.logic) {
       this.wrap();
     }
     this.$element.empty();
-    this.parseItems(items);
+    this.parseItems(collection);
     if (this.logic) {
       return this.unwrap();
     }
@@ -490,7 +529,7 @@ var EventBinding,
 EventBinding = (function(_super) {
   __extends(EventBinding, _super);
 
-  function EventBinding(eventName, $element, scope, parent, root) {
+  function EventBinding(eventName, $element, scope, parent, root, extras) {
     var csString, func, str,
       _this = this;
 
@@ -498,6 +537,7 @@ EventBinding = (function(_super) {
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     str = $element.data(eventName);
     csString = "-> " + str;
     func = this.parseBinding(csString);
@@ -508,22 +548,27 @@ EventBinding = (function(_super) {
   }
 
   EventBinding.prototype.generateFunction = function(str) {
-    var args, js, key, scopeArgs;
+    var argHash, args, js, key, scopeArgs, value;
 
     js = CoffeeScript.compile("do -> " + str, {
       bare: true
     });
+    argHash = {};
     args = [];
     scopeArgs = [];
     for (key in this.scope) {
-      if (!(isNaN(key))) {
-        continue;
-      }
-      args.push(key);
-      scopeArgs.push("this.scope." + key);
+      argHash[key] = "this.scope[ '" + key + "' ]";
     }
-    args.push('$root, $parent, $data');
-    scopeArgs.push('this.root, this.parent, this.scope');
+    for (key in this.extras) {
+      argHash[key] = "this.extras[ '" + key + "' ]";
+    }
+    for (key in argHash) {
+      value = argHash[key];
+      args.push(key);
+      scopeArgs.push(value);
+    }
+    args.push('$root, $parent, $data, $extras');
+    scopeArgs.push('this.root, this.parent, this.scope, this.extras');
     return eval("( function ( event ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
@@ -532,20 +577,23 @@ EventBinding = (function(_super) {
 })(Base);
 
 var ForBinding,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 ForBinding = (function(_super) {
   __extends(ForBinding, _super);
 
-  function ForBinding($element, scope, parent, root, childParser) {
+  function ForBinding($element, scope, parent, root, extras, childParser) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.childParser = childParser;
+    this.checkForChanges = __bind(this.checkForChanges, this);
     this.binding = this.$element.data('for');
-    this.parts = this.binding.split('in');
+    this.parts = this.binding.split(' in ');
     this.itemName = $.trim(this.parts[0]);
     this.collectionName = $.trim(this.parts[1]);
     this.getTemplate();
@@ -561,42 +609,63 @@ ForBinding = (function(_super) {
     var items;
 
     items = this.parseBinding(this.collectionName);
-    return (typeof items === "function" ? items() : void 0) || items;
+    if (typeof items === 'function') {
+      return items();
+    } else {
+      return items;
+    }
   };
 
   ForBinding.prototype.parseItems = function(collection) {
-    var $item, index, item, scope, _i, _len, _results;
+    var $item, extras, index, item, _i, _len, _results;
 
     if (collection == null) {
       collection = this.getCollection();
     }
-    this.collection = JSON.stringify(collection);
     _results = [];
     for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
       item = collection[index];
       $item = this.$template.clone().appendTo(this.$element);
-      scope = $.extend({}, this.scope);
+      extras = $.extend({}, this.extras);
       if (typeof item === 'object') {
-        scope[this.itemName] = item;
-        scope[this.itemName].$index = index;
-        scope[this.itemName].$total = collection.length;
+        extras[this.itemName] = item;
+        extras[this.itemName].$index = index;
+        extras[this.itemName].$total = collection.length;
       } else {
-        scope[this.itemName] = item;
+        extras[this.itemName] = item;
       }
-      _results.push(this.childParser($item, scope, this.parent, this.root));
+      _results.push(this.childParser($item, this.scope, this.parent, this.root, extras));
     }
     return _results;
   };
 
+  ForBinding.prototype.checkForChanges = function(collection) {
+    var index, item, _i, _len, _ref;
+
+    if (!this.collection) {
+      return true;
+    }
+    if (collection.length !== this.collection.length) {
+      return true;
+    }
+    _ref = collection || [];
+    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+      item = _ref[index];
+      if (item !== this.collection[index]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   ForBinding.prototype.updateItems = function() {
-    var collection, collectionString;
+    var collection;
 
     collection = this.getCollection();
-    collectionString = JSON.stringify(collection);
-    if (this.collection === collectionString) {
+    if (!this.checkForChanges(collection)) {
       return;
     }
-    this.collection = collectionString;
+    this.collection = collection.slice(0);
     if (this.logic) {
       this.wrap();
     }
@@ -622,11 +691,12 @@ var HTMLBinding,
 HTMLBinding = (function(_super) {
   __extends(HTMLBinding, _super);
 
-  function HTMLBinding($element, scope, parent, root) {
+  function HTMLBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.binding = this.$element.data('html');
     this.setValue();
     this.pushBinding();
@@ -657,11 +727,12 @@ var IfBinding,
 IfBinding = (function(_super) {
   __extends(IfBinding, _super);
 
-  function IfBinding($element, scope, parent, root, callback) {
+  function IfBinding($element, scope, parent, root, extras, callback) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.callback = callback;
     this.binding = this.$element.data('if');
     this.insertPlaceholder();
@@ -677,7 +748,7 @@ IfBinding = (function(_super) {
       this.value = value;
       if (this.value) {
         this.$element.insertAfter(this.$placeholder);
-        return this.callback(this.$element.contents(), this.scope, this.parent, this.root);
+        return this.callback(this.$element.contents(), this.scope, this.parent, this.root, this.extras);
       } else {
         return this.$element.detach();
       }
@@ -699,11 +770,12 @@ var TextNode,
 TextNode = (function(_super) {
   __extends(TextNode, _super);
 
-  function TextNode($element, scope, parent, root) {
+  function TextNode($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.template = this.$element.text();
     if (!(this.template.indexOf('{') + 1)) {
       return;
@@ -737,11 +809,12 @@ var TextBinding,
 TextBinding = (function(_super) {
   __extends(TextBinding, _super);
 
-  function TextBinding($element, scope, parent, root) {
+  function TextBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.binding = this.$element.data('text');
     this.setValue();
     this.pushBinding();
@@ -772,11 +845,12 @@ var UnlessBinding,
 UnlessBinding = (function(_super) {
   __extends(UnlessBinding, _super);
 
-  function UnlessBinding($element, scope, parent, root, callback) {
+  function UnlessBinding($element, scope, parent, root, extras, callback) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.callback = callback;
     this.binding = this.$element.data('if');
     this.insertPlaceholder();
@@ -815,13 +889,14 @@ var UpdateBinding,
 UpdateBinding = (function(_super) {
   __extends(UpdateBinding, _super);
 
-  function UpdateBinding($element, scope, parent, root) {
+  function UpdateBinding($element, scope, parent, root, extras) {
     var binding, csString;
 
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     binding = this.$element.data('update');
     csString = "-> " + binding;
     this.func = this.parseBinding(csString);
@@ -845,11 +920,12 @@ var ValueBinding,
 ValueBinding = (function(_super) {
   __extends(ValueBinding, _super);
 
-  function ValueBinding($element, scope, parent, root) {
+  function ValueBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.updateHandler = __bind(this.updateHandler, this);
     this.binding = this.$element.data('value');
     this.live = this.$element.data('live') != null;
@@ -925,8 +1001,11 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.update = function() {
-    if (this.$element.is(':focus') && this.getValue() === this.value && this.live) {
-      return this.updateHandler();
+    if (this.$element.is(':focus')) {
+      if (this.live) {
+        console.log('element is live');
+        return this.updateHandler();
+      }
     } else {
       return this.setValue();
     }
@@ -943,11 +1022,12 @@ var VisibleBinding,
 VisibleBinding = (function(_super) {
   __extends(VisibleBinding, _super);
 
-  function VisibleBinding($element, scope, parent, root) {
+  function VisibleBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
+    this.extras = extras;
     this.binding = this.$element.data('visible');
     this.setValue();
     this.pushBinding();
@@ -978,12 +1058,13 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
-  function Parser($dom, scope, parent, root) {
+  function Parser($dom, scope, parent, root, extras) {
     var _this = this;
 
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
+    this.scope = scope != null ? scope : {};
+    this.parent = parent != null ? parent : {};
+    this.root = root != null ? root : {};
+    this.extras = extras != null ? extras : {};
     $dom.each(function(index, element) {
       var $element;
 
@@ -1000,58 +1081,58 @@ Parser = (function() {
     this.attachEvents($element);
     this.parseAttributes($element);
     if ($element.get(0).nodeType === 3) {
-      new TextNode($element, this.scope, this.parent, this.root);
+      new TextNode($element, this.scope, this.parent, this.root, this.extras);
       return;
     }
     if ($element.data('css')) {
-      new CSSBinding($element, this.scope, this.parent, this.root);
+      new CSSBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('visible') != null) {
-      new VisibleBinding($element, this.scope, this.parent, this.root);
+      new VisibleBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('if') != null) {
       parseChildren = false;
-      new IfBinding($element, this.scope, this.parent, this.root, function($element) {
-        return new Parser($element, _this.scope, _this.parent, _this.root);
+      new IfBinding($element, this.scope, this.parent, this.root, this.extras, function($element) {
+        return new Parser($element, _this.scope, _this.parent, _this.root, _this.extras);
       });
     }
     if ($element.data('unless') != null) {
       parseChildren = false;
-      new UnlessBinding($element, this.scope, this.parent, this.root, function($element) {
-        return new Parser($element, _this.scope, _this.parent, _this.root);
+      new UnlessBinding($element, this.scope, this.parent, this.root, this.extras, function($element) {
+        return new Parser($element, _this.scope, _this.parent, _this.root, _this.extras);
       });
     }
     if ($element.data('compose')) {
       parseChildren = false;
-      new ComposeBinding($element, this.scope, this.parent, this.root, function($element, scope, parent, root) {
-        return new Parser($element, scope, parent, root);
+      new ComposeBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
+        return new Parser($element, scope, parent, root, extras);
       });
     }
     if ($element.data('for')) {
       parseChildren = false;
-      new ForBinding($element, this.scope, this.parent, this.root, function($element, scope, parent, root) {
-        return new Parser($element, scope, parent, root);
+      new ForBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
+        return new Parser($element, scope, parent, root, extras);
       });
     }
     if ($element.data('each')) {
       parseChildren = false;
-      new EachBinding($element, this.scope, this.parent, this.root, function($element, scope, parent, root) {
-        return new Parser($element, scope, parent, root);
+      new EachBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
+        return new Parser($element, scope, parent, root, extras);
       });
     }
     if ($element.data('text')) {
       parseChildren = false;
-      new TextBinding($element, this.scope, this.parent, this.root);
+      new TextBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('html')) {
-      new HTMLBinding($element, this.scope, this.parent, this.root);
+      new HTMLBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('value')) {
       parseChildren = false;
-      new ValueBinding($element, this.scope, this.parent, this.root);
+      new ValueBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('update')) {
-      new UpdateBinding($element, this.scope, this.parent, this.root);
+      new UpdateBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if (!parseChildren) {
       return;
@@ -1072,13 +1153,13 @@ Parser = (function() {
       if (!str) {
         continue;
       }
-      new AttributeBinding(attribute, $element, this.scope, this.parent, this.root);
+      new AttributeBinding(attribute, $element, this.scope, this.parent, this.root, this.extras);
     }
     _ref1 = $element.get(0).attributes || [];
     _results = [];
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       attribute = _ref1[_j];
-      _results.push(new AttributeText(attribute, $element, this.scope, this.parent, this.root));
+      _results.push(new AttributeText(attribute, $element, this.scope, this.parent, this.root, this.extras));
     }
     return _results;
   };
@@ -1094,7 +1175,7 @@ Parser = (function() {
       if (!str) {
         continue;
       }
-      _results.push(new EventBinding(event, $element, this.scope, this.parent, this.root));
+      _results.push(new EventBinding(event, $element, this.scope, this.parent, this.root, this.extras));
     }
     return _results;
   };

@@ -34,13 +34,16 @@ class Base
 
   generateFunction: ( str ) ->
     js = CoffeeScript.compile "do -> #{ str }", bare: true
+    argHash = {}
     args = []
     scopeArgs = []
-    for key of @scope when isNaN( key )
+    for key of @scope   when isNaN( key ) then argHash[ key ] = "this.scope[ '#{ key }' ]"
+    for key of @extras  when isNaN( key ) then argHash[ key ] = "this.extras[ '#{ key }' ]"
+    for key, value of argHash
       args.push key
-      scopeArgs.push "this.scope.#{ key }"
-    args.push '$root, $parent, $scope'
-    scopeArgs.push 'this.root, this.parent, this.scope'
+      scopeArgs.push value
+    args.push '$root, $parent, $scope, $extras'
+    scopeArgs.push 'this.root, this.parent, this.scope, this.extras'
     eval """
       ( function () {
         return ( function ( #{ args.join( ',' ) } ) {

@@ -1,6 +1,6 @@
 class IfBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @callback ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras, @callback ) ->
     @binding = @$element.data( 'if' )
     @insertPlaceholder()
     @setValue()
@@ -12,7 +12,7 @@ class IfBinding extends Base
       @value = value
       if @value
         @$element.insertAfter( @$placeholder )
-        @callback( @$element.contents(), @scope, @parent, @root )
+        @callback( @$element.contents(), @scope, @parent, @root, @extras )
       else
         @$element.detach()
 

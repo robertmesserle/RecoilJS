@@ -1,6 +1,6 @@
 class UnlessBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @callback ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras, @callback ) ->
     @binding = @$element.data( 'if' )
     @insertPlaceholder()
     @setValue()

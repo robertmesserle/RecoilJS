@@ -1,6 +1,6 @@
 class AttributeBinding extends Base
 
-  constructor: ( @attribute, @$element, @scope, @parent, @root  ) ->
+  constructor: ( @attribute, @$element, @scope, @parent, @root, @extras  ) ->
     @binding = @$element.data @attribute
     @setValue()
     @pushBinding()

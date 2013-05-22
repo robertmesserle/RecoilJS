@@ -1,6 +1,6 @@
 class TextNode extends Base
 
-  constructor: ( @$element, @scope, @parent, @root  ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
     @template = @$element.text()
     return unless @template.indexOf( '{' ) + 1
     @element = @$element.get( 0 )

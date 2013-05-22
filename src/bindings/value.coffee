@@ -1,6 +1,6 @@
 class ValueBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root  ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
     @binding = @$element.data( 'value' )
     @live = @$element.data( 'live' )?
     @setValue()
@@ -39,7 +39,9 @@ class ValueBinding extends Base
     @updateBinding( @value )
 
   update: ->
-    if @$element.is( ':focus' ) and @getValue() is @value and @live
-      @updateHandler()
+    if @$element.is( ':focus' )
+      if @live
+        console.log 'element is live'
+        @updateHandler()
     else
       @setValue()
