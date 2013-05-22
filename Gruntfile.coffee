@@ -47,7 +47,7 @@ module.exports = ( grunt ) ->
     uglify:
       options:
         mangle: false
-        banner: "#{ header }\n\n"
+        banner: "#{ header.banner }\n\n"
       compile:
         files: 'recoil.min.js': [ 'recoil.js' ]
     watch:

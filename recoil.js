@@ -167,7 +167,14 @@ Base = (function() {
     js = CoffeeScript.compile("do -> " + str, {
       bare: true
     });
-    argHash = {};
+    argHash = {
+      '$element': 'this.$element',
+      '$root': 'this.root',
+      '$parent': 'this.parent',
+      '$data': 'this.scope',
+      '$scope': 'this.scope',
+      '$extras': 'this.extras'
+    };
     args = [];
     scopeArgs = [];
     for (key in this.scope) {
@@ -185,8 +192,6 @@ Base = (function() {
       args.push(key);
       scopeArgs.push(value);
     }
-    args.push('$root, $parent, $scope, $extras');
-    scopeArgs.push('this.root, this.parent, this.scope, this.extras');
     return eval("( function () {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
@@ -333,15 +338,14 @@ var ComposeBinding,
 ComposeBinding = (function(_super) {
   __extends(ComposeBinding, _super);
 
-  function ComposeBinding($element, scope, parent, root, extras, childParser) {
+  function ComposeBinding($element, scope, parent, root, extras) {
     var _ref;
 
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
-    this.extras = extras != null ? extras : this.scope;
-    this.childParser = childParser;
+    this.extras = extras;
     this.renderView = __bind(this.renderView, this);
     this.binding = this.$element.data('compose');
     this.controller = this.parseBinding(this.binding);
@@ -375,7 +379,7 @@ ComposeBinding = (function(_super) {
     }
     this.html = data;
     this.$element.html(this.html);
-    this.childParser(this.$element.children(), this.controller, this.scope, this.root);
+    this.parseChildren();
     if (typeof (_base = this.controller).afterRender === "function") {
       _base.afterRender({
         $dom: this.$element,
@@ -386,6 +390,14 @@ ComposeBinding = (function(_super) {
     }
     intro = Recoil.transitions.intro[this.view] || ((_ref = this.controller) != null ? _ref.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.$element) : void 0;
+  };
+
+  ComposeBinding.prototype.parseChildren = function() {
+    var _this = this;
+
+    return this.$element.contents().each(function(index, element) {
+      return new Parser($(element), _this.controller, _this.scope, _this.root, _this.extras);
+    });
   };
 
   ComposeBinding.prototype.update = function() {
@@ -461,7 +473,14 @@ EventBinding = (function(_super) {
     js = CoffeeScript.compile("do -> " + str, {
       bare: true
     });
-    argHash = {};
+    argHash = {
+      '$element': 'this.$element',
+      '$root': 'this.root',
+      '$parent': 'this.parent',
+      '$data': 'this.scope',
+      '$scope': 'this.scope',
+      '$extras': 'this.extras'
+    };
     args = [];
     scopeArgs = [];
     for (key in this.scope) {
@@ -475,8 +494,6 @@ EventBinding = (function(_super) {
       args.push(key);
       scopeArgs.push(value);
     }
-    args.push('$root, $parent, $data, $extras');
-    scopeArgs.push('this.root, this.parent, this.scope, this.extras');
     return eval("( function ( event ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
@@ -492,13 +509,12 @@ var ForBinding,
 ForBinding = (function(_super) {
   __extends(ForBinding, _super);
 
-  function ForBinding($element, scope, parent, root, extras, childParser) {
+  function ForBinding($element, scope, parent, root, extras) {
     this.$element = $element;
     this.scope = scope;
     this.parent = parent;
     this.root = root;
     this.extras = extras;
-    this.childParser = childParser;
     this.checkForChanges = __bind(this.checkForChanges, this);
     this.binding = this.$element.data('for');
     this.parts = this.binding.split(' in ');
@@ -542,7 +558,7 @@ ForBinding = (function(_super) {
       } else {
         extras[this.itemName] = item;
       }
-      _results.push(this.childParser($item, this.scope, this.parent, this.root, extras));
+      _results.push(new Parser($item, this.scope, this.parent, this.root, extras));
     }
     return _results;
   };
@@ -656,7 +672,7 @@ IfBinding = (function(_super) {
       this.value = value;
       if (this.value) {
         this.$element.insertAfter(this.$placeholder);
-        return this.callback(this.$element.contents(), this.scope, this.parent, this.root, this.extras);
+        return new Parser(this.$element.contents(), this.scope, this.parent, this.root, this.extras);
       } else {
         return this.$element.detach();
       }
@@ -743,50 +759,6 @@ TextBinding = (function(_super) {
   };
 
   return TextBinding;
-
-})(Base);
-
-var UnlessBinding,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-UnlessBinding = (function(_super) {
-  __extends(UnlessBinding, _super);
-
-  function UnlessBinding($element, scope, parent, root, extras, callback) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.callback = callback;
-    this.binding = this.$element.data('if');
-    this.insertPlaceholder();
-    this.setValue();
-    this.pushBinding();
-  }
-
-  UnlessBinding.prototype.setValue = function() {
-    var value;
-
-    value = !this.parseBinding(this.binding);
-    if (this.value !== value) {
-      this.value = value;
-      if (this.value) {
-        this.$element.insertAfter(this.$placeholder);
-        return this.unwrap();
-      } else {
-        this.wrap();
-        return this.$element.detach();
-      }
-    }
-  };
-
-  UnlessBinding.prototype.update = function() {
-    return this.setValue();
-  };
-
-  return UnlessBinding;
 
 })(Base);
 
@@ -1000,27 +972,15 @@ Parser = (function() {
     }
     if ($element.data('if') != null) {
       parseChildren = false;
-      new IfBinding($element, this.scope, this.parent, this.root, this.extras, function($element) {
-        return new Parser($element, _this.scope, _this.parent, _this.root, _this.extras);
-      });
-    }
-    if ($element.data('unless') != null) {
-      parseChildren = false;
-      new UnlessBinding($element, this.scope, this.parent, this.root, this.extras, function($element) {
-        return new Parser($element, _this.scope, _this.parent, _this.root, _this.extras);
-      });
+      new IfBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('compose')) {
       parseChildren = false;
-      new ComposeBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
-        return new Parser($element, scope, parent, root, extras);
-      });
+      new ComposeBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('for')) {
       parseChildren = false;
-      new ForBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
-        return new Parser($element, scope, parent, root, extras);
-      });
+      new ForBinding($element, this.scope, this.parent, this.root, this.extras);
     }
     if ($element.data('text')) {
       parseChildren = false;
@@ -1122,13 +1082,13 @@ Core = (function() {
     this.$element = $element;
     this.controller = controller;
     this.afterRender = __bind(this.afterRender, this);
-    if (this.controller.view) {
-      this.$element.data('compose', '$scope');
-    }
     this.afterRender();
   }
 
   Core.prototype.afterRender = function() {
+    if (this.controller.view) {
+      this.$element.data('compose', '$scope');
+    }
     return new Parser(this.$element, this.controller, false, this.controller);
   };
 

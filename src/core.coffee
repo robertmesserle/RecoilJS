@@ -4,6 +4,8 @@ class Core
     @afterRender()
 
   afterRender: =>
+    if @controller.view
+      @$element.data( 'compose', '$scope' )
     new Parser( @$element, @controller, false, @controller )
 
   checkForChanges: ->

@@ -1,6 +1,6 @@
 class ComposeBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras = @scope ) ->
+  constructor: ( @$element, @scope, @parent, @root, @extras ) ->
     @binding      = @$element.data( 'compose' )
     @controller   = @parseBinding @binding
     @view         = @controller?.view
@@ -20,14 +20,19 @@ class ComposeBinding extends Base
   renderView: ( data = @html ) =>
     @html = data
     @$element.html( @html )
-    new Parser( $element, @scope, @parent, @root, @extras )
-    @controller.afterRender?
+    @parseChildren()
+    @controller.afterRender? {
       $dom:   @$element
       scope:  @scope
       parent: @parent
       root:   @root
+    }
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
     intro? @$element
+
+  parseChildren: ->
+    @$element.contents().each ( index, element ) =>
+      new Parser( $( element ), @controller, @scope, @root, @extras )
 
   update: ->
     controller = @parseBinding @binding

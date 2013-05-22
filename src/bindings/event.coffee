@@ -11,7 +11,13 @@ class EventBinding extends Base
     
   generateFunction: ( str ) ->
     js = CoffeeScript.compile "do -> #{ str }", bare: true
-    argHash = {}
+    argHash =
+      '$element': 'this.$element'
+      '$root':    'this.root'
+      '$parent':  'this.parent'
+      '$data':    'this.scope'
+      '$scope':   'this.scope'
+      '$extras':  'this.extras'
     args = []
     scopeArgs = []
     for key of @scope   then argHash[ key ] = "this.scope[ '#{ key }' ]"
@@ -19,8 +25,6 @@ class EventBinding extends Base
     for key, value of argHash
       args.push key
       scopeArgs.push value
-    args.push '$root, $parent, $data, $extras'
-    scopeArgs.push 'this.root, this.parent, this.scope, this.extras'
     eval """
       ( function ( event ) {
         return ( function ( #{ args.join( ',' ) } ) {
