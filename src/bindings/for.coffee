@@ -14,24 +14,26 @@ class ForBinding extends Base
 
   getCollection: ->
     items = @parseBinding @collectionName
-    ( items?() or items ).slice( 0 )
+    items?() or items
 
-  parseItems: ( @collection = @getCollection( collection ) ) ->
-    for item, index in @collection
+  parseItems: ( collection = @getCollection() ) ->
+    @collection = JSON.stringify( collection )
+    for item, index in collection
       $item   = @$template.clone().appendTo( @$element )
       scope   = $.extend {}, @scope
       if typeof item is 'object'
-        scope[ @itemName ] = $.extend {}, item 
+        scope[ @itemName ] = item
         scope[ @itemName ].$index = index
-        scope[ @itemName ].$total = @collection.length
+        scope[ @itemName ].$total = collection.length
       else
         scope[ @itemName ] = item
       @childParser( $item, scope, @parent, @root )
 
   updateItems: ->
     collection = @getCollection()
-    return if @collection is collection
-    return if JSON.stringify( @collection ) is JSON.stringify( collection )
+    collectionString = JSON.stringify( collection )
+    return if @collection is collectionString
+    @collection = collectionString
     @wrap() if @logic
     @$element.empty()
     @parseItems( collection )

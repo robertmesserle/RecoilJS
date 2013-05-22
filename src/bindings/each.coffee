@@ -11,9 +11,9 @@ class EachBinding extends Base
 
   getItems: ->
     items = @parseBinding @binding
-    ( items?() or items ).slice( 0 )
+    items?() or items
 
-  parseItems: ( @items = @getItems() ) ->
+  parseItems: ( items = @getItems() ) ->
     for item, index in @items
       $item         = @$template.clone().appendTo( @$element )
       scope         = $.extend( {}, @scope )
@@ -23,8 +23,9 @@ class EachBinding extends Base
 
   updateItems: ->
     items = @getItems()
-    return if @items is items
-    return if JSON.stringify( @items ) is JSON.stringify( items )
+    itemsString = JSON.stringify( items )
+    return if @items is itemsString
+    @items = itemsString
     @wrap() if @logic
     @$element.empty()
     @parseItems( items )

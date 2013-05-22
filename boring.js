@@ -430,13 +430,15 @@ EachBinding = (function(_super) {
     var items;
 
     items = this.parseBinding(this.binding);
-    return ((typeof items === "function" ? items() : void 0) || items).slice(0);
+    return (typeof items === "function" ? items() : void 0) || items;
   };
 
   EachBinding.prototype.parseItems = function(items) {
     var $item, index, item, scope, _i, _len, _ref, _results;
 
-    this.items = items != null ? items : this.getItems();
+    if (items == null) {
+      items = this.getItems();
+    }
     _ref = this.items;
     _results = [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
@@ -451,15 +453,14 @@ EachBinding = (function(_super) {
   };
 
   EachBinding.prototype.updateItems = function() {
-    var items;
+    var items, itemsString;
 
     items = this.getItems();
-    if (this.items === items) {
+    itemsString = JSON.stringify(items);
+    if (this.items === itemsString) {
       return;
     }
-    if (JSON.stringify(this.items) === JSON.stringify(items)) {
-      return;
-    }
+    this.items = itemsString;
     if (this.logic) {
       this.wrap();
     }
@@ -556,23 +557,25 @@ ForBinding = (function(_super) {
     var items;
 
     items = this.parseBinding(this.collectionName);
-    return ((typeof items === "function" ? items() : void 0) || items).slice(0);
+    return (typeof items === "function" ? items() : void 0) || items;
   };
 
   ForBinding.prototype.parseItems = function(collection) {
-    var $item, index, item, scope, _i, _len, _ref, _results;
+    var $item, index, item, scope, _i, _len, _results;
 
-    this.collection = collection != null ? collection : this.getCollection(collection);
-    _ref = this.collection;
+    if (collection == null) {
+      collection = this.getCollection();
+    }
+    this.collection = JSON.stringify(collection);
     _results = [];
-    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-      item = _ref[index];
+    for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
+      item = collection[index];
       $item = this.$template.clone().appendTo(this.$element);
       scope = $.extend({}, this.scope);
       if (typeof item === 'object') {
-        scope[this.itemName] = $.extend({}, item);
+        scope[this.itemName] = item;
         scope[this.itemName].$index = index;
-        scope[this.itemName].$total = this.collection.length;
+        scope[this.itemName].$total = collection.length;
       } else {
         scope[this.itemName] = item;
       }
@@ -582,15 +585,14 @@ ForBinding = (function(_super) {
   };
 
   ForBinding.prototype.updateItems = function() {
-    var collection;
+    var collection, collectionString;
 
     collection = this.getCollection();
-    if (this.collection === collection) {
+    collectionString = JSON.stringify(collection);
+    if (this.collection === collectionString) {
       return;
     }
-    if (JSON.stringify(this.collection) === JSON.stringify(collection)) {
-      return;
-    }
+    this.collection = collectionString;
     if (this.logic) {
       this.wrap();
     }
@@ -852,10 +854,27 @@ ValueBinding = (function(_super) {
     if (this.$element.is('select')) {
       this.updateHandler();
     }
-    if (!this.live) {
-      this.$element.on('blur', this.updateHandler);
-    }
+    this.bindEvents();
   }
+
+  ValueBinding.prototype.bindEvents = function() {
+    var eventType;
+
+    eventType = (function() {
+      switch (this.$element.attr('type')) {
+        case 'radio':
+        case 'checkbox':
+          return 'change';
+        default:
+          if (this.live) {
+            return 'blur';
+          }
+      }
+    }).call(this);
+    if (eventType) {
+      return this.$element.on(eventType, this.updateHandler);
+    }
+  };
 
   ValueBinding.prototype.getValue = function() {
     var value;
