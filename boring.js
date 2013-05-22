@@ -936,6 +936,45 @@ ValueBinding = (function(_super) {
 
 })(Base);
 
+var VisibleBinding,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+VisibleBinding = (function(_super) {
+  __extends(VisibleBinding, _super);
+
+  function VisibleBinding($element, scope, parent, root) {
+    this.$element = $element;
+    this.scope = scope;
+    this.parent = parent;
+    this.root = root;
+    this.binding = this.$element.data('visible');
+    this.setValue();
+    this.pushBinding();
+  }
+
+  VisibleBinding.prototype.setValue = function() {
+    var value;
+
+    value = !!this.parseBinding(this.binding);
+    if (this.value !== value) {
+      this.value = value;
+      if (this.value) {
+        return this.$element.show();
+      } else {
+        return this.$element.hide();
+      }
+    }
+  };
+
+  VisibleBinding.prototype.update = function() {
+    return this.setValue();
+  };
+
+  return VisibleBinding;
+
+})(Base);
+
 var Parser;
 
 Parser = (function() {
@@ -966,6 +1005,9 @@ Parser = (function() {
     }
     if ($element.data('css')) {
       new CSSBinding($element, this.scope, this.parent, this.root);
+    }
+    if ($element.data('visible') != null) {
+      new VisibleBinding($element, this.scope, this.parent, this.root);
     }
     if ($element.data('if') != null) {
       parseChildren = false;

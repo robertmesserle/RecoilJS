@@ -14,6 +14,8 @@ class Parser
       return
     if $element.data( 'css' )
       new CSSBinding( $element, @scope, @parent, @root )
+    if $element.data( 'visible' )?
+      new VisibleBinding( $element, @scope, @parent, @root )
     if $element.data( 'if' )?
       parseChildren = false
       new IfBinding $element, @scope, @parent, @root, ( $element ) =>
