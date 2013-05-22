@@ -894,8 +894,13 @@ ValueBinding = (function(_super) {
     value = this.getValue();
     if (this.value !== value) {
       this.value = value;
-      if (!this.$element.is('input:radio')) {
-        return this.$element.val(this.value);
+      switch (this.$element.attr('type')) {
+        case 'checkbox':
+          return this.$element.prop('checked', value);
+        case 'radio':
+          break;
+        default:
+          return this.$element.val(this.value);
       }
     }
   };

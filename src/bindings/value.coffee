@@ -25,7 +25,10 @@ class ValueBinding extends Base
     value = @getValue()
     if @value isnt value
       @value = value
-      @$element.val @value unless @$element.is( 'input:radio' )
+      switch @$element.attr( 'type' )
+        when 'checkbox' then @$element.prop( 'checked', value )
+        when 'radio' then break
+        else @$element.val @value
 
   updateHandler: =>
     return if @$element.is( ':radio' ) and not @$element.is( ':checked' )
