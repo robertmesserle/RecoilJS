@@ -180,7 +180,11 @@ Base = (function() {
     parts = binding.split('.');
     part = parts.pop();
     scope = this.parseBinding(parts.join('.')) || this.scope;
-    return (typeof scope[part] === "function" ? scope[part](value) : void 0) || (scope[part] = value);
+    if (typeof scope[part] === 'function') {
+      return scope[part](value);
+    } else {
+      return scope[part] = value;
+    }
   };
 
   Base.prototype.insertPlaceholder = function() {
