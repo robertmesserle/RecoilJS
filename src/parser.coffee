@@ -32,10 +32,6 @@ class Parser
       parseChildren = false
       new ForBinding $element, @scope, @parent, @root, @extras, ( $element, scope, parent, root, extras ) =>
         new Parser( $element, scope, parent, root, extras )
-    if $element.data( 'each' )
-      parseChildren = false
-      new EachBinding $element, @scope, @parent, @root, @extras, ( $element, scope, parent, root, extras ) =>
-        new Parser( $element, scope, parent, root, extras )
     if $element.data( 'text' )
       parseChildren = false
       new TextBinding( $element, @scope, @parent, @root, @extras )

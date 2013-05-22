@@ -430,108 +430,6 @@ CSSBinding = (function(_super) {
 
 })(Base);
 
-var EachBinding,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-EachBinding = (function(_super) {
-  __extends(EachBinding, _super);
-
-  function EachBinding($element, scope, parent, root, extras, childParser) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.childParser = childParser;
-    this.checkForChanges = __bind(this.checkForChanges, this);
-    this.binding = this.$element.data('each');
-    this.getTemplate();
-    this.parseItems();
-    EachBinding.__super__.constructor.apply(this, arguments);
-  }
-
-  EachBinding.prototype.getTemplate = function() {
-    return this.$template = this.$element.contents().remove();
-  };
-
-  EachBinding.prototype.getItems = function() {
-    var items;
-
-    items = this.parseBinding(this.binding);
-    if (typeof items === 'function') {
-      return items();
-    } else {
-      return items;
-    }
-  };
-
-  EachBinding.prototype.parseItems = function(items) {
-    var $item, extras, index, item, _i, _len, _results;
-
-    if (items == null) {
-      items = this.getItems();
-    }
-    _results = [];
-    for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
-      item = collection[index];
-      $item = this.$template.clone().appendTo(this.$element);
-      extras = $.extend({}, this.extras);
-      if (typeof item === 'object') {
-        extras[this.itemName].$index = index;
-        extras[this.itemName].$total = collection.length;
-      }
-      _results.push(this.childParser($item, item, this.scope, this.root, extras));
-    }
-    return _results;
-  };
-
-  EachBinding.prototype.checkForChanges = function(collection) {
-    var index, item, _i, _len, _ref;
-
-    if (!this.collection) {
-      return true;
-    }
-    if (collection.length !== this.collection.length) {
-      return true;
-    }
-    _ref = collection || [];
-    for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-      item = _ref[index];
-      if (item !== this.collection[index]) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  EachBinding.prototype.updateItems = function() {
-    var collection;
-
-    collection = this.getCollection();
-    if (!this.checkForChanges(collection)) {
-      return;
-    }
-    this.collection = collection.slice(0);
-    if (this.logic) {
-      this.wrap();
-    }
-    this.$element.empty();
-    this.parseItems(collection);
-    if (this.logic) {
-      return this.unwrap();
-    }
-  };
-
-  EachBinding.prototype.update = function() {
-    return this.updateItems();
-  };
-
-  return EachBinding;
-
-})(Base);
-
 var EventBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1121,12 +1019,6 @@ Parser = (function() {
     if ($element.data('for')) {
       parseChildren = false;
       new ForBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
-        return new Parser($element, scope, parent, root, extras);
-      });
-    }
-    if ($element.data('each')) {
-      parseChildren = false;
-      new EachBinding($element, this.scope, this.parent, this.root, this.extras, function($element, scope, parent, root, extras) {
         return new Parser($element, scope, parent, root, extras);
       });
     }
