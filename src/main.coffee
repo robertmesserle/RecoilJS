@@ -27,6 +27,9 @@ class Recoil
   @createTransition: ( type, id, callback ) ->
     Recoil.transitions[ type ][ id ] = callback
 
+  @checkForChanges: ->
+    Recoil.app? arguments...
+
   constructor: ( @id, @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."
     $ ( element ) =>

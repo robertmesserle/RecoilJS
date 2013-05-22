@@ -1,10 +1,23 @@
 module.exports = ( grunt ) ->
 
   header =
-    """
-    /*! RecoilJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/RecoilJS */
-    /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
-    """
+    banner:
+      """
+      /*! RecoilJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/RecoilJS */
+      /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
+      """
+    js:
+      """
+      ( function ( root, $ ) {
+      """
+
+  footer =
+    js:
+      """
+      if ( typeof define === 'function' && define.amd ) define( Recoil )
+      else root.Recoil = Recoil
+      } )( this, jQuery )
+      """
 
   grunt.initConfig
     coffee:
@@ -19,8 +32,8 @@ module.exports = ( grunt ) ->
     concat:
       options:
         stripBanners: true
-        banner: "#{ header }\n\n(function($){\n"
-        footer: "window.Recoil = Recoil;\n})(jQuery);"
+        banner: "#{ header.banner }\n\n#{ header.js }\n"
+        footer: "#{ footer.js }"
       dist:
         src: [
           'tmp/main.js'

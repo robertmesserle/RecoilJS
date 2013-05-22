@@ -1,7 +1,7 @@
 /*! RecoilJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/RecoilJS */
 /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
 
-(function($){
+( function ( root, $ ) {
 var Recoil;
 
 Recoil = (function() {
@@ -30,6 +30,10 @@ Recoil = (function() {
 
   Recoil.createTransition = function(type, id, callback) {
     return Recoil.transitions[type][id] = callback;
+  };
+
+  Recoil.checkForChanges = function() {
+    return typeof Recoil.app === "function" ? Recoil.app.apply(Recoil, arguments) : void 0;
   };
 
   function Recoil(id, controller) {
@@ -74,10 +78,8 @@ Recoil = (function() {
 
           args = Array.apply(null, arguments);
           args[1] = function() {
-            var _ref;
-
             listener.apply(null, arguments);
-            return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
+            return Recoil.checkForChanges();
           };
           return originalMethod.apply(this, args);
         };
@@ -92,10 +94,8 @@ Recoil = (function() {
 
           args = Array.apply(null, arguments);
           args[1] = function() {
-            var _ref;
-
             listener.apply(null, arguments);
-            return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
+            return Recoil.checkForChanges();
           };
           return originalMethod.apply(this, args);
         };
@@ -104,14 +104,10 @@ Recoil = (function() {
   })();
   return $(function() {
     $(document).ajaxComplete(function() {
-      var _ref;
-
-      return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
+      return Recoil.checkForChanges();
     });
     return $(document).on('keydown click', function() {
-      var _ref;
-
-      return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
+      return Recoil.checkForChanges();
     });
   });
 })();
@@ -1279,5 +1275,6 @@ Core = (function() {
   return Core;
 
 })();
-window.Recoil = Recoil;
-})(jQuery);
+if ( typeof define === 'function' && define.amd ) define( Recoil )
+else root.Recoil = Recoil
+} )( this, jQuery )
