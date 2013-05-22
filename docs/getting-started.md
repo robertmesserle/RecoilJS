@@ -1,4 +1,4 @@
-# [ Documentation ]( index.md ) / Getting Started
+# [ Documentation ]( readme.md ) / Getting Started
 
 ## Including RecoilJS
 
