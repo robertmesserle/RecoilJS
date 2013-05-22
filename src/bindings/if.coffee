@@ -13,9 +13,7 @@ class IfBinding extends Base
       if @value
         @$element.insertAfter( @$placeholder )
         @callback( @$element.contents(), @scope, @parent, @root )
-        @unwrap()
       else
-        @wrap()
         @$element.detach()
 
   update: ->

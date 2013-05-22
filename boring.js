@@ -671,10 +671,8 @@ IfBinding = (function(_super) {
       this.value = value;
       if (this.value) {
         this.$element.insertAfter(this.$placeholder);
-        this.callback(this.$element.contents(), this.scope, this.parent, this.root);
-        return this.unwrap();
+        return this.callback(this.$element.contents(), this.scope, this.parent, this.root);
       } else {
-        this.wrap();
         return this.$element.detach();
       }
     }
