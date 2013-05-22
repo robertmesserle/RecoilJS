@@ -666,7 +666,7 @@ IfBinding = (function(_super) {
   IfBinding.prototype.setValue = function() {
     var value;
 
-    value = this.parseBinding(this.binding);
+    value = !!this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
       if (this.value) {

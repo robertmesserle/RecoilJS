@@ -7,7 +7,7 @@ class IfBinding extends Base
     @pushBinding()
 
   setValue: ->
-    value = @parseBinding @binding
+    value = !! @parseBinding @binding
     if @value isnt value
       @value = value
       if @value
