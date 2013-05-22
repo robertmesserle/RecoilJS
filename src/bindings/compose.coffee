@@ -9,10 +9,10 @@ class ComposeBinding extends Base
 
   loadView: ->
     url = "/views/#{ @view }.html"
-    if globals.views[ url ]
-      return @renderView( globals.views[ url ] )
+    if Recoil.views[ url ]
+      return @renderView( Recoil.views[ url ] )
     $.ajax url: url, success: ( data ) =>
-      data = globals.views[ url ] = data
+      data = Recoil.views[ url ] = data
         .replace( /<\$/g, '<div data-logic="true"' )
         .replace( /<\/\$>/g, '</div>' )
       @renderView( data )
@@ -27,7 +27,7 @@ class ComposeBinding extends Base
       parent: @parent
       root:   @root
     )
-    intro = globals.transitions.intro[ @view ] or @controller?.intro or null
+    intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
     intro?( @$element )
 
   update: ->
@@ -37,5 +37,5 @@ class ComposeBinding extends Base
         @controller = controller
         @view = @controller.view
         @loadView()
-      outro = globals.transitions.outro[ @view ] or @controller?.outro or null
+      outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       outro?( @$element, callback ) or callback()

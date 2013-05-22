@@ -14,7 +14,7 @@ do ->
           args = Array arguments...
           args[ 1 ] = ->
             listener( arguments... )
-            globals.app?.checkForChanges()
+            Recoil.app?.checkForChanges()
           originalMethod.apply( this, args )
       if type.prototype.attachEvent
         originalMethod = type.prototype.attachEvent
@@ -23,12 +23,12 @@ do ->
           args = Array arguments...
           args[ 1 ] = ->
             listener( arguments... )
-            globals.app?.checkForChanges()
+            Recoil.app?.checkForChanges()
           originalMethod.apply( this, args )
 
 
   $ ->
     $( document ).ajaxComplete ->
-      globals.app?.checkForChanges()
+      Recoil.app?.checkForChanges()
     $( document ).on 'keydown click', ->
-      globals.app?.checkForChanges()
+      Recoil.app?.checkForChanges()

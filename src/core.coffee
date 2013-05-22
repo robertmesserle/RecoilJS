@@ -9,13 +9,13 @@ class Core
 
   checkForChanges: ->
     setTimeout =>
-      for binding in globals.bindings
+      for binding in Recoil.bindings
         binding.update()
       @cleanBindings()
 
   cleanBindings: ->
-    count = globals.bindings.length
+    count = Recoil.bindings.length
     for index in [ count - 1..0 ]
-      binding = globals.bindings[ index ]
+      binding = Recoil.bindings[ index ]
       element = binding.$placeholder?.get( 0 ) or binding.$element?.get( 0 )
-      globals.bindings.splice( index, 1 ) unless $.contains( document.body, element )
+      Recoil.bindings.splice( index, 1 ) unless $.contains( document.body, element )

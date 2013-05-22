@@ -1,45 +1,56 @@
-/*! BoringJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/BoringJS */
+/*! RecoilJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/RecoilJS */
 /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
+
 (function($){
+var Recoil;
 
-(function() {
-  $.fn.makeBoring = function(controller) {
-    var $element;
+Recoil = (function() {
+  Recoil.app = null;
 
-    if (globals.app) {
-      throw 'You may only have one app running at a time.';
-    }
-    $element = $(this);
-    return globals.app = new Core($element, controller);
-  };
-  $.makeBoring = function(id, controller) {
-    if (globals.app) {
-      throw 'You may only have one app running at a time.';
-    }
-    return $(function() {
-      return $("[data-app='" + id + "']:first").makeBoring(controller);
-    });
-  };
-  return $.boring = {
-    createTransition: function(type, id, callback) {
-      return globals.transitions[type][id] = callback;
-    }
-  };
-})();
+  Recoil.bindings = [];
 
-var globals;
+  Recoil.views = {};
 
-globals = {
-  app: null,
-  bindings: [],
-  views: {},
-  transitions: {
+  Recoil.transitions = {
     intro: {},
     outro: {}
-  },
-  events: 'blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error'.split(/\s+/g),
-  attributes: 'class id src href style'.split(/\s+/g)
-};
+  };
+
+  Recoil.events = 'blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error'.split(/\s+/g);
+
+  Recoil.attributes = 'class id src href style'.split(/\s+/g);
+
+  Recoil.init = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Recoil, arguments, function(){});
+  };
+
+  Recoil.createTransition = function(type, id, callback) {
+    return Recoil.transitions[type][id] = callback;
+  };
+
+  function Recoil(id, controller) {
+    var _this = this;
+
+    this.id = id;
+    this.controller = controller;
+    if (Recoil.app) {
+      throw "You may only have one app running at a time.";
+    }
+    $(function(element) {
+      var $element;
+
+      $element = $(element);
+      return Recoil.app = new Core($element, _this.controller);
+    });
+  }
+
+  return Recoil;
+
+})();
 
 (function() {
   var elementList;
@@ -63,7 +74,7 @@ globals = {
             var _ref;
 
             listener.apply(null, arguments);
-            return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+            return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
           };
           return originalMethod.apply(this, args);
         };
@@ -81,7 +92,7 @@ globals = {
             var _ref;
 
             listener.apply(null, arguments);
-            return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+            return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
           };
           return originalMethod.apply(this, args);
         };
@@ -92,12 +103,12 @@ globals = {
     $(document).ajaxComplete(function() {
       var _ref;
 
-      return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+      return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
     });
     return $(document).on('keydown click', function() {
       var _ref;
 
-      return (_ref = globals.app) != null ? _ref.checkForChanges() : void 0;
+      return (_ref = Recoil.app) != null ? _ref.checkForChanges() : void 0;
     });
   });
 })();
@@ -118,7 +129,7 @@ Base = (function() {
   }
 
   Base.prototype.pushBinding = function() {
-    return globals.bindings.push(this);
+    return Recoil.bindings.push(this);
   };
 
   Base.prototype.parseBinding = function(binding) {
@@ -345,13 +356,13 @@ ComposeBinding = (function(_super) {
       _this = this;
 
     url = "/views/" + this.view + ".html";
-    if (globals.views[url]) {
-      return this.renderView(globals.views[url]);
+    if (Recoil.views[url]) {
+      return this.renderView(Recoil.views[url]);
     }
     return $.ajax({
       url: url,
       success: function(data) {
-        data = globals.views[url] = data.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
+        data = Recoil.views[url] = data.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
         return _this.renderView(data);
       }
     });
@@ -374,7 +385,7 @@ ComposeBinding = (function(_super) {
         root: this.root
       });
     }
-    intro = globals.transitions.intro[this.view] || ((_ref = this.controller) != null ? _ref.intro : void 0) || null;
+    intro = Recoil.transitions.intro[this.view] || ((_ref = this.controller) != null ? _ref.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.$element) : void 0;
   };
 
@@ -389,7 +400,7 @@ ComposeBinding = (function(_super) {
         _this.view = _this.controller.view;
         return _this.loadView();
       };
-      outro = globals.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
+      outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       return (typeof outro === "function" ? outro(this.$element, callback) : void 0) || callback();
     }
   };
@@ -1146,7 +1157,7 @@ Parser = (function() {
   Parser.prototype.parseAttributes = function($element) {
     var attribute, str, _i, _j, _len, _len1, _ref, _ref1, _results;
 
-    _ref = globals.attributes;
+    _ref = Recoil.attributes;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       attribute = _ref[_i];
       str = $element.data(attribute);
@@ -1167,7 +1178,7 @@ Parser = (function() {
   Parser.prototype.attachEvents = function($element) {
     var event, str, _i, _len, _ref, _results;
 
-    _ref = globals.events;
+    _ref = Recoil.events;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       event = _ref[_i];
@@ -1236,7 +1247,7 @@ Core = (function() {
     return setTimeout(function() {
       var binding, _i, _len, _ref;
 
-      _ref = globals.bindings;
+      _ref = Recoil.bindings;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         binding = _ref[_i];
         binding.update();
@@ -1248,13 +1259,13 @@ Core = (function() {
   Core.prototype.cleanBindings = function() {
     var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
 
-    count = globals.bindings.length;
+    count = Recoil.bindings.length;
     _results = [];
     for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
-      binding = globals.bindings[index];
+      binding = Recoil.bindings[index];
       element = ((_ref1 = binding.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.$element) != null ? _ref2.get(0) : void 0);
       if (!$.contains(document.body, element)) {
-        _results.push(globals.bindings.splice(index, 1));
+        _results.push(Recoil.bindings.splice(index, 1));
       } else {
         _results.push(void 0);
       }
@@ -1265,4 +1276,4 @@ Core = (function() {
   return Core;
 
 })();
-})(jQuery);
+;window.Recoil = Recoil;})(jQuery);

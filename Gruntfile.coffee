@@ -1,5 +1,11 @@
 module.exports = ( grunt ) ->
 
+  header =
+    """
+    /*! RecoilJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/RecoilJS */
+    /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
+    """
+
   grunt.initConfig
     coffee:
       compile:
@@ -13,37 +19,24 @@ module.exports = ( grunt ) ->
     concat:
       options:
         stripBanners: true
-        banner:
-          """
-          /*! BoringJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/BoringJS */
-          /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
-          (function($){
-          \n
-          """
-        footer: "})(jQuery);"
+        banner: "#{ header }\n\n(function($){\n"
+        footer: ";window.Recoil = Recoil;})(jQuery);"
       dist:
         src: [
           'tmp/main.js'
-          'tmp/globals.js'
           'tmp/overrides.js'
           'tmp/bindings/base.js'
           'tmp/bindings/*.js'
           'tmp/parser.js'
           'tmp/core.js'
         ]
-        dest: 'boring.js'
+        dest: 'recoil.js'
     uglify:
       options:
         mangle: false
-        banner:
-          """
-          /*! BoringJS (Alpha) by Robert Messerle  |  https://github.com/robertmesserle/BoringJS */
-          /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
-          \n
-          """
+        banner: "#{ header }\n\n"
       compile:
-        files:
-          'boring.min.js': [ 'boring.js' ]
+        files: 'recoil.min.js': [ 'recoil.js' ]
     watch:
       scripts:
         files: [ 'src/*.coffee', 'src/**/*.coffee' ]

@@ -55,7 +55,7 @@ class Parser
 
   parseAttributes: ( $element ) ->
     # Data-Attributes
-    for attribute in globals.attributes
+    for attribute in Recoil.attributes
       str = $element.data( attribute )
       continue unless str
       new AttributeBinding( attribute, $element, @scope, @parent, @root, @extras )
@@ -64,7 +64,7 @@ class Parser
       new AttributeText( attribute, $element, @scope, @parent, @root, @extras )
 
   attachEvents: ( $element ) ->
-    for event in globals.events
+    for event in Recoil.events
       str = $element.data( event )
       continue unless str
       new EventBinding( event, $element, @scope, @parent, @root, @extras )

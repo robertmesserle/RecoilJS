@@ -1,6 +1,8 @@
 
 function Test () {
-  //-- test code goes here
+  var _ = {}
+
+  return _
 }
 
-$.makeBoring( 'test', new Test )
+Recoil.init( 'test', Test() )

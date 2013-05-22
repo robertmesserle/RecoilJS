@@ -9,7 +9,7 @@ class Base
     if @update then @pushBinding()
 
   pushBinding: ->
-    globals.bindings.push( this )
+    Recoil.bindings.push( this )
 
   parseBinding: ( binding ) ->
     # Return cached binding if available
