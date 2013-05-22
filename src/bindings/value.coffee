@@ -6,7 +6,14 @@ class ValueBinding extends Base
     @setValue()
     @pushBinding()
     @updateHandler() if @$element.is( 'select' )
-    @$element.on( 'blur', @updateHandler ) unless @live
+    @bindEvents()
+
+  bindEvents: ->
+    eventType = switch @$element.attr( 'type' )
+      when 'radio', 'checkbox' then 'change'
+      else
+        if @live then 'blur'
+    if eventType then @$element.on eventType, @updateHandler
 
   getValue: ->
     if @$element.attr( 'type' ) is 'radio'
