@@ -53,7 +53,8 @@ class Base
     parts = binding.split( '.' )
     part  = parts.pop()
     scope = @parseBinding( parts.join( '.' ) ) or @scope
-    scope[ part ]?( value ) or scope[ part ] = value
+    if typeof scope[ part ] is 'function' then scope[ part ] value
+    else scope[ part ] = value
 
   insertPlaceholder: ->
     str = ( for attr in @$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
