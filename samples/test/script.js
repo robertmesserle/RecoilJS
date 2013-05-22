@@ -1,7 +1,6 @@
 
 function Test () {
-  var _ = {}
-
+  var _ = { title: 'test' }
   return _
 }
 

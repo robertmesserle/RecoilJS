@@ -27,8 +27,9 @@ class Recoil
   @createTransition: ( type, id, callback ) ->
     Recoil.transitions[ type ][ id ] = callback
 
-  constructor: ( @id, @controller )->
+  constructor: ( @id, @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."
     $ ( element ) =>
-      $element    = $( element )
+      $element    = $( "[data-app='#{ @id }']" )
+      unless $element.length then throw "No element found for id '#{ @id }'."
       Recoil.app  = new Core( $element, @controller )

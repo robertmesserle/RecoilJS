@@ -20,7 +20,7 @@ module.exports = ( grunt ) ->
       options:
         stripBanners: true
         banner: "#{ header }\n\n(function($){\n"
-        footer: ";window.Recoil = Recoil;})(jQuery);"
+        footer: "window.Recoil = Recoil;\n})(jQuery);"
       dist:
         src: [
           'tmp/main.js'

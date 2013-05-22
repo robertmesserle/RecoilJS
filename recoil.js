@@ -43,7 +43,10 @@ Recoil = (function() {
     $(function(element) {
       var $element;
 
-      $element = $(element);
+      $element = $("[data-app='" + _this.id + "']");
+      if (!$element.length) {
+        throw "No element found for id '" + _this.id + "'.";
+      }
       return Recoil.app = new Core($element, _this.controller);
     });
   }
@@ -1276,4 +1279,5 @@ Core = (function() {
   return Core;
 
 })();
-;window.Recoil = Recoil;})(jQuery);
+window.Recoil = Recoil;
+})(jQuery);
