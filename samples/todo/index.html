@@ -6,8 +6,11 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body data-app="todo">
+
   <h1>Todo List</h1>
+
   <input type="text" name="new-task" id="new-task" placeholder="Please enter a task..." data-keydown="handleKey( $element, $event.keyCode )" />
+  
   <h2 data-visible="tasks.length">Tasks</h2>
   <ul data-for="task in tasks">
     <li>
