@@ -9,7 +9,7 @@ class Base
     if @update then @pushBinding()
 
   pushBinding: ->
-    Recoil.bindings.push( this )
+    Recoil.bindings.push( this ) unless @$element.data( 'static' )
 
   parseBinding: ( binding ) ->
     # Return cached binding if available

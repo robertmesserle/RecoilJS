@@ -126,7 +126,9 @@ Base = (function() {
   }
 
   Base.prototype.pushBinding = function() {
-    return Recoil.bindings.push(this);
+    if (!this.$element.data('static')) {
+      return Recoil.bindings.push(this);
+    }
   };
 
   Base.prototype.parseBinding = function(binding) {
@@ -860,7 +862,8 @@ VisibleBinding = (function(_super) {
 
 })(Base);
 
-var Parser;
+var Parser,
+  __slice = [].slice;
 
 Parser = (function() {
   function Parser($dom, scope, parent, root, extras) {
@@ -870,6 +873,7 @@ Parser = (function() {
     this.parent = parent != null ? parent : {};
     this.root = root != null ? root : {};
     this.extras = extras != null ? extras : {};
+    this.splat = [this.scope, this.parent, this.root, this.extras];
     $dom.each(function(index, element) {
       var $element;
 
@@ -886,36 +890,72 @@ Parser = (function() {
     this.attachEvents($element);
     this.parseAttributes($element);
     if ($element.get(0).nodeType === 3) {
-      new TextNode($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(TextNode, [$element].concat(__slice.call(this.splat)), function(){});
       return;
     }
     if ($element.data('css')) {
-      new CSSBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(CSSBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('visible') != null) {
-      new VisibleBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(VisibleBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('if') != null) {
       parseChildren = false;
-      new IfBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(IfBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('compose')) {
       parseChildren = false;
-      new ComposeBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(ComposeBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('for')) {
       parseChildren = false;
-      new ForBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(ForBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('html')) {
-      new HTMLBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(HTMLBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('value')) {
       parseChildren = false;
-      new ValueBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(ValueBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if ($element.data('update')) {
-      new UpdateBinding($element, this.scope, this.parent, this.root, this.extras);
+      (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(UpdateBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
     if (!parseChildren) {
       return;
@@ -933,7 +973,11 @@ Parser = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       attribute = _ref[_i];
-      _results.push(new AttributeText(attribute, $element, this.scope, this.parent, this.root, this.extras));
+      _results.push((function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(AttributeText, [attribute, $element].concat(__slice.call(this.splat)), function(){}));
     }
     return _results;
   };
@@ -949,7 +993,11 @@ Parser = (function() {
       if (!str) {
         continue;
       }
-      _results.push(new EventBinding(event, $element, this.scope, this.parent, this.root, this.extras));
+      _results.push((function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(EventBinding, [event, $element].concat(__slice.call(this.splat)), function(){}));
     }
     return _results;
   };
