@@ -3,6 +3,7 @@ class Recoil
   # Global Data
   
   @app:            null
+  @viewPath:       '/views'
   @bindings:       []
   @views:          {}
   @transitions:    
@@ -25,6 +26,8 @@ class Recoil
 
   @checkForChanges: ->
     Recoil.app? arguments...
+
+  @setViewPath: ( @viewPath ) ->
 
   constructor: ( @id, @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."

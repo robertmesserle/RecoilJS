@@ -7,6 +7,8 @@ var Recoil;
 Recoil = (function() {
   Recoil.app = null;
 
+  Recoil.viewPath = '/views';
+
   Recoil.bindings = [];
 
   Recoil.views = {};
@@ -32,6 +34,10 @@ Recoil = (function() {
 
   Recoil.checkForChanges = function() {
     return typeof Recoil.app === "function" ? Recoil.app.apply(Recoil, arguments) : void 0;
+  };
+
+  Recoil.setViewPath = function(viewPath) {
+    this.viewPath = viewPath;
   };
 
   function Recoil(id, controller) {
@@ -321,7 +327,7 @@ ComposeBinding = (function(_super) {
     var url,
       _this = this;
 
-    url = "/views/" + this.view + ".html";
+    url = "" + Recoil.viewPath + "/" + this.view + ".html";
     if (Recoil.views[url]) {
       return this.renderView(Recoil.views[url]);
     }

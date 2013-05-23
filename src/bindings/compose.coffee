@@ -8,7 +8,7 @@ class ComposeBinding extends Base
     @pushBinding()
 
   loadView: ->
-    url = "/views/#{ @view }.html"
+    url = "#{ Recoil.viewPath }/#{ @view }.html"
     if Recoil.views[ url ]
       return @renderView( Recoil.views[ url ] )
     $.ajax url: url, success: ( data ) =>
