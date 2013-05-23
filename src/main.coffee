@@ -2,12 +2,11 @@ class Recoil
 
   # Global Data
   
-  @app:            null
-  @viewPath:       '/views'
-  @compile:        CoffeeScript.compile
-  @bindings:       []
-  @views:          {}
-  @transitions:    
+  @app:           null
+  @viewPath:      '/views'
+  @bindings:      []
+  @views:         {}
+  @transitions:   
     intro:        {}
     outro:        {}
   @events:
@@ -29,6 +28,17 @@ class Recoil
     Recoil.app? arguments...
 
   @setViewPath: ( @viewPath ) ->
+
+  @compile: ( str ) ->
+    if CoffeeScript?.compile
+      CoffeeScript.compile "do -> #{ str }", bare: true
+    else
+      exp = /.#\{([^\}]*[^\\])\}/g
+      str = str.replace( /\n/g, '\\n' )
+      str = str.replace exp, ( match, expression ) ->
+        if match.charAt( 0 ) is '\\' then match
+        else "\" + ( #{ expression } ) + \""
+      "( function () { return #{ str }; } )()"
 
   constructor: ( @id, @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."

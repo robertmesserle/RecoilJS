@@ -26,7 +26,7 @@ class Base
     @cachedStrings ?= {}
     jsString = @cachedStrings[ str ]
     return jsString.call( this ) if jsString
-    # Otherwise, continue parsing the CoffeeScript into a usable function
+    # Otherwise, continue parsing the code into a usable function
     str = str.replace( /\"/g, '\\"' )
     str = '"' + str + '"'
     # Generate argument hash
@@ -34,7 +34,7 @@ class Base
     @cachedStrings[ str ].call( this )
 
   generateFunction: ( str, customArgs = [] ) ->
-    js = Recoil.compile "do -> #{ str }", bare: true
+    js = Recoil.compile "#{ str }"
     argHash = {
       '$element': 'this.$element'
       '$root':    'this.root'

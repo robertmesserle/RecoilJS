@@ -9,8 +9,6 @@ Recoil = (function() {
 
   Recoil.viewPath = '/views';
 
-  Recoil.compile = CoffeeScript.compile;
-
   Recoil.bindings = [];
 
   Recoil.views = {};
@@ -40,6 +38,27 @@ Recoil = (function() {
 
   Recoil.setViewPath = function(viewPath) {
     this.viewPath = viewPath;
+  };
+
+  Recoil.compile = function(str) {
+    var exp;
+
+    if (typeof CoffeeScript !== "undefined" && CoffeeScript !== null ? CoffeeScript.compile : void 0) {
+      return CoffeeScript.compile("do -> " + str, {
+        bare: true
+      });
+    } else {
+      exp = /.#\{([^\}]*[^\\])\}/g;
+      str = str.replace(/\n/g, '\\n');
+      str = str.replace(exp, function(match, expression) {
+        if (match.charAt(0) === '\\') {
+          return match;
+        } else {
+          return "\" + ( " + expression + " ) + \"";
+        }
+      });
+      return "( function () { return " + str + "; } )()";
+    }
   };
 
   function Recoil(id, controller) {
@@ -182,9 +201,7 @@ Base = (function() {
     if (customArgs == null) {
       customArgs = [];
     }
-    js = Recoil.compile("do -> " + str, {
-      bare: true
-    });
+    js = Recoil.compile("" + str);
     argHash = {
       '$element': 'this.$element',
       '$root': 'this.root',
