@@ -11,7 +11,7 @@ class Parser
     @attachEvents( $element )
     @parseAttributes( $element )
     if $element.get( 0 ).nodeType is 3
-      new TextNode( $element, @splat... )
+      new TextNode $element, @splat...
       return
     if $element.data( 'css' )
       new CSSBinding $element, @splat...

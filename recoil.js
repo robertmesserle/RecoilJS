@@ -9,6 +9,8 @@ Recoil = (function() {
 
   Recoil.viewPath = '/views';
 
+  Recoil.compile = CoffeeScript.compile;
+
   Recoil.bindings = [];
 
   Recoil.views = {};
@@ -137,9 +139,12 @@ Base = (function() {
     }
   };
 
-  Base.prototype.parseBinding = function(binding) {
+  Base.prototype.parseBinding = function(binding, evalFunction) {
     var jsBinding, _ref;
 
+    if (evalFunction == null) {
+      evalFunction = true;
+    }
     if ((_ref = this.cachedBindings) == null) {
       this.cachedBindings = {};
     }
@@ -148,7 +153,11 @@ Base = (function() {
       return jsBinding.call(this);
     }
     this.cachedBindings[binding] = this.generateFunction(binding);
-    return this.cachedBindings[binding].call(this);
+    if (evalFunction) {
+      return this.cachedBindings[binding].call(this);
+    } else {
+      return this.cachedBindings[binding];
+    }
   };
 
   Base.prototype.parseString = function(str) {
@@ -167,10 +176,13 @@ Base = (function() {
     return this.cachedStrings[str].call(this);
   };
 
-  Base.prototype.generateFunction = function(str) {
+  Base.prototype.generateFunction = function(str, customArgs) {
     var argHash, args, js, key, scopeArgs, value;
 
-    js = CoffeeScript.compile("do -> " + str, {
+    if (customArgs == null) {
+      customArgs = [];
+    }
+    js = Recoil.compile("do -> " + str, {
       bare: true
     });
     argHash = {
@@ -198,7 +210,7 @@ Base = (function() {
       args.push(key);
       scopeArgs.push(value);
     }
-    return eval("( function () {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
+    return eval("( function ( " + (customArgs.join(',')) + " ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
   };
 
   Base.prototype.updateBinding = function(value, binding) {
@@ -428,8 +440,8 @@ EventBinding = (function(_super) {
     this.root = root;
     this.extras = extras;
     str = $element.data(eventName);
-    csString = "-> " + str;
-    func = this.parseBinding(csString);
+    csString = "" + str;
+    func = this.parseBinding(csString, false);
     eventName = "" + eventName + ".boringjs";
     $element.off(eventName).on(eventName, function(event) {
       return func.call(_this, event);
@@ -437,33 +449,7 @@ EventBinding = (function(_super) {
   }
 
   EventBinding.prototype.generateFunction = function(str) {
-    var argHash, args, js, key, scopeArgs, value;
-
-    js = CoffeeScript.compile("do -> " + str, {
-      bare: true
-    });
-    argHash = {
-      '$element': 'this.$element',
-      '$root': 'this.root',
-      '$parent': 'this.parent',
-      '$data': 'this.scope',
-      '$scope': 'this.scope',
-      '$extras': 'this.extras'
-    };
-    args = [];
-    scopeArgs = [];
-    for (key in this.scope) {
-      argHash[key] = "this.scope[ '" + key + "' ]";
-    }
-    for (key in this.extras) {
-      argHash[key] = "this.extras[ '" + key + "' ]";
-    }
-    for (key in argHash) {
-      value = argHash[key];
-      args.push(key);
-      scopeArgs.push(value);
-    }
-    return eval("( function ( event ) {\n  return ( function ( " + (args.join(',')) + " ) {\n    return " + js + "\n  } ).call( {}, " + (scopeArgs.join(', ')) + " )\n} )");
+    return EventBinding.__super__.generateFunction.call(this, str, ['$event']);
   };
 
   return EventBinding;

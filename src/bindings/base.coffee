@@ -11,14 +11,15 @@ class Base
   pushBinding: ->
     Recoil.bindings.push( this ) unless @$element.data( 'static' )
 
-  parseBinding: ( binding ) ->
+  parseBinding: ( binding, evalFunction = true ) ->
     # Return cached binding if available
     @cachedBindings   ?= {}
     jsBinding         = @cachedBindings[ binding ]
     return jsBinding.call( this ) if jsBinding
     # Otherwise, continue parsing the CoffeeScript into a usable functionkey
     @cachedBindings[ binding ] = @generateFunction( binding )
-    @cachedBindings[ binding ].call( this )
+    if evalFunction then @cachedBindings[ binding ].call( this )
+    else @cachedBindings[ binding ]
 
   parseString: ( str ) ->
     # Return cached binding if available
@@ -32,8 +33,8 @@ class Base
     @cachedStrings[ str ] = @generateFunction( str )
     @cachedStrings[ str ].call( this )
 
-  generateFunction: ( str ) ->
-    js = CoffeeScript.compile "do -> #{ str }", bare: true
+  generateFunction: ( str, customArgs = [] ) ->
+    js = Recoil.compile "do -> #{ str }", bare: true
     argHash = {
       '$element': 'this.$element'
       '$root':    'this.root'
@@ -50,7 +51,7 @@ class Base
       args.push key
       scopeArgs.push value
     eval """
-      ( function () {
+      ( function ( #{ customArgs.join ',' } ) {
         return ( function ( #{ args.join( ',' ) } ) {
           return #{ js }
         } ).call( {}, #{ scopeArgs.join( ', ' ) } )

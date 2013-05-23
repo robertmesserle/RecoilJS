@@ -4,6 +4,7 @@ class Recoil
   
   @app:            null
   @viewPath:       '/views'
+  @compile:        CoffeeScript.compile
   @bindings:       []
   @views:          {}
   @transitions:    
