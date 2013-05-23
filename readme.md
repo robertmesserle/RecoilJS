@@ -8,4 +8,4 @@ RecoilJS tries to be as unassuming as possible, providing you with the tools tha
 
 ## Documentation
 
-Documentation can be found in the [ Wiki ]( wiki )
+Documentation can be found in the [ Wiki ]( https://github.com/robertmesserle/RecoilJS/wiki )
