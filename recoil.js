@@ -33,7 +33,9 @@ Recoil = (function() {
   };
 
   Recoil.checkForChanges = function() {
-    return typeof Recoil.app === "function" ? Recoil.app.apply(Recoil, arguments) : void 0;
+    var _ref;
+
+    return (_ref = Recoil.app) != null ? _ref.checkForChanges.apply(_ref, arguments) : void 0;
   };
 
   Recoil.setViewPath = function(viewPath) {
@@ -153,7 +155,7 @@ Base = (function() {
   }
 
   Base.prototype.pushBinding = function() {
-    if (!this.$element.data('static')) {
+    if (this.$element.data('static') == null) {
       return Recoil.bindings.push(this);
     }
   };

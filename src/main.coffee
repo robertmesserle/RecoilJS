@@ -25,7 +25,7 @@ class Recoil
     Recoil.transitions[ type ][ id ] = callback
 
   @checkForChanges: ->
-    Recoil.app? arguments...
+    Recoil.app?.checkForChanges arguments...
 
   @setViewPath: ( @viewPath ) ->
 
