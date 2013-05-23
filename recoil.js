@@ -129,6 +129,40 @@ Recoil = (function() {
       }
     }
   })();
+  (function() {
+    var originalSetInterval, originalSetTimeout;
+
+    originalSetTimeout = setTimeout;
+    Recoil.setTimeout = function() {
+      return originalSetTimeout.apply(window, arguments);
+    };
+    window.setTimeout = function(func, timeout) {
+      var args;
+
+      args = Array.apply(null, arguments);
+      args[0] = function() {
+        console.log('setTimeout callback');
+        func.apply(null, arguments);
+        return Recoil.checkForChanges();
+      };
+      return originalSetTimeout.apply(window, args);
+    };
+    originalSetInterval = setInterval;
+    Recoil.setInterval = function() {
+      return originalSetInterval.apply(window, arguments);
+    };
+    return window.setInterval = function(func, timeout) {
+      var args;
+
+      args = Array.apply(null, arguments);
+      args[0] = function() {
+        console.log('setInterval callback');
+        func.apply(null, arguments);
+        return Recoil.checkForChanges();
+      };
+      return originalSetInterval.apply(window, args);
+    };
+  })();
   return $(function() {
     $(document).ajaxComplete(function() {
       return Recoil.checkForChanges();
@@ -1066,7 +1100,7 @@ Core = (function() {
   Core.prototype.checkForChanges = function() {
     var _this = this;
 
-    return setTimeout(function() {
+    return Recoil.setTimeout(function() {
       var binding, _i, _len, _ref;
 
       _ref = Recoil.bindings;

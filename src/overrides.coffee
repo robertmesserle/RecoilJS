@@ -26,6 +26,26 @@ do ->
             Recoil.checkForChanges()
           originalMethod.apply( this, args )
 
+  do ->
+    originalSetTimeout = setTimeout
+    Recoil.setTimeout = -> originalSetTimeout.apply( window, arguments )
+    window.setTimeout = ( func, timeout ) ->
+      args = Array arguments...
+      args[ 0 ] = ->
+        console.log 'setTimeout callback'
+        func( arguments... )
+        Recoil.checkForChanges()
+      originalSetTimeout.apply( window, args )
+
+    originalSetInterval = setInterval
+    Recoil.setInterval = -> originalSetInterval.apply( window, arguments )
+    window.setInterval = ( func, timeout ) ->
+      args = Array arguments...
+      args[ 0 ] = ->
+        console.log 'setInterval callback'
+        func( arguments... )
+        Recoil.checkForChanges()
+      originalSetInterval.apply( window, args )
 
   $ ->
     $( document ).ajaxComplete ->

@@ -9,7 +9,7 @@ class Core
     new Parser( @$element, @controller, false, @controller )
 
   checkForChanges: ->
-    setTimeout =>
+    Recoil.setTimeout =>
       for binding in Recoil.bindings
         binding.update()
       @cleanBindings()
