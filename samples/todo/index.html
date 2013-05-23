@@ -9,13 +9,23 @@
 
   <h1>Todo List</h1>
 
-  <input type="text" name="new-task" id="new-task" placeholder="Please enter a task..." data-keydown="handleKey( $element, $event.keyCode )" />
+  <input autofocus type="text" name="new-task" id="new-task" placeholder="Please enter a task..." data-keydown="handleKey( $element, $event.keyCode )" />
   
-  <h2 data-visible="tasks.length">Tasks</h2>
-  <ul data-for="task in tasks">
+  <h2 data-visible="getTasks( false ).length">Tasks</h2>
+  <ul data-for="task in getTasks( false )">
     <li>
       <label>
-        <input type="checkbox" />
+        <input type="checkbox" data-value="task.complete" />
+        #{ task.title }
+      </label>
+    </li>
+  </ul>
+
+  <h2 data-visible="getTasks( true ).length">Completed</h2>
+  <ul data-for="task in getTasks( true )" class="completed">
+    <li>
+      <label>
+        <input type="checkbox" data-value="task.complete" />
         #{ task.title }
       </label>
     </li>
