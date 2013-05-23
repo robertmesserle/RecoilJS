@@ -18,8 +18,6 @@ Recoil = (function() {
 
   Recoil.events = 'blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error'.split(/\s+/g);
 
-  Recoil.attributes = 'class id src href style'.split(/\s+/g);
-
   Recoil.init = function() {
     return (function(func, args, ctor) {
       ctor.prototype = func.prototype;
@@ -290,43 +288,6 @@ AttributeText = (function(_super) {
   };
 
   return AttributeText;
-
-})(Base);
-
-var AttributeBinding,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-AttributeBinding = (function(_super) {
-  __extends(AttributeBinding, _super);
-
-  function AttributeBinding(attribute, $element, scope, parent, root, extras) {
-    this.attribute = attribute;
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.binding = this.$element.data(this.attribute);
-    this.setValue();
-    this.pushBinding();
-  }
-
-  AttributeBinding.prototype.setValue = function() {
-    var value;
-
-    value = this.parseBinding(this.binding);
-    if (this.value !== value) {
-      this.value = value;
-      return this.$element.attr(this.attribute, this.value);
-    }
-  };
-
-  AttributeBinding.prototype.update = function() {
-    return this.setValue();
-  };
-
-  return AttributeBinding;
 
 })(Base);
 
@@ -726,42 +687,6 @@ TextNode = (function(_super) {
 
 })(Base);
 
-var TextBinding,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-TextBinding = (function(_super) {
-  __extends(TextBinding, _super);
-
-  function TextBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.binding = this.$element.data('text');
-    this.setValue();
-    this.pushBinding();
-  }
-
-  TextBinding.prototype.setValue = function() {
-    var value;
-
-    value = this.parseBinding(this.binding);
-    if (this.value !== value) {
-      this.value = value;
-      return this.$element.text(this.value);
-    }
-  };
-
-  TextBinding.prototype.update = function() {
-    return this.setValue();
-  };
-
-  return TextBinding;
-
-})(Base);
-
 var UpdateBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -982,10 +907,6 @@ Parser = (function() {
       parseChildren = false;
       new ForBinding($element, this.scope, this.parent, this.root, this.extras);
     }
-    if ($element.data('text')) {
-      parseChildren = false;
-      new TextBinding($element, this.scope, this.parent, this.root, this.extras);
-    }
     if ($element.data('html')) {
       new HTMLBinding($element, this.scope, this.parent, this.root, this.extras);
     }
@@ -1006,21 +927,12 @@ Parser = (function() {
   };
 
   Parser.prototype.parseAttributes = function($element) {
-    var attribute, str, _i, _j, _len, _len1, _ref, _ref1, _results;
+    var attribute, _i, _len, _ref, _results;
 
-    _ref = Recoil.attributes;
+    _ref = $element.get(0).attributes || [];
+    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       attribute = _ref[_i];
-      str = $element.data(attribute);
-      if (!str) {
-        continue;
-      }
-      new AttributeBinding(attribute, $element, this.scope, this.parent, this.root, this.extras);
-    }
-    _ref1 = $element.get(0).attributes || [];
-    _results = [];
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      attribute = _ref1[_j];
       _results.push(new AttributeText(attribute, $element, this.scope, this.parent, this.root, this.extras));
     }
     return _results;

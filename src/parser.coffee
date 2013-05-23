@@ -25,9 +25,6 @@ class Parser
     if $element.data( 'for' )
       parseChildren = false
       new ForBinding $element, @scope, @parent, @root, @extras
-    if $element.data( 'text' )
-      parseChildren = false
-      new TextBinding( $element, @scope, @parent, @root, @extras )
     if $element.data( 'html' )
       new HTMLBinding( $element, @scope, @parent, @root, @extras )
     if $element.data( 'value' )
@@ -43,12 +40,6 @@ class Parser
       @parseNode( $element )
 
   parseAttributes: ( $element ) ->
-    # Data-Attributes
-    for attribute in Recoil.attributes
-      str = $element.data( attribute )
-      continue unless str
-      new AttributeBinding( attribute, $element, @scope, @parent, @root, @extras )
-    # Attributes
     for attribute in $element.get( 0 ).attributes or []
       new AttributeText( attribute, $element, @scope, @parent, @root, @extras )
 

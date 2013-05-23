@@ -14,10 +14,6 @@ class Recoil
     dblclick mousedown mouseup mousemove mouseover mouseout mouseenter
     mouseleave change select submit keydown keypress keyup error
     '''.split( /\s+/g )
-  @attributes:
-    '''
-    class id src href style
-    '''.split( /\s+/g )
 
   # Methods
 
