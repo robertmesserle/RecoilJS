@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-app="todo">
+  <h1>Todo List</h1>
+  <input type="text" name="new-task" id="new-task" placeholder="Please enter a task..." data-keydown="handleKey( $element, $event.keyCode )" />
+  <h2 data-visible="tasks.length">Tasks</h2>
+  <ul data-for="task in tasks">
+    <li>
+      <label>
+        <input type="checkbox" />
+        #{ task.title }
+      </label>
+    </li>
+  </ul>
+
+  <script src="../../lib/jquery.js"></script>
+  <script src="../../lib/coffee-script.js"></script>
+  <script src="../../recoil.js"></script>
+  <script src="todo.js"></script>
+</body>
+</html>
