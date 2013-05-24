@@ -54,6 +54,11 @@ module.exports = ( grunt ) ->
       scripts:
         files: [ 'src/*.coffee', 'src/**/*.coffee' ]
         tasks: [ 'coffee', 'concat', 'uglify', 'clean' ]
+    connect:
+      server:
+        options:
+          port: 8383
+          base: '.'
     clean: [ 'tmp' ]
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -61,5 +66,6 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-contrib-connect'
 
   grunt.registerTask 'default', [ 'coffee', 'concat', 'uglify', 'clean' ]
