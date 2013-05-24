@@ -29,11 +29,6 @@ class Recoil
 
   @setViewPath: ( @viewPath ) ->
 
-  @stripLogicTags: ( html ) ->
-    html
-      .replace( /<\$/g, '<div data-logic="true"' )
-      .replace( /<\/\$>/g, '</div>' )
-
   @compile: ( str ) ->
     if CoffeeScript?.compile
       CoffeeScript.compile "do -> #{ str }", bare: true

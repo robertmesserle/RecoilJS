@@ -12,7 +12,9 @@ class ComposeBinding extends Base
     if Recoil.views[ url ]
       return @renderView( Recoil.views[ url ] )
     $.ajax url: url, success: ( data ) =>
-      data = Recoil.views[ url ] = Recoil.stripLogicTags( data )
+      data = Recoil.views[ url ] = data
+        .replace( /<\$/g, '<div data-logic="true"' )
+        .replace( /<\/\$>/g, '</div>' )
       @renderView( data )
 
   renderView: ( data = @html ) =>

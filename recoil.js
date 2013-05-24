@@ -42,10 +42,6 @@ Recoil = (function() {
     this.viewPath = viewPath;
   };
 
-  Recoil.stripLogicTags = function(html) {
-    return html.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
-  };
-
   Recoil.compile = function(str) {
     var exp;
 
@@ -406,7 +402,7 @@ ComposeBinding = (function(_super) {
     return $.ajax({
       url: url,
       success: function(data) {
-        data = Recoil.views[url] = Recoil.stripLogicTags(data);
+        data = Recoil.views[url] = data.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
         return _this.renderView(data);
       }
     });
@@ -1094,8 +1090,23 @@ Core = (function() {
     this.$element = $element;
     this.controller = controller;
     this.afterRender = __bind(this.afterRender, this);
+    this.checkForLogicTags();
     this.afterRender();
   }
+
+  Core.prototype.checkForLogicTags = function() {
+    var html;
+
+    html = this.$element.html();
+    if (!(html.indexOf('&lt;$') + 1)) {
+      return;
+    }
+    html = html.replace(/&lt;\$(.*)&gt;/g, function(match, contents) {
+      return "<div data-logic " + contents + ">";
+    });
+    html = html.replace(/<!--\$-->/g, '</div>');
+    return this.$element.html(html);
+  };
 
   Core.prototype.afterRender = function() {
     if (this.controller.view) {
