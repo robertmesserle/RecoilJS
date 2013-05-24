@@ -29,6 +29,11 @@ class Recoil
 
   @setViewPath: ( @viewPath ) ->
 
+  @stripLogicTags: ( html ) ->
+    html
+      .replace( /<\$/g, '<div data-logic="true"' )
+      .replace( /<\/\$>/g, '</div>' )
+
   @compile: ( str ) ->
     if CoffeeScript?.compile
       CoffeeScript.compile "do -> #{ str }", bare: true
@@ -36,8 +41,9 @@ class Recoil
       exp = /.#\{([^\}]*[^\\])\}/g
       str = str.replace( /\n/g, '\\n' )
       str = str.replace exp, ( match, expression ) ->
-        if match.charAt( 0 ) is '\\' then match
-        else "\" + ( #{ expression } ) + \""
+        firstChar = match.charAt( 0 )
+        if firstChar is '\\' then match
+        else "#{ firstChar }\" + ( #{ expression } ) + \""
       "( function () { return #{ str }; } )()"
 
   constructor: ( @id, @controller ) ->

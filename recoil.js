@@ -42,6 +42,10 @@ Recoil = (function() {
     this.viewPath = viewPath;
   };
 
+  Recoil.stripLogicTags = function(html) {
+    return html.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
+  };
+
   Recoil.compile = function(str) {
     var exp;
 
@@ -53,10 +57,13 @@ Recoil = (function() {
       exp = /.#\{([^\}]*[^\\])\}/g;
       str = str.replace(/\n/g, '\\n');
       str = str.replace(exp, function(match, expression) {
-        if (match.charAt(0) === '\\') {
+        var firstChar;
+
+        firstChar = match.charAt(0);
+        if (firstChar === '\\') {
           return match;
         } else {
-          return "\" + ( " + expression + " ) + \"";
+          return "" + firstChar + "\" + ( " + expression + " ) + \"";
         }
       });
       return "( function () { return " + str + "; } )()";
@@ -399,7 +406,7 @@ ComposeBinding = (function(_super) {
     return $.ajax({
       url: url,
       success: function(data) {
-        data = Recoil.views[url] = data.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
+        data = Recoil.views[url] = Recoil.stripLogicTags(data);
         return _this.renderView(data);
       }
     });
