@@ -36,8 +36,8 @@ module.exports = ( grunt ) ->
         footer: "#{ footer.js }"
       dist:
         src: [
+          'tmp/dirty-check.js'
           'tmp/main.js'
-          'tmp/overrides.js'
           'tmp/bindings/base.js'
           'tmp/bindings/*.js'
           'tmp/parser.js'

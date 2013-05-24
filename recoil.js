@@ -2,6 +2,132 @@
 /*! This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/. */
 
 ( function ( root, $ ) {
+var DirtyCheck;
+
+DirtyCheck = (function() {
+  DirtyCheck.originalMethods = {};
+
+  DirtyCheck.instance = null;
+
+  DirtyCheck.prototype.lastCheck = 0;
+
+  DirtyCheck.prototype.timeout = null;
+
+  DirtyCheck.prototype.elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
+
+  DirtyCheck.update = function() {
+    var _this = this;
+
+    return this.originalMethods.setTimeout(function() {
+      var binding, _i, _len, _ref;
+
+      _ref = Recoil.bindings;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        binding = _ref[_i];
+        binding.update();
+      }
+      return _this.cleanBindings();
+    });
+  };
+
+  DirtyCheck.cleanBindings = function() {
+    var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
+
+    count = Recoil.bindings.length;
+    _results = [];
+    for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
+      binding = Recoil.bindings[index];
+      element = ((_ref1 = binding.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.$element) != null ? _ref2.get(0) : void 0);
+      if (!$.contains(document.body, element)) {
+        _results.push(Recoil.bindings.splice(index, 1));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  function DirtyCheck() {
+    if (this.constructor.instance) {
+      return this.constructor.instance;
+    }
+    this.constructor.instance = this;
+    this.overwriteEventListeners();
+    this.overwriteTimeouts();
+    this.bindEvents();
+  }
+
+  DirtyCheck.prototype.overwriteEventListeners = function() {
+    var func, originalMethod, type, _fn, _i, _j, _len, _len1, _ref, _ref1;
+
+    _ref = this.elementList;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      type = _ref[_i];
+      _ref1 = ['addEventListener', 'attachEvent'];
+      _fn = function(originalMethod) {
+        return type.prototype[func] = function(type, listener) {
+          var args;
+
+          args = Array.apply(null, arguments);
+          args[1] = function() {
+            listener.apply(null, arguments);
+            return DirtyCheck.update();
+          };
+          return originalMethod.apply(this, args);
+        };
+      };
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        func = _ref1[_j];
+        if (!(originalMethod = type.prototype[func])) {
+          return;
+        }
+        _fn(originalMethod);
+      }
+    }
+  };
+
+  DirtyCheck.prototype.overwriteTimeouts = function() {
+    var func, originalMethod, _i, _len, _ref, _results,
+      _this = this;
+
+    _ref = ['setTimeout', 'setInterval'];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      func = _ref[_i];
+      originalMethod = window[func];
+      _results.push((function(originalMethod) {
+        _this.constructor.originalMethods[func] = function() {
+          return originalMethod.apply(window, arguments);
+        };
+        return window[func] = function(func, timeout) {
+          var args;
+
+          args = Array.apply(null, arguments);
+          args[0] = function() {
+            func.apply(null, arguments);
+            return DirtyCheck.update();
+          };
+          return originalMethod.apply(window, args);
+        };
+      })(originalMethod));
+    }
+    return _results;
+  };
+
+  DirtyCheck.prototype.bindEvents = function() {
+    return $(function() {
+      return $(document).ajaxComplete(function() {
+        return DirtyCheck.update();
+      }).on('keydown click', function() {
+        return DirtyCheck.update();
+      });
+    });
+  };
+
+  return DirtyCheck;
+
+})();
+
 var Recoil;
 
 Recoil = (function() {
@@ -77,6 +203,7 @@ Recoil = (function() {
     $(function(element) {
       var $element;
 
+      new DirtyCheck();
       $element = $("[data-app='" + _this.id + "']");
       if (!$element.length) {
         throw "No element found for id '" + _this.id + "'.";
@@ -87,93 +214,6 @@ Recoil = (function() {
 
   return Recoil;
 
-})();
-
-(function() {
-  var elementList;
-
-  elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
-  (function() {
-    var originalMethod, type, _i, _len;
-
-    for (_i = 0, _len = elementList.length; _i < _len; _i++) {
-      type = elementList[_i];
-      if (type.prototype.addEventListener) {
-        originalMethod = type.prototype.addEventListener;
-        if (!originalMethod) {
-          return;
-        }
-        type.prototype.addEventListener = function(type, listener) {
-          var args;
-
-          args = Array.apply(null, arguments);
-          args[1] = function() {
-            listener.apply(null, arguments);
-            return Recoil.checkForChanges();
-          };
-          return originalMethod.apply(this, args);
-        };
-      }
-      if (type.prototype.attachEvent) {
-        originalMethod = type.prototype.attachEvent;
-        if (!originalMethod) {
-          return;
-        }
-        type.prototype.attachEvent = function(type, listener) {
-          var args;
-
-          args = Array.apply(null, arguments);
-          args[1] = function() {
-            listener.apply(null, arguments);
-            return Recoil.checkForChanges();
-          };
-          return originalMethod.apply(this, args);
-        };
-      }
-    }
-  })();
-  (function() {
-    var originalSetInterval, originalSetTimeout;
-
-    originalSetTimeout = setTimeout;
-    Recoil.setTimeout = function() {
-      return originalSetTimeout.apply(window, arguments);
-    };
-    window.setTimeout = function(func, timeout) {
-      var args;
-
-      args = Array.apply(null, arguments);
-      args[0] = function() {
-        console.log('setTimeout callback');
-        func.apply(null, arguments);
-        return Recoil.checkForChanges();
-      };
-      return originalSetTimeout.apply(window, args);
-    };
-    originalSetInterval = setInterval;
-    Recoil.setInterval = function() {
-      return originalSetInterval.apply(window, arguments);
-    };
-    return window.setInterval = function(func, timeout) {
-      var args;
-
-      args = Array.apply(null, arguments);
-      args[0] = function() {
-        console.log('setInterval callback');
-        func.apply(null, arguments);
-        return Recoil.checkForChanges();
-      };
-      return originalSetInterval.apply(window, args);
-    };
-  })();
-  return $(function() {
-    $(document).ajaxComplete(function() {
-      return Recoil.checkForChanges();
-    });
-    return $(document).on('keydown click', function() {
-      return Recoil.checkForChanges();
-    });
-  });
 })();
 
 var Base;
@@ -1114,38 +1154,6 @@ Core = (function() {
       this.$element.data('compose', '$scope');
     }
     return new Parser(this.$element, this.controller, false, this.controller);
-  };
-
-  Core.prototype.checkForChanges = function() {
-    var _this = this;
-
-    return Recoil.setTimeout(function() {
-      var binding, _i, _len, _ref;
-
-      _ref = Recoil.bindings;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        binding = _ref[_i];
-        binding.update();
-      }
-      return _this.cleanBindings();
-    });
-  };
-
-  Core.prototype.cleanBindings = function() {
-    var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
-
-    count = Recoil.bindings.length;
-    _results = [];
-    for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
-      binding = Recoil.bindings[index];
-      element = ((_ref1 = binding.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.$element) != null ? _ref2.get(0) : void 0);
-      if (!$.contains(document.body, element)) {
-        _results.push(Recoil.bindings.splice(index, 1));
-      } else {
-        _results.push(void 0);
-      }
-    }
-    return _results;
   };
 
   return Core;
