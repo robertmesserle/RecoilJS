@@ -7,7 +7,10 @@ class EventBinding extends Base
     eventName   = "#{ eventName }.boringjs"
     $element
       .off( eventName )
-      .on eventName, ( event ) => func.call( this, event )
+      .on eventName, ( event ) =>
+        ret = func.call( this, event )
+        if typeof ret is 'function' then ret( event, @extras.$item or @scope )
+        else ret
     
   generateFunction: ( str ) ->
     super str, [ '$event' ]

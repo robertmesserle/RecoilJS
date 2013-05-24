@@ -134,6 +134,8 @@ DirtyCheck = (function() {
         return DirtyCheck.update();
       }).on('keydown click', function() {
         return DirtyCheck.update();
+      }).on('load', 'script', function() {
+        return DirtyCheck.update();
       });
     });
   };
@@ -555,7 +557,14 @@ EventBinding = (function(_super) {
     func = this.parseBinding(csString, false);
     eventName = "" + eventName + ".boringjs";
     $element.off(eventName).on(eventName, function(event) {
-      return func.call(_this, event);
+      var ret;
+
+      ret = func.call(_this, event);
+      if (typeof ret === 'function') {
+        return ret(event, _this.extras.$item || _this.scope);
+      } else {
+        return ret;
+      }
     });
   }
 
@@ -618,6 +627,8 @@ ForBinding = (function(_super) {
       $item = this.$template.clone().appendTo(this.$element);
       extras = $.extend({}, this.extras);
       if (typeof item === 'object') {
+        extras.itemName = this.itemName;
+        extras.$item = item;
         extras[this.itemName] = item;
         extras[this.itemName].$index = index;
         extras[this.itemName].$total = collection.length;

@@ -17,7 +17,7 @@
   
   <h2 data-visible="getTasks( false ).length">
     Tasks
-    <button class="mark-all" data-click="checkAll()">Check All</button>
+    <button class="mark-all" data-click="checkAll">Check All</button>
   </h2>
   <ul data-for="task in getTasks( false )">
     <li>
@@ -30,7 +30,7 @@
 
   <h2 data-visible="getTasks( true ).length">
     Completed
-    <button class="clear" data-click="clearCompleted()">Clear Completed Items</button>
+    <button class="clear" data-click="clearCompleted">Clear Completed Items</button>
   </h2>
   <ul data-for="task in getTasks( true )" class="completed">
     <li>
