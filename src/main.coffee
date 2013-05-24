@@ -3,7 +3,7 @@ class Recoil
   # Global Data
   
   @app:           null
-  @viewPath:      '/views'
+  @viewPath:      './views'
   @bindings:      []
   @views:         {}
   @transitions:   

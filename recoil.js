@@ -7,7 +7,7 @@ var Recoil;
 Recoil = (function() {
   Recoil.app = null;
 
-  Recoil.viewPath = '/views';
+  Recoil.viewPath = './views';
 
   Recoil.bindings = [];
 
@@ -385,8 +385,10 @@ ComposeBinding = (function(_super) {
     this.extras = extras;
     this.renderView = __bind(this.renderView, this);
     this.binding = this.$element.data('compose');
-    this.controller = this.parseBinding(this.binding);
-    this.view = (_ref = this.controller) != null ? _ref.view : void 0;
+    if (this.binding) {
+      this.controller = this.parseBinding(this.binding);
+    }
+    this.view = this.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
     this.loadView();
     this.pushBinding();
   }
@@ -409,7 +411,7 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.renderView = function(data) {
-    var intro, _base, _ref;
+    var intro, _ref, _ref1;
 
     if (data == null) {
       data = this.html;
@@ -417,15 +419,12 @@ ComposeBinding = (function(_super) {
     this.html = data;
     this.$element.html(this.html);
     this.parseChildren();
-    if (typeof (_base = this.controller).afterRender === "function") {
-      _base.afterRender({
-        $dom: this.$element,
-        scope: this.scope,
-        parent: this.parent,
-        root: this.root
-      });
+    if ((_ref = this.controller) != null) {
+      if (typeof _ref.afterRender === "function") {
+        _ref.afterRender(this.$element, this.parent, this.root);
+      }
     }
-    intro = Recoil.transitions.intro[this.view] || ((_ref = this.controller) != null ? _ref.intro : void 0) || null;
+    intro = Recoil.transitions.intro[this.view] || ((_ref1 = this.controller) != null ? _ref1.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.$element) : void 0;
   };
 
@@ -441,7 +440,9 @@ ComposeBinding = (function(_super) {
     var callback, controller, outro, _ref,
       _this = this;
 
-    controller = this.parseBinding(this.binding);
+    if (this.binding) {
+      controller = this.parseBinding(this.binding);
+    }
     if (this.controller !== controller) {
       callback = function() {
         _this.controller = controller;
@@ -967,7 +968,7 @@ Parser = (function() {
         return Object(result) === result ? result : child;
       })(IfBinding, [$element].concat(__slice.call(this.splat)), function(){});
     }
-    if ($element.data('compose')) {
+    if ($element.data('compose') || $element.data('view')) {
       parseChildren = false;
       (function(func, args, ctor) {
         ctor.prototype = func.prototype;

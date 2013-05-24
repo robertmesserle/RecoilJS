@@ -20,7 +20,7 @@ class Parser
     if $element.data( 'if' )?
       parseChildren = false
       new IfBinding $element, @splat...
-    if $element.data( 'compose' )
+    if $element.data( 'compose' ) or $element.data( 'view' )
       parseChildren = false
       new ComposeBinding $element, @splat...
     if $element.data( 'for' )
