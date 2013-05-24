@@ -5,7 +5,7 @@ body { margin: 0; padding: 40px; font-family: 'Helvetica Neue', 'Segoe UI', sans
 h1 { font-size: 50px; font-weight: 100; margin: 0 0 20px; padding: 0; border-bottom: 1px solid #eee; }
 input[ type = text ] { width: 100%; height: 40px; font-size: 16px; border-radius: 5px; border: 1px solid #ddd; padding: 0 20px;
   font-family: 'Helvetica Neue', 'Segoe UI', sans-serif; font-weight: 100; font-size: 18px; }
-h2 { font-size: 30px; font-weight: 100; margin: 40px 0 20px; padding: 0; }
+h2 { font-size: 30px; font-weight: 100; margin: 40px 0 20px; padding: 0; position: relative; }
 ul { margin: 0; padding: 0; list-style: none; }
 ul li { padding: 0; margin: 0 0 3px; font-size: 18px; font-weight: 100; height: 40px; line-height: 40px; }
 ul li:nth-child( odd ) { background: #f9f9f9; position: relative; }
@@ -14,3 +14,12 @@ ul li:nth-child( odd )::after  { top: 0; bottom: 0;  left: 100%; width: 40px; co
 ul li label { display: block; cursor: pointer; }
 ul li label input[ type = checkbox ] { margin-right: 10px; position: relative; top: -2px; }
 ul.completed li { text-decoration: line-through; }
+h2 button { position: absolute; background: #25A1CB; bottom: 0; right: -52px; border: none; height: 30px; line-height: 30px;
+  color: white; font-size: 16px; font-weight: 100; padding: 0 20px; border-radius: 5px 0 0 5px; font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+  transition: all 0.35s; cursor: pointer; }
+h2 button::after { content: ''; position: absolute; bottom: -10px; right: 0; width: 0; height: 0; border-width: 5px;
+  border-color: #1D7F9F transparent transparent #1D7F9F; border-style: solid; }
+h2 button:hover { padding: 0 30px; background: #45B8DD; }
+h2 button.clear { background: #cb25a1; }
+h2 button.clear::after { border-color: #9f1d7f transparent transparent #9f1d7f; }
+h2 button.clear:hover { background: #dd45b8; }

@@ -15,7 +15,10 @@
 
   <input autofocus type="text" name="new-task" id="new-task" placeholder="Please enter a task..." data-keydown="handleKey( $element, $event.keyCode )" />
   
-  <h2 data-visible="getTasks( false ).length">Tasks</h2>
+  <h2 data-visible="getTasks( false ).length">
+    Tasks
+    <button class="mark-all" data-click="checkAll()">Check All</button>
+  </h2>
   <ul data-for="task in getTasks( false )">
     <li>
       <label>
@@ -25,7 +28,10 @@
     </li>
   </ul>
 
-  <h2 data-visible="getTasks( true ).length">Completed</h2>
+  <h2 data-visible="getTasks( true ).length">
+    Completed
+    <button class="clear" data-click="clearCompleted()">Clear Completed Items</button>
+  </h2>
   <ul data-for="task in getTasks( true )" class="completed">
     <li>
       <label>

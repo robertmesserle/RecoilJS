@@ -19,6 +19,17 @@ function TodoApp () {
     }
   }
 
+  _.checkAll = function () {
+    for ( var i = _.tasks.length; i--; )
+      _.tasks[ i ].complete = true
+  }
+
+  _.clearCompleted = function () {
+    for ( var i = _.tasks.length; i--; )
+      if ( _.tasks[ i ].complete )
+        _.tasks.splice( i, 1 )
+  }
+
   return _
 }
 
