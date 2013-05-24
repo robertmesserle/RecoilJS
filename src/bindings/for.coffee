@@ -22,9 +22,11 @@ class ForBinding extends Base
       $item   = @$template.clone().appendTo( @$element )
       extras  = $.extend {}, @extras
       if typeof item is 'object'
-        extras[ @itemName ] = item
-        extras[ @itemName ].$index = index
-        extras[ @itemName ].$total = collection.length
+        extras.itemName             = @itemName
+        extras.$item                = item
+        extras[ @itemName ]         = item
+        extras[ @itemName ].$index  = index
+        extras[ @itemName ].$total  = collection.length
       else
         extras[ @itemName ] = item
       new Parser( $item, @scope, @parent, @root, extras )
