@@ -71,4 +71,5 @@ class DirtyCheck
     $ ->
       $( document )
         .ajaxComplete( -> DirtyCheck.update() )
-        .on( 'keydown click load', -> DirtyCheck.update() )
+        .on( 'keydown click', -> DirtyCheck.update() )
+        .on( 'load', 'script', -> DirtyCheck.update() )
