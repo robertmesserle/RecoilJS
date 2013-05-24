@@ -12,7 +12,7 @@ class DirtyCheck
     now = +new Date()
     waitTime = now - @lastCheck
     @lastCheck = now
-    if waitTime > 50 then waitTime = 0
+    if waitTime > Recoil.throttle then waitTime = 0
     timeout = @originalMethods.setTimeout =>
       @timeout = null
       for binding in Recoil.bindings then binding.update()

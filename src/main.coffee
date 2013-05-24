@@ -4,6 +4,7 @@ class Recoil
   
   @app:           null
   @viewPath:      './views'
+  @throttle:      50
   @bindings:      []
   @views:         {}
   @transitions:   
@@ -24,10 +25,9 @@ class Recoil
   @createTransition: ( type, id, callback ) ->
     Recoil.transitions[ type ][ id ] = callback
 
-  @checkForChanges: ->
-    Recoil.app?.checkForChanges arguments...
-
   @setViewPath: ( @viewPath ) ->
+
+  @setMaxUpdateFrequency: ( @throttle ) ->
 
   @compile: ( str ) ->
     if CoffeeScript?.compile

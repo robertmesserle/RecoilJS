@@ -23,7 +23,7 @@ DirtyCheck = (function() {
     now = +new Date();
     waitTime = now - this.lastCheck;
     this.lastCheck = now;
-    if (waitTime > 50) {
+    if (waitTime > Recoil.throttle) {
       waitTime = 0;
     }
     timeout = this.originalMethods.setTimeout(function() {
@@ -149,6 +149,8 @@ Recoil = (function() {
 
   Recoil.viewPath = './views';
 
+  Recoil.throttle = 50;
+
   Recoil.bindings = [];
 
   Recoil.views = {};
@@ -172,14 +174,12 @@ Recoil = (function() {
     return Recoil.transitions[type][id] = callback;
   };
 
-  Recoil.checkForChanges = function() {
-    var _ref;
-
-    return (_ref = Recoil.app) != null ? _ref.checkForChanges.apply(_ref, arguments) : void 0;
-  };
-
   Recoil.setViewPath = function(viewPath) {
     this.viewPath = viewPath;
+  };
+
+  Recoil.setMaxUpdateFrequency = function(throttle) {
+    this.throttle = throttle;
   };
 
   Recoil.compile = function(str) {
