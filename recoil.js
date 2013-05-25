@@ -108,12 +108,12 @@ DirtyCheck = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       func = _ref[_i];
-      originalMethod = window[func];
+      originalMethod = root[func];
       _results.push((function(originalMethod) {
         _this.constructor.originalMethods[func] = function() {
-          return originalMethod.apply(window, arguments);
+          return originalMethod.apply(root, arguments);
         };
-        return window[func] = function(func, timeout) {
+        return root[func] = function(func, timeout) {
           var args;
 
           args = Array.apply(null, arguments);
@@ -121,7 +121,7 @@ DirtyCheck = (function() {
             func.apply(null, arguments);
             return DirtyCheck.update();
           };
-          return originalMethod.apply(window, args);
+          return originalMethod.apply(root, args);
         };
       })(originalMethod));
     }

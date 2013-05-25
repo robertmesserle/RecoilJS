@@ -56,16 +56,16 @@ class DirtyCheck
 
   overwriteTimeouts: ->
     for func in [ 'setTimeout', 'setInterval' ]
-      originalMethod = window[ func ]
+      originalMethod = root[ func ]
       do ( originalMethod ) =>
         @constructor.originalMethods[ func ] = ->
-          originalMethod.apply( window, arguments )
-        window[ func ] = ( func, timeout ) ->
+          originalMethod.apply( root, arguments )
+        root[ func ] = ( func, timeout ) ->
           args = Array arguments...
           args[ 0 ] = ->
             func( arguments... )
             DirtyCheck.update()
-          originalMethod.apply( window, args )
+          originalMethod.apply( root, args )
 
   bindEvents: ->
     $ ->
