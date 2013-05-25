@@ -1,9 +1,9 @@
 class VisibleBinding extends Base
 
   constructor: ( @context ) ->
-    @binding = @context.$element.data( 'visible' )
+    return unless @binding = @context.$element.data( 'visible' )
     @setValue()
-    @pushBinding()
+    super
 
   setValue: ->
     value = !! @parseBinding @binding

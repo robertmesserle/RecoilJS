@@ -1,13 +1,13 @@
 class ValueBinding extends Base
 
   constructor: ( @context  ) ->
+    return unless @binding = @context.$element.data( 'value' )
     @context.stopParsing = true
-    @binding = @context.$element.data( 'value' )
     @live = @context.$element.data( 'live' )?
     @setValue()
-    @pushBinding()
     @updateHandler() if @context.$element.is( 'select' )
     @bindEvents()
+    super
 
   bindEvents: ->
     eventType = switch @context.$element.attr( 'type' )

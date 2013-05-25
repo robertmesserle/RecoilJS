@@ -1,9 +1,8 @@
 class ContextBinding extends Base
 
   constructor: ( @context ) ->
-    @binding = @context.$element.data( 'context' )
+    return unless @binding = @context.$element.data( 'context' )
     @setValue()
-    @pushBinding()
     super
 
   setValue: ->

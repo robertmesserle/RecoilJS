@@ -1,7 +1,7 @@
 class HTMLBinding extends Base
 
   constructor: ( @context  ) ->
-    @binding = @context.$element.data( 'html' )
+    return unless @binding = @context.$element.data( 'html' )
     @setValue()
     @pushBinding()
 

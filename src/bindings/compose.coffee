@@ -1,11 +1,11 @@
 class ComposeBinding extends Base
 
   constructor: ( @context ) ->
-    @binding      = @context.$element.data( 'compose' )
+    return unless @binding = @context.$element.data( 'compose' )
     @controller   = @parseBinding @binding if @binding
     @view         = @context.$element.data( 'view' ) or @controller?.view
     @loadView()
-    @pushBinding()
+    super
 
   loadView: ->
     url = "#{ Recoil.viewPath }/#{ @view }.html"

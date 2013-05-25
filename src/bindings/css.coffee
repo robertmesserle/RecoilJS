@@ -1,9 +1,9 @@
 class CSSBinding extends Base
 
   constructor: ( @context ) ->
-    @binding = @context.$element.data( 'css' )
+    return unless @binding = @context.$element.data( 'css' )
     @updateCSS()
-    @pushBinding()
+    super
 
   updateCSS: ->
     @css = @parseBinding( @binding )

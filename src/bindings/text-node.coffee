@@ -1,12 +1,13 @@
 class TextNode extends Base
 
   constructor: ( @context  ) ->
-    @context.stopParsing = true
-    @template = @context.$element.text()
+    return unless @context.$element.get( 0 ).nodeType is 3
+    return unless @template = @context.$element.text()
     return unless @template.indexOf( '{' ) + 1
+    @context.stopParsing = true
     @element = @context.$element.get( 0 )
     @updateValue()
-    @pushBinding()
+    super
 
   updateValue: ->
     value = @parseString( @template )

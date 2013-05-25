@@ -1,12 +1,11 @@
 class IfBinding extends Base
 
   constructor: ( @context ) ->
+    return unless @binding = @context.$element.data( 'if' )
     @wrap()
-    @binding = @context.$element.data( 'if' )
     @insertPlaceholder()
     @setValue()
-    @pushBinding()
-    @unwrap()
+    super
 
   setValue: ->
     value = !! @parseBinding @binding

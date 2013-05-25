@@ -242,7 +242,6 @@ Base = (function() {
     this.logic = this.context.$element.data('logic') != null;
     if (this.logic) {
       this.insertPlaceholder();
-      this.unwrap();
     }
     if (this.update) {
       this.pushBinding();
@@ -438,13 +437,15 @@ ComposeBinding = (function(_super) {
 
     this.context = context;
     this.renderView = __bind(this.renderView, this);
-    this.binding = this.context.$element.data('compose');
+    if (!(this.binding = this.context.$element.data('compose'))) {
+      return;
+    }
     if (this.binding) {
       this.controller = this.parseBinding(this.binding);
     }
     this.view = this.context.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
     this.loadView();
-    this.pushBinding();
+    ComposeBinding.__super__.constructor.apply(this, arguments);
   }
 
   ComposeBinding.prototype.loadView = function() {
@@ -527,9 +528,10 @@ ContextBinding = (function(_super) {
 
   function ContextBinding(context) {
     this.context = context;
-    this.binding = this.context.$element.data('context');
+    if (!(this.binding = this.context.$element.data('context'))) {
+      return;
+    }
     this.setValue();
-    this.pushBinding();
     ContextBinding.__super__.constructor.apply(this, arguments);
   }
 
@@ -567,9 +569,11 @@ CSSBinding = (function(_super) {
 
   function CSSBinding(context) {
     this.context = context;
-    this.binding = this.context.$element.data('css');
+    if (!(this.binding = this.context.$element.data('css'))) {
+      return;
+    }
     this.updateCSS();
-    this.pushBinding();
+    CSSBinding.__super__.constructor.apply(this, arguments);
   }
 
   CSSBinding.prototype.updateCSS = function() {
@@ -638,8 +642,10 @@ ForBinding = (function(_super) {
   function ForBinding(context) {
     this.context = context;
     this.checkForChanges = __bind(this.checkForChanges, this);
+    if (!(this.binding = this.context.$element.data('for'))) {
+      return;
+    }
     this.context.stopParsing = true;
-    this.binding = this.context.$element.data('for');
     this.parts = this.binding.split(' in ');
     this.itemName = $.trim(this.parts[0]);
     this.collectionName = $.trim(this.parts[1]);
@@ -748,7 +754,9 @@ HTMLBinding = (function(_super) {
 
   function HTMLBinding(context) {
     this.context = context;
-    this.binding = this.context.$element.data('html');
+    if (!(this.binding = this.context.$element.data('html'))) {
+      return;
+    }
     this.setValue();
     this.pushBinding();
   }
@@ -780,12 +788,13 @@ IfBinding = (function(_super) {
 
   function IfBinding(context) {
     this.context = context;
+    if (!(this.binding = this.context.$element.data('if'))) {
+      return;
+    }
     this.wrap();
-    this.binding = this.context.$element.data('if');
     this.insertPlaceholder();
     this.setValue();
-    this.pushBinding();
-    this.unwrap();
+    IfBinding.__super__.constructor.apply(this, arguments);
   }
 
   IfBinding.prototype.setValue = function() {
@@ -821,14 +830,19 @@ TextNode = (function(_super) {
 
   function TextNode(context) {
     this.context = context;
-    this.context.stopParsing = true;
-    this.template = this.context.$element.text();
+    if (this.context.$element.get(0).nodeType !== 3) {
+      return;
+    }
+    if (!(this.template = this.context.$element.text())) {
+      return;
+    }
     if (!(this.template.indexOf('{') + 1)) {
       return;
     }
+    this.context.stopParsing = true;
     this.element = this.context.$element.get(0);
     this.updateValue();
-    this.pushBinding();
+    TextNode.__super__.constructor.apply(this, arguments);
   }
 
   TextNode.prototype.updateValue = function() {
@@ -859,11 +873,13 @@ UpdateBinding = (function(_super) {
     var binding, csString;
 
     this.context = context;
-    binding = this.context.$element.data('update');
+    if (!(binding = this.context.$element.data('update'))) {
+      return;
+    }
     csString = "-> " + binding;
     this.func = this.parseBinding(csString);
     this.func();
-    this.pushBinding();
+    UpdateBinding.__super__.constructor.apply(this, arguments);
   }
 
   UpdateBinding.prototype.update = function() {
@@ -885,15 +901,17 @@ ValueBinding = (function(_super) {
   function ValueBinding(context) {
     this.context = context;
     this.updateHandler = __bind(this.updateHandler, this);
+    if (!(this.binding = this.context.$element.data('value'))) {
+      return;
+    }
     this.context.stopParsing = true;
-    this.binding = this.context.$element.data('value');
     this.live = this.context.$element.data('live') != null;
     this.setValue();
-    this.pushBinding();
     if (this.context.$element.is('select')) {
       this.updateHandler();
     }
     this.bindEvents();
+    ValueBinding.__super__.constructor.apply(this, arguments);
   }
 
   ValueBinding.prototype.bindEvents = function() {
@@ -982,9 +1000,11 @@ VisibleBinding = (function(_super) {
 
   function VisibleBinding(context) {
     this.context = context;
-    this.binding = this.context.$element.data('visible');
+    if (!(this.binding = this.context.$element.data('visible'))) {
+      return;
+    }
     this.setValue();
-    this.pushBinding();
+    VisibleBinding.__super__.constructor.apply(this, arguments);
   }
 
   VisibleBinding.prototype.setValue = function() {
@@ -1012,6 +1032,8 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
+  Parser.prototype.bindings = [TextNode, ContextBinding, CSSBinding, VisibleBinding, IfBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
+
   function Parser(context) {
     var _this = this;
 
@@ -1025,7 +1047,7 @@ Parser = (function() {
   }
 
   Parser.prototype.parseNode = function($element) {
-    var $contents, context, parseChildren,
+    var $contents, binding, context, parseChildren, _i, _len, _ref,
       _this = this;
 
     context = $.extend({}, this.context);
@@ -1033,35 +1055,13 @@ Parser = (function() {
     parseChildren = true;
     this.attachEvents($element);
     this.parseAttributes($element);
-    if ($element.get(0).nodeType === 3) {
-      new TextNode(context);
-    }
-    if ($element.data('context')) {
-      new ContextBinding(context);
-    }
-    if ($element.data('css')) {
-      new CSSBinding(context);
-    }
-    if ($element.data('visible') != null) {
-      new VisibleBinding(context);
-    }
-    if ($element.data('if') != null) {
-      new IfBinding(context);
-    }
-    if ($element.data('compose') || $element.data('view')) {
-      new ComposeBinding(context);
-    }
-    if ($element.data('for')) {
-      new ForBinding(context);
-    }
-    if ($element.data('html')) {
-      new HTMLBinding(context);
-    }
-    if ($element.data('value')) {
-      new ValueBinding(context);
-    }
-    if ($element.data('update')) {
-      new UpdateBinding(context);
+    _ref = this.bindings;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      binding = _ref[_i];
+      new binding(context);
+      if (context.skipBindings) {
+        break;
+      }
     }
     if (context.stopParsing) {
       return;

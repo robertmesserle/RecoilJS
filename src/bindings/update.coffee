@@ -1,11 +1,11 @@
 class UpdateBinding extends Base
 
   constructor: ( @context  ) ->
-    binding = @context.$element.data( 'update' )
+    return unless binding = @context.$element.data( 'update' )
     csString = "-> #{ binding }"
     @func = @parseBinding( csString )
     @func()
-    @pushBinding()
+    super
 
   update: ->
     @func()

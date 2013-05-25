@@ -3,9 +3,7 @@ class Base
 
   constructor: ->
     @logic = @context.$element.data( 'logic' )? 
-    if @logic
-      @insertPlaceholder()
-      @unwrap()
+    if @logic then @insertPlaceholder()
     if @update then @pushBinding()
 
   pushBinding: ->

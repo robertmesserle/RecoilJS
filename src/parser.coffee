@@ -1,5 +1,7 @@
 class Parser
 
+  bindings: [ TextNode, ContextBinding, CSSBinding, VisibleBinding, IfBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding ]
+
   constructor: ( @context ) ->
     @context.$element.each ( index, element ) =>
       $element = $( element )
@@ -12,16 +14,9 @@ class Parser
     @attachEvents( $element )
     @parseAttributes( $element )
 
-    if $element.get( 0 ).nodeType is 3 then new TextNode context
-    if $element.data( 'context' ) then new ContextBinding context
-    if $element.data( 'css' ) then new CSSBinding context
-    if $element.data( 'visible' )? then new VisibleBinding context
-    if $element.data( 'if' )? then new IfBinding context
-    if $element.data( 'compose' ) or $element.data( 'view' ) then new ComposeBinding context
-    if $element.data( 'for' ) then new ForBinding context
-    if $element.data( 'html' ) then new HTMLBinding context
-    if $element.data( 'value' ) then new ValueBinding context
-    if $element.data( 'update' ) then new UpdateBinding context
+    for binding in @bindings
+      new binding context
+      break if context.skipBindings
 
     return if context.stopParsing
 
