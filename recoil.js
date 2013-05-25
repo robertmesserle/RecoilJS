@@ -825,30 +825,32 @@ IfBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('if'))) {
       return;
     }
-    this.wrap();
+    this.update();
     this.insertPlaceholder();
-    this.setValue();
     IfBinding.__super__.constructor.apply(this, arguments);
   }
 
   IfBinding.prototype.setValue = function() {
+    if (this.value) {
+      delete this.context.stopParsing;
+      return this.context.$element.insertAfter(this.context.$placeholder);
+    } else {
+      this.context.stopParsing = true;
+      this.context.skipBindings = true;
+      return this.context.$element.detach();
+    }
+  };
+
+  IfBinding.prototype.update = function() {
     var value;
 
     value = !!this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
-      if (this.value) {
-        delete this.context.stopParsing;
-        return this.context.$element.insertAfter(this.context.$placeholder);
-      } else {
-        this.context.stopParsing = true;
-        return this.context.$element.detach();
-      }
+      this.wrap();
+      this.setValue();
+      return this.unwrap();
     }
-  };
-
-  IfBinding.prototype.update = function() {
-    return this.setValue();
   };
 
   return IfBinding;
@@ -874,6 +876,7 @@ TextNode = (function(_super) {
       return;
     }
     this.context.stopParsing = true;
+    this.context.skipBindings = true;
     this.element = this.context.$element.get(0);
     this.updateValue();
     TextNode.__super__.constructor.apply(this, arguments);
