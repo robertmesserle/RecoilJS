@@ -37,6 +37,7 @@ module.exports = ( grunt ) ->
       dist:
         src: [
           'tmp/dirty-check.js'
+          'tmp/router.js'
           'tmp/main.js'
           'tmp/bindings/base.js'
           'tmp/bindings/*.js'

@@ -22,6 +22,9 @@ class Recoil
   @init: ->
     new Recoil( arguments... )
 
+  @mapRoute: ->
+    Router.getInstance().mapRoute arguments...
+
   @createTransition: ( type, id, callback ) ->
     Recoil.transitions[ type ][ id ] = callback
 
@@ -44,7 +47,6 @@ class Recoil
   constructor: ( @id, @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."
     $ ( element ) =>
-      # Initiate dirty checking
       new DirtyCheck()
       $element    = $( "[data-app='#{ @id }']" )
       unless $element.length then throw "No element found for id '#{ @id }'."

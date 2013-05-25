@@ -147,6 +147,101 @@ DirtyCheck = (function() {
 
 })();
 
+var Router,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+Router = (function() {
+  Router.getInstance = function() {
+    var _ref;
+
+    return (_ref = this.instance) != null ? _ref : this.instance = new Router;
+  };
+
+  Router.prototype.event = 'hashchange';
+
+  Router.prototype.mode = document.documentMode;
+
+  Router.prototype.support = (root["on" + Router.event] != null) && ((Router.mode == null) || Router.mode > 7);
+
+  Router.prototype.routes = [];
+
+  function Router() {
+    this.handleChange = __bind(this.handleChange, this);    this.createSpecialEvent();
+    this.bindEvent();
+  }
+
+  Router.prototype.bindEvent = function() {
+    return $(window).on('hashchange', this.handleChange);
+  };
+
+  Router.prototype.handleChange = function(event) {
+    var hash, route, _i, _len, _ref;
+
+    hash = location.hash.replace(/^#/, '');
+    _ref = this.routes;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      route = _ref[_i];
+      if (route.regex.test(hash)) {
+        return route.handler(this.getParams(hash, route));
+      }
+    }
+  };
+
+  Router.prototype.createSpecialEvent = function() {
+    var _this = this;
+
+    return $.extend($.event.special[this.event], {
+      start: function() {
+        if (_this.support) {
+          return false;
+        }
+        _this.HashListener = new HashListener(_this.event);
+        return $(_this.HashListener.start);
+      },
+      teardown: function() {
+        if (_this.support) {
+          return false;
+        }
+        return $(_this.HashListener.stop);
+      }
+    });
+  };
+
+  Router.prototype.getRegex = function(path) {
+    var index, part, parts, regex, _i, _len;
+
+    parts = path.split('/');
+    regex = parts.slice(0);
+    for (index = _i = 0, _len = parts.length; _i < _len; index = ++_i) {
+      part = parts[index];
+      if (part.charAt(0) === ':') {
+        regex[index] = '[^\\\/]+';
+      } else {
+        regex[index] = part.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      }
+    }
+    return new RegExp("^" + (regex.join('\\\/')));
+  };
+
+  Router.prototype.mapRoute = function(path, handler) {
+    var route;
+
+    route = {
+      regex: this.getRegex(path),
+      path: path,
+      handler: handler
+    };
+    return this.routes.push(route);
+  };
+
+  Router.prototype.getParams = function(hash, route) {
+    return {};
+  };
+
+  return Router;
+
+})();
+
 var Recoil;
 
 Recoil = (function() {
@@ -173,6 +268,12 @@ Recoil = (function() {
       var child = new ctor, result = func.apply(child, args);
       return Object(result) === result ? result : child;
     })(Recoil, arguments, function(){});
+  };
+
+  Recoil.mapRoute = function() {
+    var _ref;
+
+    return (_ref = Router.getInstance()).mapRoute.apply(_ref, arguments);
   };
 
   Recoil.createTransition = function(type, id, callback) {
