@@ -1,6 +1,15 @@
 class CSSBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras ) ->
-    @binding = @$element.data( 'css' )
+  constructor: ( @context ) ->
+    @binding = @context.$element.data( 'css' )
+    @updateCSS()
+    @pushBinding()
+
+  updateCSS: ->
     @css = @parseBinding( @binding )
-    @$element.css @css
+    cssString = JSON.stringify( @css )
+    return if @cssString is cssString
+    @context.$element.css @css
+
+  update: ->
+    @updateCSS()

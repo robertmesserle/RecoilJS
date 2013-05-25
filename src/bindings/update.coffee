@@ -1,7 +1,7 @@
 class UpdateBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
-    binding = @$element.data( 'update' )
+  constructor: ( @context  ) ->
+    binding = @context.$element.data( 'update' )
     csString = "-> #{ binding }"
     @func = @parseBinding( csString )
     @func()

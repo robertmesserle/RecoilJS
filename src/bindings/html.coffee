@@ -1,7 +1,7 @@
 class HTMLBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
-    @binding = @$element.data( 'html' )
+  constructor: ( @context  ) ->
+    @binding = @context.$element.data( 'html' )
     @setValue()
     @pushBinding()
 
@@ -9,7 +9,7 @@ class HTMLBinding extends Base
     value = @parseBinding @binding
     if @value isnt value
       @value = value
-      @$element.html @value
+      @context.$element.html @value
 
   update: ->
     @setValue()

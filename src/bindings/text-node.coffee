@@ -1,9 +1,10 @@
 class TextNode extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
-    @template = @$element.text()
+  constructor: ( @context  ) ->
+    @context.stopParsing = true
+    @template = @context.$element.text()
     return unless @template.indexOf( '{' ) + 1
-    @element = @$element.get( 0 )
+    @element = @context.$element.get( 0 )
     @updateValue()
     @pushBinding()
 

@@ -1,7 +1,8 @@
 class ForBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras ) ->
-    @binding          = @$element.data( 'for' )
+  constructor: ( @context ) ->
+    @context.stopParsing = true
+    @binding          = @context.$element.data( 'for' )
     @parts            = @binding.split( ' in ' )
     @itemName         = $.trim @parts[ 0 ]
     @collectionName   = $.trim @parts[ 1 ]
@@ -10,7 +11,7 @@ class ForBinding extends Base
     super
 
   getTemplate: ->
-    @$template = @$element.contents().remove()
+    @$template = @context.$element.contents().remove()
 
   getCollection: ->
     items = @parseBinding @collectionName
@@ -19,8 +20,8 @@ class ForBinding extends Base
 
   parseItems: ( collection = @getCollection() ) ->
     for item, index in collection
-      $item   = @$template.clone().appendTo( @$element )
-      extras  = $.extend {}, @extras
+      $item   = @$template.clone().appendTo( @context.$element )
+      extras  = $.extend {}, @context.extras
       if typeof item is 'object'
         extras.itemName             = @itemName
         extras.$item                = item
@@ -28,8 +29,9 @@ class ForBinding extends Base
         extras[ @itemName ].$index  = index
         extras[ @itemName ].$total  = collection.length
       else
-        extras[ @itemName ] = item
-      new Parser( $item, @scope, @parent, @root, extras )
+        extras[ @itemName ]         = item
+      # Update context for future parsing
+      new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   checkForChanges: ( collection ) =>
     return true unless @collection
@@ -43,7 +45,7 @@ class ForBinding extends Base
     return unless @checkForChanges( collection )
     @collection = collection.slice( 0 )
     @wrap() if @logic
-    @$element.empty()
+    @context.$element.empty()
     @parseItems( collection )
     @unwrap() if @logic
 

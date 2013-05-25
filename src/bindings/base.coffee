@@ -1,15 +1,15 @@
 
 class Base
 
-  constructor: ( @$element ) ->
-    @logic = @$element.data( 'logic' )
+  constructor: ->
+    @logic = @context.$element.data( 'logic' )? 
     if @logic
       @insertPlaceholder()
       @unwrap()
     if @update then @pushBinding()
 
   pushBinding: ->
-    Recoil.bindings.push( this ) unless @$element.data( 'static' )?
+    Recoil.bindings.push( this ) unless @context.$element.data( 'static' )?
 
   parseBinding: ( binding, evalFunction = true ) ->
     # Return cached binding if available
@@ -36,17 +36,17 @@ class Base
   generateFunction: ( str, customArgs = [] ) ->
     js = Recoil.compile "#{ str }"
     argHash = {
-      '$element': 'this.$element'
-      '$root':    'this.root'
-      '$parent':  'this.parent'
-      '$data':    'this.scope'
-      '$scope':   'this.scope'
-      '$extras':  'this.extras'
+      '$element': 'this.context.$element'
+      '$root':    'this.context.root'
+      '$parent':  'this.context.parent'
+      '$data':    'this.context.scope'
+      '$scope':   'this.context.scope'
+      '$extras':  'this.context.extras'
     }
     args = []
     scopeArgs = []
-    for key of @scope   when isNaN( key ) then argHash[ key ] = "this.scope[ '#{ key }' ]"
-    for key of @extras  when isNaN( key ) then argHash[ key ] = "this.extras[ '#{ key }' ]"
+    for key of @context.scope   when isNaN( key ) then argHash[ key ] = "this.context.scope[ '#{ key }' ]"
+    for key of @context.extras  when isNaN( key ) then argHash[ key ] = "this.context.extras[ '#{ key }' ]"
     for key, value of argHash
       args.push key
       scopeArgs.push value
@@ -61,22 +61,23 @@ class Base
   updateBinding: ( value, binding = @binding ) ->
     parts = binding.split( '.' )
     part  = parts.pop()
-    scope = @parseBinding( parts.join( '.' ) ) or @scope
+    scope = @parseBinding( parts.join( '.' ) ) or @context.scope
     if typeof scope[ part ] is 'function' then scope[ part ] value
     else scope[ part ] = value
 
   insertPlaceholder: ->
-    str = ( for attr in @$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
-    @$placeholder = $( """<!-- Start BoringJS Block: #{ str } -->""" ).insertBefore( @$element )
-    $( """<!-- End BoringJS Block: #{ str } -->""" ).insertAfter( @$element )
+    return if @$placeholder
+    str = ( for attr in @context.$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
+    @$placeholder = $( """<!-- Start BoringJS Block: #{ str } -->""" ).insertBefore( @context.$element )
+    $( """<!-- End BoringJS Block: #{ str } -->""" ).insertAfter( @context.$element )
 
   wrap: ->
     return unless @unwrapped
     @unwrapped = false
-    @$contents.eq( 0 ).before( @$element )
-    @$element.append( @$contents )
+    @context.$contents.eq( 0 ).before( @context.$element )
+    @context.$element.append( @context.$contents )
 
   unwrap: ->
     unless @unwrapped then @unwrapped  = true
-    @$contents = @$element.contents().insertAfter( @$element )
-    @$element.detach()
+    @context.$contents = @context.$element.contents().insertAfter( @context.$element )
+    @context.$element.detach()

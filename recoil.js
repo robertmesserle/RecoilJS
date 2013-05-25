@@ -49,7 +49,7 @@ DirtyCheck = (function() {
     _results = [];
     for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
       binding = Recoil.bindings[index];
-      element = ((_ref1 = binding.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.$element) != null ? _ref2.get(0) : void 0);
+      element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
       if (!$.contains(document.body, element)) {
         _results.push(Recoil.bindings.splice(index, 1));
       } else {
@@ -235,9 +235,8 @@ Recoil = (function() {
 var Base;
 
 Base = (function() {
-  function Base($element) {
-    this.$element = $element;
-    this.logic = this.$element.data('logic');
+  function Base() {
+    this.logic = this.context.$element.data('logic') != null;
     if (this.logic) {
       this.insertPlaceholder();
       this.unwrap();
@@ -248,7 +247,7 @@ Base = (function() {
   }
 
   Base.prototype.pushBinding = function() {
-    if (this.$element.data('static') == null) {
+    if (this.context.$element.data('static') == null) {
       return Recoil.bindings.push(this);
     }
   };
@@ -298,23 +297,23 @@ Base = (function() {
     }
     js = Recoil.compile("" + str);
     argHash = {
-      '$element': 'this.$element',
-      '$root': 'this.root',
-      '$parent': 'this.parent',
-      '$data': 'this.scope',
-      '$scope': 'this.scope',
-      '$extras': 'this.extras'
+      '$element': 'this.context.$element',
+      '$root': 'this.context.root',
+      '$parent': 'this.context.parent',
+      '$data': 'this.context.scope',
+      '$scope': 'this.context.scope',
+      '$extras': 'this.context.extras'
     };
     args = [];
     scopeArgs = [];
-    for (key in this.scope) {
+    for (key in this.context.scope) {
       if (isNaN(key)) {
-        argHash[key] = "this.scope[ '" + key + "' ]";
+        argHash[key] = "this.context.scope[ '" + key + "' ]";
       }
     }
-    for (key in this.extras) {
+    for (key in this.context.extras) {
       if (isNaN(key)) {
-        argHash[key] = "this.extras[ '" + key + "' ]";
+        argHash[key] = "this.context.extras[ '" + key + "' ]";
       }
     }
     for (key in argHash) {
@@ -333,7 +332,7 @@ Base = (function() {
     }
     parts = binding.split('.');
     part = parts.pop();
-    scope = this.parseBinding(parts.join('.')) || this.scope;
+    scope = this.parseBinding(parts.join('.')) || this.context.scope;
     if (typeof scope[part] === 'function') {
       return scope[part](value);
     } else {
@@ -344,10 +343,13 @@ Base = (function() {
   Base.prototype.insertPlaceholder = function() {
     var attr, str;
 
+    if (this.$placeholder) {
+      return;
+    }
     str = ((function() {
       var _i, _len, _ref, _results;
 
-      _ref = this.$element.get(0).attributes;
+      _ref = this.context.$element.get(0).attributes;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         attr = _ref[_i];
@@ -355,8 +357,8 @@ Base = (function() {
       }
       return _results;
     }).call(this)).join(' ');
-    this.$placeholder = $("<!-- Start BoringJS Block: " + str + " -->").insertBefore(this.$element);
-    return $("<!-- End BoringJS Block: " + str + " -->").insertAfter(this.$element);
+    this.$placeholder = $("<!-- Start BoringJS Block: " + str + " -->").insertBefore(this.context.$element);
+    return $("<!-- End BoringJS Block: " + str + " -->").insertAfter(this.context.$element);
   };
 
   Base.prototype.wrap = function() {
@@ -364,16 +366,16 @@ Base = (function() {
       return;
     }
     this.unwrapped = false;
-    this.$contents.eq(0).before(this.$element);
-    return this.$element.append(this.$contents);
+    this.context.$contents.eq(0).before(this.context.$element);
+    return this.context.$element.append(this.context.$contents);
   };
 
   Base.prototype.unwrap = function() {
     if (!this.unwrapped) {
       this.unwrapped = true;
     }
-    this.$contents = this.$element.contents().insertAfter(this.$element);
-    return this.$element.detach();
+    this.context.$contents = this.context.$element.contents().insertAfter(this.context.$element);
+    return this.context.$element.detach();
   };
 
   return Base;
@@ -387,13 +389,9 @@ var AttributeText,
 AttributeText = (function(_super) {
   __extends(AttributeText, _super);
 
-  function AttributeText(attribute, $element, scope, parent, root, extras) {
+  function AttributeText(attribute, context) {
     this.attribute = attribute;
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
+    this.context = context;
     this.template = this.attribute.nodeValue;
     if (this.attribute.nodeName.match(/^data/)) {
       return;
@@ -431,20 +429,16 @@ var ComposeBinding,
 ComposeBinding = (function(_super) {
   __extends(ComposeBinding, _super);
 
-  function ComposeBinding($element, scope, parent, root, extras) {
+  function ComposeBinding(context) {
     var _ref;
 
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
+    this.context = context;
     this.renderView = __bind(this.renderView, this);
-    this.binding = this.$element.data('compose');
+    this.binding = this.context.$element.data('compose');
     if (this.binding) {
       this.controller = this.parseBinding(this.binding);
     }
-    this.view = this.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
+    this.view = this.context.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
     this.loadView();
     this.pushBinding();
   }
@@ -473,22 +467,28 @@ ComposeBinding = (function(_super) {
       data = this.html;
     }
     this.html = data;
-    this.$element.html(this.html);
+    this.context.$element.html(this.html);
     this.parseChildren();
     if ((_ref = this.controller) != null) {
       if (typeof _ref.afterRender === "function") {
-        _ref.afterRender(this.$element, this.parent, this.root);
+        _ref.afterRender(this.context.$element, this.context.parent, this.context.root);
       }
     }
     intro = Recoil.transitions.intro[this.view] || ((_ref1 = this.controller) != null ? _ref1.intro : void 0) || null;
-    return typeof intro === "function" ? intro(this.$element) : void 0;
+    return typeof intro === "function" ? intro(this.context.$element) : void 0;
   };
 
   ComposeBinding.prototype.parseChildren = function() {
     var _this = this;
 
-    return this.$element.contents().each(function(index, element) {
-      return new Parser($(element), _this.controller, _this.scope, _this.root, _this.extras);
+    return this.context.$element.contents().each(function(index, element) {
+      return new Parser({
+        $element: $(element),
+        scope: _this.controller,
+        parent: _this.context.scope,
+        root: _this.context.root,
+        extras: _this.context.extras
+      });
     });
   };
 
@@ -506,7 +506,7 @@ ComposeBinding = (function(_super) {
         return _this.loadView();
       };
       outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
-      return (typeof outro === "function" ? outro(this.$element, callback) : void 0) || callback();
+      return (typeof outro === "function" ? outro(this.context.$element, callback) : void 0) || callback();
     }
   };
 
@@ -521,16 +521,27 @@ var CSSBinding,
 CSSBinding = (function(_super) {
   __extends(CSSBinding, _super);
 
-  function CSSBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.binding = this.$element.data('css');
-    this.css = this.parseBinding(this.binding);
-    this.$element.css(this.css);
+  function CSSBinding(context) {
+    this.context = context;
+    this.binding = this.context.$element.data('css');
+    this.updateCSS();
+    this.pushBinding();
   }
+
+  CSSBinding.prototype.updateCSS = function() {
+    var cssString;
+
+    this.css = this.parseBinding(this.binding);
+    cssString = JSON.stringify(this.css);
+    if (this.cssString === cssString) {
+      return;
+    }
+    return this.context.$element.css(this.css);
+  };
+
+  CSSBinding.prototype.update = function() {
+    return this.updateCSS();
+  };
 
   return CSSBinding;
 
@@ -543,25 +554,21 @@ var EventBinding,
 EventBinding = (function(_super) {
   __extends(EventBinding, _super);
 
-  function EventBinding(eventName, $element, scope, parent, root, extras) {
+  function EventBinding(eventName, context) {
     var csString, func, str,
       _this = this;
 
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    str = $element.data(eventName);
+    this.context = context;
+    str = this.context.$element.data(eventName);
     csString = "" + str;
     func = this.parseBinding(csString, false);
-    eventName = "" + eventName + ".boringjs";
-    $element.off(eventName).on(eventName, function(event) {
-      var ret;
+    eventName = "" + eventName + ".recoil";
+    this.context.$element.off(eventName).on(eventName, function(event) {
+      var ret, _ref;
 
       ret = func.call(_this, event);
       if (typeof ret === 'function') {
-        return ret(event, _this.extras.$item || _this.scope);
+        return ret(event, ((_ref = _this.context.extras) != null ? _ref.item : void 0) || _this.context.scope);
       } else {
         return ret;
       }
@@ -584,14 +591,11 @@ var ForBinding,
 ForBinding = (function(_super) {
   __extends(ForBinding, _super);
 
-  function ForBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
+  function ForBinding(context) {
+    this.context = context;
     this.checkForChanges = __bind(this.checkForChanges, this);
-    this.binding = this.$element.data('for');
+    this.context.stopParsing = true;
+    this.binding = this.context.$element.data('for');
     this.parts = this.binding.split(' in ');
     this.itemName = $.trim(this.parts[0]);
     this.collectionName = $.trim(this.parts[1]);
@@ -601,7 +605,7 @@ ForBinding = (function(_super) {
   }
 
   ForBinding.prototype.getTemplate = function() {
-    return this.$template = this.$element.contents().remove();
+    return this.$template = this.context.$element.contents().remove();
   };
 
   ForBinding.prototype.getCollection = function() {
@@ -624,8 +628,8 @@ ForBinding = (function(_super) {
     _results = [];
     for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
       item = collection[index];
-      $item = this.$template.clone().appendTo(this.$element);
-      extras = $.extend({}, this.extras);
+      $item = this.$template.clone().appendTo(this.context.$element);
+      extras = $.extend({}, this.context.extras);
       if (typeof item === 'object') {
         extras.itemName = this.itemName;
         extras.$item = item;
@@ -635,7 +639,13 @@ ForBinding = (function(_super) {
       } else {
         extras[this.itemName] = item;
       }
-      _results.push(new Parser($item, this.scope, this.parent, this.root, extras));
+      _results.push(new Parser({
+        $element: $item,
+        scope: this.context.scope,
+        parent: this.context.parent,
+        root: this.context.root,
+        extras: extras
+      }));
     }
     return _results;
   };
@@ -670,7 +680,7 @@ ForBinding = (function(_super) {
     if (this.logic) {
       this.wrap();
     }
-    this.$element.empty();
+    this.context.$element.empty();
     this.parseItems(collection);
     if (this.logic) {
       return this.unwrap();
@@ -692,13 +702,9 @@ var HTMLBinding,
 HTMLBinding = (function(_super) {
   __extends(HTMLBinding, _super);
 
-  function HTMLBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.binding = this.$element.data('html');
+  function HTMLBinding(context) {
+    this.context = context;
+    this.binding = this.context.$element.data('html');
     this.setValue();
     this.pushBinding();
   }
@@ -709,7 +715,7 @@ HTMLBinding = (function(_super) {
     value = this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
-      return this.$element.html(this.value);
+      return this.context.$element.html(this.value);
     }
   };
 
@@ -728,17 +734,13 @@ var IfBinding,
 IfBinding = (function(_super) {
   __extends(IfBinding, _super);
 
-  function IfBinding($element, scope, parent, root, extras, callback) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.callback = callback;
-    this.binding = this.$element.data('if');
+  function IfBinding(context) {
+    this.context = context;
+    this.binding = this.context.$element.data('if');
     this.insertPlaceholder();
     this.setValue();
     this.pushBinding();
+    IfBinding.__super__.constructor.apply(this, arguments);
   }
 
   IfBinding.prototype.setValue = function() {
@@ -748,10 +750,11 @@ IfBinding = (function(_super) {
     if (this.value !== value) {
       this.value = value;
       if (this.value) {
-        this.$element.insertAfter(this.$placeholder);
-        return new Parser(this.$element.contents(), this.scope, this.parent, this.root, this.extras);
+        delete this.context.stopParsing;
+        return this.context.$element.insertAfter(this.$placeholder);
       } else {
-        return this.$element.detach();
+        this.context.stopParsing = true;
+        return this.context.$element.detach();
       }
     }
   };
@@ -771,17 +774,14 @@ var TextNode,
 TextNode = (function(_super) {
   __extends(TextNode, _super);
 
-  function TextNode($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.template = this.$element.text();
+  function TextNode(context) {
+    this.context = context;
+    this.context.stopParsing = true;
+    this.template = this.context.$element.text();
     if (!(this.template.indexOf('{') + 1)) {
       return;
     }
-    this.element = this.$element.get(0);
+    this.element = this.context.$element.get(0);
     this.updateValue();
     this.pushBinding();
   }
@@ -810,15 +810,11 @@ var UpdateBinding,
 UpdateBinding = (function(_super) {
   __extends(UpdateBinding, _super);
 
-  function UpdateBinding($element, scope, parent, root, extras) {
+  function UpdateBinding(context) {
     var binding, csString;
 
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    binding = this.$element.data('update');
+    this.context = context;
+    binding = this.context.$element.data('update');
     csString = "-> " + binding;
     this.func = this.parseBinding(csString);
     this.func();
@@ -841,18 +837,15 @@ var ValueBinding,
 ValueBinding = (function(_super) {
   __extends(ValueBinding, _super);
 
-  function ValueBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
+  function ValueBinding(context) {
+    this.context = context;
     this.updateHandler = __bind(this.updateHandler, this);
-    this.binding = this.$element.data('value');
-    this.live = this.$element.data('live') != null;
+    this.context.stopParsing = true;
+    this.binding = this.context.$element.data('value');
+    this.live = this.context.$element.data('live') != null;
     this.setValue();
     this.pushBinding();
-    if (this.$element.is('select')) {
+    if (this.context.$element.is('select')) {
       this.updateHandler();
     }
     this.bindEvents();
@@ -862,7 +855,7 @@ ValueBinding = (function(_super) {
     var eventType;
 
     eventType = (function() {
-      switch (this.$element.attr('type')) {
+      switch (this.context.$element.attr('type')) {
         case 'radio':
         case 'checkbox':
           return 'change';
@@ -873,15 +866,15 @@ ValueBinding = (function(_super) {
       }
     }).call(this);
     if (eventType) {
-      return this.$element.on(eventType, this.updateHandler);
+      return this.context.$element.on(eventType, this.updateHandler);
     }
   };
 
   ValueBinding.prototype.getValue = function() {
     var value;
 
-    if (this.$element.attr('type') === 'radio') {
-      if (!this.$element.is(':checked')) {
+    if (this.context.$element.attr('type') === 'radio') {
+      if (!this.context.$element.is(':checked')) {
         return;
       }
     }
@@ -895,36 +888,35 @@ ValueBinding = (function(_super) {
     value = this.getValue();
     if (this.value !== value) {
       this.value = value;
-      switch (this.$element.attr('type')) {
+      switch (this.context.$element.attr('type')) {
         case 'checkbox':
-          return this.$element.prop('checked', value);
+          return this.context.$element.prop('checked', value);
         case 'radio':
           break;
         default:
-          return this.$element.val(this.value);
+          return this.context.$element.val(this.value);
       }
     }
   };
 
   ValueBinding.prototype.updateHandler = function() {
-    if (this.$element.is(':radio') && !this.$element.is(':checked')) {
+    if (this.context.$element.is(':radio') && !this.context.$element.is(':checked')) {
       return;
     }
     this.value = (function() {
-      switch (this.$element.attr('type')) {
+      switch (this.context.$element.attr('type')) {
         case 'checkbox':
-          return this.$element.prop('checked');
+          return this.context.$element.prop('checked');
         default:
-          return this.$element.val();
+          return this.context.$element.val();
       }
     }).call(this);
     return this.updateBinding(this.value);
   };
 
   ValueBinding.prototype.update = function() {
-    if (this.$element.is(':focus')) {
+    if (this.context.$element.is(':focus')) {
       if (this.live) {
-        console.log('element is live');
         return this.updateHandler();
       }
     } else {
@@ -943,13 +935,9 @@ var VisibleBinding,
 VisibleBinding = (function(_super) {
   __extends(VisibleBinding, _super);
 
-  function VisibleBinding($element, scope, parent, root, extras) {
-    this.$element = $element;
-    this.scope = scope;
-    this.parent = parent;
-    this.root = root;
-    this.extras = extras;
-    this.binding = this.$element.data('visible');
+  function VisibleBinding(context) {
+    this.context = context;
+    this.binding = this.context.$element.data('visible');
     this.setValue();
     this.pushBinding();
   }
@@ -961,9 +949,9 @@ VisibleBinding = (function(_super) {
     if (this.value !== value) {
       this.value = value;
       if (this.value) {
-        return this.$element.show();
+        return this.context.$element.show();
       } else {
-        return this.$element.hide();
+        return this.context.$element.hide();
       }
     }
   };
@@ -976,19 +964,14 @@ VisibleBinding = (function(_super) {
 
 })(Base);
 
-var Parser,
-  __slice = [].slice;
+var Parser;
 
 Parser = (function() {
-  function Parser($dom, scope, parent, root, extras) {
+  function Parser(context) {
     var _this = this;
 
-    this.scope = scope != null ? scope : {};
-    this.parent = parent != null ? parent : {};
-    this.root = root != null ? root : {};
-    this.extras = extras != null ? extras : {};
-    this.splat = [this.scope, this.parent, this.root, this.extras];
-    $dom.each(function(index, element) {
+    this.context = context;
+    this.context.$element.each(function(index, element) {
       var $element;
 
       $element = $(element);
@@ -997,86 +980,49 @@ Parser = (function() {
   }
 
   Parser.prototype.parseNode = function($element) {
-    var parseChildren,
+    var $contents, context, parseChildren,
       _this = this;
 
+    context = $.extend({}, this.context);
+    context.$element = $element;
     parseChildren = true;
     this.attachEvents($element);
     this.parseAttributes($element);
     if ($element.get(0).nodeType === 3) {
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(TextNode, [$element].concat(__slice.call(this.splat)), function(){});
-      return;
+      new TextNode(context);
     }
     if ($element.data('css')) {
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(CSSBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new CSSBinding(context);
     }
     if ($element.data('visible') != null) {
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(VisibleBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new VisibleBinding(context);
     }
     if ($element.data('if') != null) {
-      parseChildren = false;
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(IfBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new IfBinding(context);
     }
     if ($element.data('compose') || $element.data('view')) {
-      parseChildren = false;
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(ComposeBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new ComposeBinding(context);
     }
     if ($element.data('for')) {
-      parseChildren = false;
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(ForBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new ForBinding(context);
     }
     if ($element.data('html')) {
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(HTMLBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new HTMLBinding(context);
     }
     if ($element.data('value')) {
-      parseChildren = false;
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(ValueBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new ValueBinding(context);
     }
     if ($element.data('update')) {
-      (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(UpdateBinding, [$element].concat(__slice.call(this.splat)), function(){});
+      new UpdateBinding(context);
     }
-    if (!parseChildren) {
+    if (context.stopParsing) {
       return;
     }
-    return $element.contents().each(function(index, element) {
-      $element = $(element);
-      return _this.parseNode($element);
+    $contents = context.$contents || $element.contents();
+    return $contents.each(function(index, element) {
+      return new Parser($.extend({}, context, context.childContext, {
+        $element: $(element)
+      }));
     });
   };
 
@@ -1087,11 +1033,7 @@ Parser = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       attribute = _ref[_i];
-      _results.push((function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(AttributeText, [attribute, $element].concat(__slice.call(this.splat)), function(){}));
+      _results.push(new AttributeText(attribute, this.context));
     }
     return _results;
   };
@@ -1107,41 +1049,9 @@ Parser = (function() {
       if (!str) {
         continue;
       }
-      _results.push((function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return Object(result) === result ? result : child;
-      })(EventBinding, [event, $element].concat(__slice.call(this.splat)), function(){}));
+      _results.push(new EventBinding(event, this.context));
     }
     return _results;
-  };
-
-  Parser.prototype.parseString = function(str) {
-    var part, parts, scope, value, _i, _len;
-
-    parts = str.split('.');
-    switch (parts[0]) {
-      case '$root':
-        scope = this.root;
-        parts.shift();
-        break;
-      case '$parent':
-        scope = this.parent;
-        parts.shift();
-        break;
-      case '$data':
-        scope = this.scope;
-        parts.shift();
-        break;
-      default:
-        scope = this.scope;
-    }
-    value = scope;
-    for (_i = 0, _len = parts.length; _i < _len; _i++) {
-      part = parts[_i];
-      value = value[part];
-    }
-    return value;
   };
 
   return Parser;
@@ -1178,7 +1088,11 @@ Core = (function() {
     if (this.controller.view) {
       this.$element.data('compose', '$scope');
     }
-    return new Parser(this.$element, this.controller, false, this.controller);
+    return new Parser({
+      $element: this.$element,
+      scope: this.controller,
+      root: this.controller
+    });
   };
 
   return Core;

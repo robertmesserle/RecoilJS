@@ -1,23 +1,24 @@
 class ValueBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras  ) ->
-    @binding = @$element.data( 'value' )
-    @live = @$element.data( 'live' )?
+  constructor: ( @context  ) ->
+    @context.stopParsing = true
+    @binding = @context.$element.data( 'value' )
+    @live = @context.$element.data( 'live' )?
     @setValue()
     @pushBinding()
-    @updateHandler() if @$element.is( 'select' )
+    @updateHandler() if @context.$element.is( 'select' )
     @bindEvents()
 
   bindEvents: ->
-    eventType = switch @$element.attr( 'type' )
+    eventType = switch @context.$element.attr( 'type' )
       when 'radio', 'checkbox' then 'change'
       else
         if @live then 'blur'
-    if eventType then @$element.on eventType, @updateHandler
+    if eventType then @context.$element.on eventType, @updateHandler
 
   getValue: ->
-    if @$element.attr( 'type' ) is 'radio'
-      return unless @$element.is( ':checked' )
+    if @context.$element.attr( 'type' ) is 'radio'
+      return unless @context.$element.is( ':checked' )
     value = @parseBinding @binding
     value = value?() or value
 
@@ -25,23 +26,22 @@ class ValueBinding extends Base
     value = @getValue()
     if @value isnt value
       @value = value
-      switch @$element.attr( 'type' )
-        when 'checkbox' then @$element.prop( 'checked', value )
+      switch @context.$element.attr( 'type' )
+        when 'checkbox' then @context.$element.prop( 'checked', value )
         when 'radio' then break
-        else @$element.val @value
+        else @context.$element.val @value
 
   updateHandler: =>
-    return if @$element.is( ':radio' ) and not @$element.is( ':checked' )
+    return if @context.$element.is( ':radio' ) and not @context.$element.is( ':checked' )
     @value =
-      switch @$element.attr( 'type' )
-        when 'checkbox' then @$element.prop( 'checked' )
-        else @$element.val()
+      switch @context.$element.attr( 'type' )
+        when 'checkbox' then @context.$element.prop( 'checked' )
+        else @context.$element.val()
     @updateBinding( @value )
 
   update: ->
-    if @$element.is( ':focus' )
+    if @context.$element.is( ':focus' )
       if @live
-        console.log 'element is live'
         @updateHandler()
     else
       @setValue()

@@ -1,7 +1,7 @@
 class VisibleBinding extends Base
 
-  constructor: ( @$element, @scope, @parent, @root, @extras ) ->
-    @binding = @$element.data( 'visible' )
+  constructor: ( @context ) ->
+    @binding = @context.$element.data( 'visible' )
     @setValue()
     @pushBinding()
 
@@ -9,8 +9,8 @@ class VisibleBinding extends Base
     value = !! @parseBinding @binding
     if @value isnt value
       @value = value
-      if @value then @$element.show()
-      else @$element.hide()
+      if @value then @context.$element.show()
+      else @context.$element.hide()
 
   update: ->
     @setValue()
