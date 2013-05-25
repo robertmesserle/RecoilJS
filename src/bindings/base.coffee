@@ -66,18 +66,19 @@ class Base
     else scope[ part ] = value
 
   insertPlaceholder: ->
-    return if @$placeholder
+    return if @context.$placeholder
     str = ( for attr in @context.$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
-    @$placeholder = $( """<!-- Start BoringJS Block: #{ str } -->""" ).insertBefore( @context.$element )
-    $( """<!-- End BoringJS Block: #{ str } -->""" ).insertAfter( @context.$element )
+    @context.$placeholder = $( """<!-- Start Recoil Block: #{ str } -->""" ).insertBefore( @context.$element )
+    $( """<!-- End Recoil Block: #{ str } -->""" ).insertAfter( @context.$element )
 
   wrap: ->
-    return unless @unwrapped
-    @unwrapped = false
+    return unless @context.unwrapped
+    @context.unwrapped = false
     @context.$contents.eq( 0 ).before( @context.$element )
     @context.$element.append( @context.$contents )
 
   unwrap: ->
-    unless @unwrapped then @unwrapped  = true
+    return if @context.unwrapped
+    @context.unwrapped  = true
     @context.$contents = @context.$element.contents().insertAfter( @context.$element )
     @context.$element.detach()

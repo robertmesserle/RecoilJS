@@ -13,6 +13,7 @@ class Parser
     @parseAttributes( $element )
 
     if $element.get( 0 ).nodeType is 3 then new TextNode context
+    if $element.data( 'context' ) then new ContextBinding context
     if $element.data( 'css' ) then new CSSBinding context
     if $element.data( 'visible' )? then new VisibleBinding context
     if $element.data( 'if' )? then new IfBinding context

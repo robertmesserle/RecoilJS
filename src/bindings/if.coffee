@@ -1,11 +1,12 @@
 class IfBinding extends Base
 
   constructor: ( @context ) ->
+    @wrap()
     @binding = @context.$element.data( 'if' )
     @insertPlaceholder()
     @setValue()
     @pushBinding()
-    super
+    @unwrap()
 
   setValue: ->
     value = !! @parseBinding @binding
@@ -13,7 +14,7 @@ class IfBinding extends Base
       @value = value
       if @value
         delete @context.stopParsing
-        @context.$element.insertAfter( @$placeholder )
+        @context.$element.insertAfter( @context.$placeholder )
       else
         @context.stopParsing = true
         @context.$element.detach()

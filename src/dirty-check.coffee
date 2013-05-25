@@ -22,6 +22,7 @@ class DirtyCheck
 
   @cleanBindings: ->
     count = Recoil.bindings.length
+    return unless count
     for index in [ count - 1..0 ]
       binding = Recoil.bindings[ index ]
       element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )

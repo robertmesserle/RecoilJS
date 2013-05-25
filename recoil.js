@@ -46,6 +46,9 @@ DirtyCheck = (function() {
     var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
 
     count = Recoil.bindings.length;
+    if (!count) {
+      return;
+    }
     _results = [];
     for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
       binding = Recoil.bindings[index];
@@ -343,7 +346,7 @@ Base = (function() {
   Base.prototype.insertPlaceholder = function() {
     var attr, str;
 
-    if (this.$placeholder) {
+    if (this.context.$placeholder) {
       return;
     }
     str = ((function() {
@@ -357,23 +360,24 @@ Base = (function() {
       }
       return _results;
     }).call(this)).join(' ');
-    this.$placeholder = $("<!-- Start BoringJS Block: " + str + " -->").insertBefore(this.context.$element);
-    return $("<!-- End BoringJS Block: " + str + " -->").insertAfter(this.context.$element);
+    this.context.$placeholder = $("<!-- Start Recoil Block: " + str + " -->").insertBefore(this.context.$element);
+    return $("<!-- End Recoil Block: " + str + " -->").insertAfter(this.context.$element);
   };
 
   Base.prototype.wrap = function() {
-    if (!this.unwrapped) {
+    if (!this.context.unwrapped) {
       return;
     }
-    this.unwrapped = false;
+    this.context.unwrapped = false;
     this.context.$contents.eq(0).before(this.context.$element);
     return this.context.$element.append(this.context.$contents);
   };
 
   Base.prototype.unwrap = function() {
-    if (!this.unwrapped) {
-      this.unwrapped = true;
+    if (this.context.unwrapped) {
+      return;
     }
+    this.context.unwrapped = true;
     this.context.$contents = this.context.$element.contents().insertAfter(this.context.$element);
     return this.context.$element.detach();
   };
@@ -511,6 +515,46 @@ ComposeBinding = (function(_super) {
   };
 
   return ComposeBinding;
+
+})(Base);
+
+var ContextBinding,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+ContextBinding = (function(_super) {
+  __extends(ContextBinding, _super);
+
+  function ContextBinding(context) {
+    this.context = context;
+    this.binding = this.context.$element.data('context');
+    this.setValue();
+    this.pushBinding();
+    ContextBinding.__super__.constructor.apply(this, arguments);
+  }
+
+  ContextBinding.prototype.setValue = function() {
+    var value;
+
+    value = this.parseBinding(this.binding);
+    if (this.value !== value) {
+      this.value = value;
+      return this.setChildContext();
+    }
+  };
+
+  ContextBinding.prototype.setChildContext = function() {
+    return this.context.childContext = {
+      scope: this.value,
+      parent: this.context.scope
+    };
+  };
+
+  ContextBinding.prototype.update = function() {
+    return this.setValue();
+  };
+
+  return ContextBinding;
 
 })(Base);
 
@@ -736,11 +780,12 @@ IfBinding = (function(_super) {
 
   function IfBinding(context) {
     this.context = context;
+    this.wrap();
     this.binding = this.context.$element.data('if');
     this.insertPlaceholder();
     this.setValue();
     this.pushBinding();
-    IfBinding.__super__.constructor.apply(this, arguments);
+    this.unwrap();
   }
 
   IfBinding.prototype.setValue = function() {
@@ -751,7 +796,7 @@ IfBinding = (function(_super) {
       this.value = value;
       if (this.value) {
         delete this.context.stopParsing;
-        return this.context.$element.insertAfter(this.$placeholder);
+        return this.context.$element.insertAfter(this.context.$placeholder);
       } else {
         this.context.stopParsing = true;
         return this.context.$element.detach();
@@ -990,6 +1035,9 @@ Parser = (function() {
     this.parseAttributes($element);
     if ($element.get(0).nodeType === 3) {
       new TextNode(context);
+    }
+    if ($element.data('context')) {
+      new ContextBinding(context);
     }
     if ($element.data('css')) {
       new CSSBinding(context);
