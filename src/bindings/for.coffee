@@ -2,10 +2,10 @@ class ForBinding extends Base
 
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'for' )
-    @context.stopParsing = true
-    @parts            = @binding.split( ' in ' )
-    @itemName         = $.trim @parts[ 0 ]
-    @collectionName   = $.trim @parts[ 1 ]
+    @context.stopParsing  = true
+    @parts                = @binding.split( ' in ' )
+    @itemName             = $.trim @parts[ 0 ]
+    @collectionName       = $.trim @parts[ 1 ]
     @getTemplate()
     @parseItems()
     super

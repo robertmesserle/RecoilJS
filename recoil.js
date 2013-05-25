@@ -392,9 +392,12 @@ var AttributeText,
 AttributeText = (function(_super) {
   __extends(AttributeText, _super);
 
-  function AttributeText(attribute, context) {
-    this.attribute = attribute;
+  function AttributeText(context, attribute) {
     this.context = context;
+    this.attribute = attribute;
+    if (!this.attribute) {
+      return this.parseAttributes();
+    }
     this.template = this.attribute.nodeValue;
     if (this.attribute.nodeName.match(/^data/)) {
       return;
@@ -405,6 +408,18 @@ AttributeText = (function(_super) {
     this.updateValue();
     this.pushBinding();
   }
+
+  AttributeText.prototype.parseAttributes = function() {
+    var attribute, _i, _len, _ref, _results;
+
+    _ref = this.context.$element.get(0).attributes || [];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      attribute = _ref[_i];
+      _results.push(new AttributeText(this.context, attribute));
+    }
+    return _results;
+  };
 
   AttributeText.prototype.updateValue = function() {
     var value;
@@ -602,11 +617,14 @@ var EventBinding,
 EventBinding = (function(_super) {
   __extends(EventBinding, _super);
 
-  function EventBinding(eventName, context) {
+  function EventBinding(context, eventName) {
     var csString, func, str,
       _this = this;
 
     this.context = context;
+    if (!eventName) {
+      return this.parseEvents();
+    }
     str = this.context.$element.data(eventName);
     csString = "" + str;
     func = this.parseBinding(csString, false);
@@ -622,6 +640,22 @@ EventBinding = (function(_super) {
       }
     });
   }
+
+  EventBinding.prototype.parseEvents = function() {
+    var event, str, _i, _len, _ref, _results;
+
+    _ref = Recoil.events;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      event = _ref[_i];
+      str = this.context.$element.data(event);
+      if (!str) {
+        continue;
+      }
+      _results.push(new EventBinding(this.context, event));
+    }
+    return _results;
+  };
 
   EventBinding.prototype.generateFunction = function(str) {
     return EventBinding.__super__.generateFunction.call(this, str, ['$event']);
@@ -1032,7 +1066,7 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
-  Parser.prototype.bindings = [TextNode, ContextBinding, CSSBinding, VisibleBinding, IfBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
+  Parser.prototype.bindings = [TextNode, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, IfBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
 
   function Parser(context) {
     var _this = this;
@@ -1047,14 +1081,11 @@ Parser = (function() {
   }
 
   Parser.prototype.parseNode = function($element) {
-    var $contents, binding, context, parseChildren, _i, _len, _ref,
+    var $contents, binding, context, _i, _len, _ref,
       _this = this;
 
     context = $.extend({}, this.context);
     context.$element = $element;
-    parseChildren = true;
-    this.attachEvents($element);
-    this.parseAttributes($element);
     _ref = this.bindings;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       binding = _ref[_i];
@@ -1072,34 +1103,6 @@ Parser = (function() {
         $element: $(element)
       }));
     });
-  };
-
-  Parser.prototype.parseAttributes = function($element) {
-    var attribute, _i, _len, _ref, _results;
-
-    _ref = $element.get(0).attributes || [];
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      attribute = _ref[_i];
-      _results.push(new AttributeText(attribute, this.context));
-    }
-    return _results;
-  };
-
-  Parser.prototype.attachEvents = function($element) {
-    var event, str, _i, _len, _ref, _results;
-
-    _ref = Recoil.events;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      event = _ref[_i];
-      str = $element.data(event);
-      if (!str) {
-        continue;
-      }
-      _results.push(new EventBinding(event, this.context));
-    }
-    return _results;
   };
 
   return Parser;

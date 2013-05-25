@@ -1,6 +1,7 @@
 class EventBinding extends Base
 
-  constructor: ( eventName, @context ) ->
+  constructor: ( @context, eventName ) ->
+    return @parseEvents() unless eventName
     str         = @context.$element.data( eventName )
     csString    = "#{ str }"
     func        = @parseBinding( csString, false )
@@ -11,6 +12,12 @@ class EventBinding extends Base
         ret = func.call( this, event )
         if typeof ret is 'function' then ret( event, @context.extras?.item or @context.scope )
         else ret
+
+  parseEvents: ->
+    for event in Recoil.events
+      str = @context.$element.data( event )
+      continue unless str
+      new EventBinding( @context, event )
     
   generateFunction: ( str ) ->
     super str, [ '$event' ]
