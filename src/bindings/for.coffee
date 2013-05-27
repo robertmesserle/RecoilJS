@@ -31,6 +31,7 @@ class ForBinding extends Base
       else
         extras[ @itemName ]         = item
       # Update context for future parsing
+      DirtyCheck.cleanBindings()
       new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   checkForChanges: ( collection ) =>

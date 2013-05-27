@@ -20,6 +20,7 @@ class ComposeBinding extends Base
   renderView: ( data = @html ) =>
     @html = data
     @context.$element.html( @html )
+    DirtyCheck.cleanBindings()
     @parseChildren()
     @controller?.afterRender? @context.$element, @context.parent, @context.root
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
@@ -30,7 +31,6 @@ class ComposeBinding extends Base
       new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: @context.extras )
 
   update: ->
-    controller = @parseBinding @binding if @binding
     if @controller isnt controller
       callback = =>
         @controller = controller
