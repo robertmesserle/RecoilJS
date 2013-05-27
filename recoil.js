@@ -178,6 +178,8 @@ Router = (function() {
 
   Router.prototype.routes = [];
 
+  Router.prototype.defaultRoute = null;
+
   function Router() {
     this.handleChange = __bind(this.handleChange, this);    this.createSpecialEvent();
     this.bindEvent();
@@ -188,16 +190,19 @@ Router = (function() {
   };
 
   Router.prototype.handleChange = function(event) {
-    var hash, route, _i, _len, _ref;
+    var hash, route, _i, _len, _ref, _ref1;
 
     hash = location.hash.replace(/^#/, '');
-    _ref = this.routes;
+    _ref = this.routes.sort(function(a, b) {
+      return b.path.length - a.path.length;
+    });
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       route = _ref[_i];
       if (route.regex.test(hash)) {
         return route.handler(this.getParams(hash, route));
       }
     }
+    return (_ref1 = this.defaultRoute) != null ? _ref1.handler(hash) : void 0;
   };
 
   Router.prototype.createSpecialEvent = function() {
@@ -221,19 +226,24 @@ Router = (function() {
   };
 
   Router.prototype.getRegex = function(path) {
-    var index, part, parts, regex, _i, _len;
+    var index, part, parts, _i, _len;
 
     parts = path.split('/');
-    regex = parts.slice(0);
     for (index = _i = 0, _len = parts.length; _i < _len; index = ++_i) {
       part = parts[index];
       if (part.charAt(0) === ':') {
-        regex[index] = '[^\\\/]+';
+        parts[index] = '[^\\\/]+';
       } else {
-        regex[index] = part.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        parts[index] = part.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
       }
     }
-    return new RegExp("^" + (regex.join('\\\/')));
+    return new RegExp("^" + (parts.join('\\\/')));
+  };
+
+  Router.prototype.mapDefaultRoute = function(handler) {
+    return this.defaultRoute = {
+      handler: handler
+    };
   };
 
   Router.prototype.mapRoute = function(path, handler) {
@@ -248,7 +258,19 @@ Router = (function() {
   };
 
   Router.prototype.getParams = function(hash, route) {
-    return {};
+    var hashParts, index, params, part, routeParts, _i, _len;
+
+    params = {};
+    hashParts = hash.split('/');
+    routeParts = route.path.split('/');
+    for (index = _i = 0, _len = routeParts.length; _i < _len; index = ++_i) {
+      part = routeParts[index];
+      if (part.charAt(0) === ':') {
+        params[part.substring(1)] = hashParts[index];
+      }
+    }
+    params.$rest = hashParts.slice(routeParts.length).join('/');
+    return params;
   };
 
   return Router;
@@ -291,6 +313,12 @@ Recoil = (function() {
     var _ref;
 
     return (_ref = Router.getInstance()).mapRoute.apply(_ref, arguments);
+  };
+
+  Recoil.mapDefaultRoute = function() {
+    var _ref;
+
+    return (_ref = Router.getInstance()).mapDefaultRoute.apply(_ref, arguments);
   };
 
   Recoil.createTransition = function(type, id, callback) {

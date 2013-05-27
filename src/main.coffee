@@ -19,19 +19,18 @@ class Recoil
     mouseleave change select submit keydown keypress keyup error
     '''.split( /\s+/g )
 
-  # Methods
+  # Global Methods
+  @init: -> new Recoil( arguments... )
 
-  @init: ->
-    new Recoil( arguments... )
+  # Router Methods
+  @mapRoute: -> Router.getInstance().mapRoute arguments...
+  @mapDefaultRoute: -> Router.getInstance().mapDefaultRoute arguments...
 
-  @mapRoute: ->
-    Router.getInstance().mapRoute arguments...
+  # Transition Methods
+  @createTransition: ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback
 
-  @createTransition: ( type, id, callback ) ->
-    Recoil.transitions[ type ][ id ] = callback
-
+  # Configuration Methods
   @setViewPath: ( @viewPath ) ->
-
   @setMaxUpdateFrequency: ( @throttle ) ->
 
   @compile: ( str ) ->

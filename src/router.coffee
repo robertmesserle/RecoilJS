@@ -11,6 +11,7 @@ class Router
   mode:     document.documentMode
   support:  root[ "on#{ @event }" ]? and ( not @mode? or @mode > 7 )
   routes:   []
+  defaultRoute: null
 
   constructor: ->
     @createSpecialEvent()
@@ -21,9 +22,10 @@ class Router
 
   handleChange: ( event ) =>
     hash = location.hash.replace /^#/, ''
-    for route in @routes
+    for route in @routes.sort( ( a, b ) -> b.path.length - a.path.length )
       if route.regex.test( hash )
         return route.handler( @getParams( hash, route ) )
+    return @defaultRoute?.handler( hash )
 
   createSpecialEvent: ->
     $.extend $.event.special[ @event ],
@@ -37,13 +39,16 @@ class Router
 
   getRegex: ( path ) ->
     parts = path.split( '/' )
-    regex = parts.slice( 0 )
     for part, index in parts
       if part.charAt( 0 ) is ':'
-        regex[ index ] = '[^\\\/]+'
+        parts[ index ] = '[^\\\/]+'
       else
-        regex[ index ] = part.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
-    return new RegExp "^#{ regex.join( '\\\/') }"
+        parts[ index ] = part.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
+    return new RegExp "^#{ parts.join( '\\\/') }"
+
+  mapDefaultRoute: ( handler ) ->
+    @defaultRoute =
+      handler: handler
 
   mapRoute: ( path, handler ) ->
     route =
@@ -53,4 +58,10 @@ class Router
     @routes.push route
 
   getParams: ( hash, route ) ->
-    {}
+    params = {}
+    hashParts = hash.split( '/' )
+    routeParts = route.path.split( '/' )
+    for part, index in routeParts when part.charAt( 0 ) is ':'
+      params[ part.substring( 1 ) ] = hashParts[ index ]
+    params.$rest = hashParts.slice( routeParts.length ).join( '/' )
+    return params
