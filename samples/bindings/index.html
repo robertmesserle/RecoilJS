@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test</title>
+  <script src="../../lib/jquery.js"></script>
+  <script src="../../lib/coffee-script.js"></script>
+  <script src="../../recoil.js"></script>
+  <script>
+    Recoil.init( {
+      title: 'tests',
+      num: ''
+    } )
+  </script>
+</head>
+<body>
+  <h1>Logic Tag + Text</h1>
+  <$ data-if="true" data-context="title">
+    #{ $data }
+  </$>
+  <h1>Value</h1>
+  <label for="num">Phone Number: #{ num }</label>
+  <br>
+  <input type="text" data-value="num" data-live />
+</body>
+</html>

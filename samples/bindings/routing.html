@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Routing</title>
+  <script src="../../lib/jquery.js"></script>
+  <script src="../../recoil.js"></script>
+  <script>
+  function Site () {
+    var _ = {}
+    _.title = 'Home'
+
+    function init () {
+      Recoil.mapDefaultRoute( function () {
+        _.title = 'Home'
+      } )
+      Recoil.mapRoute( '/portfolio', function () {
+        _.title = 'Portfolio'
+      } )
+      Recoil.mapRoute( '/portfolio/:site', function ( params ) {
+        console.log( params )
+        _.title = 'Portfolio:: Site'
+      } )
+    }
+
+    init()
+    return _
+  }
+  Recoil.init( Site() )
+  </script>
+</head>
+<body>
+
+  <h1>#{ title }</h1>
+
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li>
+      <a href="#/portfolio">Portfolio</a>
+      <ul>
+        <li><a href="#/portfolio/nikeplus">Nike+</a></li>
+        <li><a href="#/portfolio/nikerunning">Nike Running</a></li>
+      </ul>
+    </li>
+  </ul>
+
+</body>
+</html>
