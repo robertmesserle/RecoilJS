@@ -824,27 +824,45 @@ ForBinding = (function(_super) {
       return;
     }
     this.context.stopParsing = true;
-    this.parts = this.binding.split(' in ');
-    this.itemName = $.trim(this.parts[0]);
-    this.collectionName = $.trim(this.parts[1]);
+    this.getParts();
     this.getTemplate();
     this.parseItems();
     ForBinding.__super__.constructor.apply(this, arguments);
   }
+
+  ForBinding.prototype.getParts = function() {
+    var condition, itemParts, parts;
+
+    parts = this.binding.split(/\s+in\s+|\s+when\s+/g);
+    itemParts = parts[0].split(',');
+    this.itemName = $.trim(itemParts[0]);
+    this.indexName = $.trim(itemParts[1]);
+    this.collectionName = $.trim(parts[1]);
+    condition = $.trim(parts[2] || 'true');
+    return this.conditionFunction = this.parseBinding(condition, false);
+  };
 
   ForBinding.prototype.getTemplate = function() {
     return this.$template = this.context.$element.contents().remove();
   };
 
   ForBinding.prototype.getCollection = function() {
-    var items;
+    var item, items;
 
     items = this.parseBinding(this.collectionName);
-    if (typeof items === 'function') {
-      return items();
-    } else {
-      return items;
-    }
+    items = typeof items === 'function' ? items() : items;
+    return items = (function() {
+      var _i, _len, _results;
+
+      _results = [];
+      for (_i = 0, _len = items.length; _i < _len; _i++) {
+        item = items[_i];
+        if (this.conditionFunction.call(this, item)) {
+          _results.push(item);
+        }
+      }
+      return _results;
+    }).call(this);
   };
 
   ForBinding.prototype.parseItems = function(collection) {
@@ -867,6 +885,9 @@ ForBinding = (function(_super) {
       } else {
         extras[this.itemName] = item;
       }
+      if (this.indexName) {
+        extras[this.indexName] = index;
+      }
       DirtyCheck.cleanBindings();
       _results.push(new Parser({
         $element: $item,
@@ -879,9 +900,20 @@ ForBinding = (function(_super) {
     return _results;
   };
 
+  ForBinding.prototype.generateFunction = function(str) {
+    var args;
+
+    args = [this.itemName];
+    if (this.indexName) {
+      args.push(this.indexName);
+    }
+    return ForBinding.__super__.generateFunction.call(this, str, args);
+  };
+
   ForBinding.prototype.checkForChanges = function(collection) {
     var index, item, _i, _len, _ref;
 
+    return true;
     if (!this.collection) {
       return true;
     }

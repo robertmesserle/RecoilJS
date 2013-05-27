@@ -2,21 +2,28 @@ class ForBinding extends Base
 
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'for' )
-    @context.stopParsing  = true
-    @parts                = @binding.split( ' in ' )
-    @itemName             = $.trim @parts[ 0 ]
-    @collectionName       = $.trim @parts[ 1 ]
+    @context.stopParsing = true
+    @getParts()
     @getTemplate()
     @parseItems()
     super
+
+  getParts: ->
+    parts               = @binding.split /\s+in\s+|\s+when\s+/g
+    itemParts           = parts[ 0 ].split( ',' )
+    @itemName           = $.trim itemParts[ 0 ]
+    @indexName          = $.trim itemParts[ 1 ]
+    @collectionName     = $.trim parts[ 1 ]
+    condition           = $.trim parts[ 2 ] or 'true'
+    @conditionFunction  = @parseBinding( condition, false )
 
   getTemplate: ->
     @$template = @context.$element.contents().remove()
 
   getCollection: ->
     items = @parseBinding @collectionName
-    if typeof items is 'function' then items()
-    else items
+    items = if typeof items is 'function' then items() else items
+    items = for item in items when @conditionFunction.call( this, item ) then item
 
   parseItems: ( collection = @getCollection() ) ->
     for item, index in collection
@@ -30,11 +37,18 @@ class ForBinding extends Base
         extras[ @itemName ].$total  = collection.length
       else
         extras[ @itemName ]         = item
-      # Update context for future parsing
+      if @indexName
+        extras[ @indexName ]        = index
       DirtyCheck.cleanBindings()
       new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
+  generateFunction: ( str ) ->
+    args = [ @itemName ]
+    if @indexName then args.push @indexName
+    super str, args
+
   checkForChanges: ( collection ) =>
+    return true
     return true unless @collection
     return true unless collection.length is @collection.length
     for item, index in collection or []

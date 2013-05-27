@@ -19,11 +19,11 @@
     Tasks
     <button class="mark-all" data-click="checkAll">Check All</button>
   </h2>
-  <ul data-for="task in getTasks( false )">
+  <ul data-for="task, i in tasks when !task.complete">
     <li>
       <label>
         <input type="checkbox" data-value="task.complete" />
-        #{ task.title }
+        #{ i }) #{ task.title }
       </label>
     </li>
   </ul>
