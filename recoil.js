@@ -242,7 +242,8 @@ Router = (function() {
 
 })();
 
-var Recoil;
+var Recoil,
+  __slice = [].slice;
 
 Recoil = (function() {
   Recoil.app = null;
@@ -312,22 +313,20 @@ Recoil = (function() {
     }
   };
 
-  function Recoil(id, controller) {
-    var _this = this;
+  function Recoil() {
+    var args, controller, _i,
+      _this = this;
 
-    this.id = id;
+    args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), controller = arguments[_i++];
     this.controller = controller;
     if (Recoil.app) {
       throw "You may only have one app running at a time.";
     }
-    $(function(element) {
+    $(function() {
       var $element;
 
       new DirtyCheck();
-      $element = $("[data-app='" + _this.id + "']");
-      if (!$element.length) {
-        throw "No element found for id '" + _this.id + "'.";
-      }
+      $element = $("[data-app='" + args[0] + "'], [data-app], body").eq(0);
       return Recoil.app = new Core($element, _this.controller);
     });
   }

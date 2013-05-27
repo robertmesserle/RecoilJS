@@ -44,10 +44,9 @@ class Recoil
         else "#{ firstChar }\" + ( #{ expression } ) + \""
       "( function () { return #{ str }; } )()"
 
-  constructor: ( @id, @controller ) ->
+  constructor: ( args..., @controller ) ->
     if Recoil.app then throw "You may only have one app running at a time."
-    $ ( element ) =>
+    $ =>
       new DirtyCheck()
-      $element    = $( "[data-app='#{ @id }']" )
-      unless $element.length then throw "No element found for id '#{ @id }'."
+      $element    = $( "[data-app='#{ args[ 0 ] }'], [data-app], body" ).eq( 0 )
       Recoil.app  = new Core( $element, @controller )
