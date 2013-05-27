@@ -847,57 +847,82 @@ ForBinding = (function(_super) {
   };
 
   ForBinding.prototype.getCollection = function() {
-    var item, items;
+    var index, item, items, key;
 
     items = this.parseBinding(this.collectionName);
     items = typeof items === 'function' ? items() : items;
-    return items = (function() {
-      var _i, _len, _results;
+    if (items instanceof Array) {
+      items = (function() {
+        var _i, _len, _results;
 
-      _results = [];
-      for (_i = 0, _len = items.length; _i < _len; _i++) {
-        item = items[_i];
-        if (this.conditionFunction.call(this, item)) {
-          _results.push(item);
+        _results = [];
+        for (index = _i = 0, _len = items.length; _i < _len; index = ++_i) {
+          item = items[index];
+          if (this.conditionFunction.call(this, item, index)) {
+            _results.push(item);
+          }
+        }
+        return _results;
+      }).call(this);
+    } else {
+      for (item in items) {
+        key = items[item];
+        if (!this.conditionFunction.call(this, item, key)) {
+          delete items[key];
         }
       }
-      return _results;
-    }).call(this);
+    }
+    return items;
   };
 
   ForBinding.prototype.parseItems = function(collection) {
-    var $item, extras, index, item, _i, _len, _results;
+    var index, item, _i, _len, _results, _results1;
 
     if (collection == null) {
       collection = this.getCollection();
     }
-    _results = [];
-    for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
-      item = collection[index];
-      $item = this.$template.clone().appendTo(this.context.$element);
-      extras = $.extend({}, this.context.extras);
-      if (typeof item === 'object') {
-        extras.itemName = this.itemName;
-        extras.$item = item;
-        extras[this.itemName] = item;
-        extras[this.itemName].$index = index;
-        extras[this.itemName].$total = collection.length;
-      } else {
-        extras[this.itemName] = item;
+    if (collection instanceof Array) {
+      _results = [];
+      for (index = _i = 0, _len = collection.length; _i < _len; index = ++_i) {
+        item = collection[index];
+        _results.push(this.parseItem(item, index, collection));
       }
-      if (this.indexName) {
-        extras[this.indexName] = index;
+      return _results;
+    } else {
+      _results1 = [];
+      for (index in collection) {
+        item = collection[index];
+        _results1.push(this.parseItem(item, index, collection));
       }
-      DirtyCheck.cleanBindings();
-      _results.push(new Parser({
-        $element: $item,
-        scope: this.context.scope,
-        parent: this.context.parent,
-        root: this.context.root,
-        extras: extras
-      }));
+      return _results1;
     }
-    return _results;
+  };
+
+  ForBinding.prototype.parseItem = function(item, index, collection) {
+    var $item, extras;
+
+    $item = this.$template.clone().appendTo(this.context.$element);
+    extras = $.extend({}, this.context.extras);
+    if (typeof item === 'object') {
+      extras.itemName = this.itemName;
+      extras.$item = item;
+      extras[this.itemName] = item;
+      extras[this.itemName].$index = index;
+      extras[this.itemName].$total = collection.length;
+    } else {
+      extras[this.itemName] = item;
+    }
+    if (this.indexName) {
+      extras[this.indexName] = index;
+    }
+    DirtyCheck.cleanBindings();
+    return new Parser({
+      $element: $item,
+      scope: this.context.scope,
+      parent: this.context.parent,
+      root: this.context.root,
+      extras: extras
+    });
   };
 
   ForBinding.prototype.generateFunction = function(str) {

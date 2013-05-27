@@ -23,24 +23,34 @@ class ForBinding extends Base
   getCollection: ->
     items = @parseBinding @collectionName
     items = if typeof items is 'function' then items() else items
-    items = for item in items when @conditionFunction.call( this, item ) then item
+    if items instanceof Array
+      items = for item, index in items when @conditionFunction.call( this, item, index ) then item
+    else
+      for item, key of items when not @conditionFunction.call( this, item, key )
+        delete items[ key ]
+    items
 
   parseItems: ( collection = @getCollection() ) ->
-    for item, index in collection
-      $item   = @$template.clone().appendTo( @context.$element )
-      extras  = $.extend {}, @context.extras
-      if typeof item is 'object'
-        extras.itemName             = @itemName
-        extras.$item                = item
-        extras[ @itemName ]         = item
-        extras[ @itemName ].$index  = index
-        extras[ @itemName ].$total  = collection.length
-      else
-        extras[ @itemName ]         = item
-      if @indexName
-        extras[ @indexName ]        = index
-      DirtyCheck.cleanBindings()
-      new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
+    if collection instanceof Array
+      for item, index in collection then @parseItem item, index, collection
+    else
+      for index, item of collection then @parseItem item, index, collection
+
+  parseItem: ( item, index, collection ) ->
+    $item   = @$template.clone().appendTo( @context.$element )
+    extras  = $.extend {}, @context.extras
+    if typeof item is 'object'
+      extras.itemName             = @itemName
+      extras.$item                = item
+      extras[ @itemName ]         = item
+      extras[ @itemName ].$index  = index
+      extras[ @itemName ].$total  = collection.length
+    else
+      extras[ @itemName ]         = item
+    if @indexName
+      extras[ @indexName ]        = index
+    DirtyCheck.cleanBindings()
+    new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   generateFunction: ( str ) ->
     args = [ @itemName ]

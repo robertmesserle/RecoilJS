@@ -22,5 +22,10 @@
   <label for="num">Phone Number: #{ num }</label>
   <br>
   <input type="text" data-value="num" data-live />
+  <br>
+  <h1>Items in Object</h1>
+  <ul data-for="item, key in $scope">
+    <li>#{ key } :: #{ item }</li>
+  </ul>
 </body>
 </html>
