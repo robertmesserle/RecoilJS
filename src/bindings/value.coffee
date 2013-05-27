@@ -8,13 +8,12 @@ class ValueBinding extends Base
     @updateHandler() if @context.$element.is( 'select' )
     @bindEvents()
     super
+    Recoil.bindings.write.push( this )
 
   bindEvents: ->
-    eventType = switch @context.$element.attr( 'type' )
-      when 'radio', 'checkbox' then 'change'
-      else
-        if @live then 'blur'
-    if eventType then @context.$element.on eventType, @updateHandler
+    switch @context.$element.attr( 'type' )
+      when 'radio', 'checkbox'
+        @context.$element.on 'change', @updateHandler
 
   getValue: ->
     if @context.$element.attr( 'type' ) is 'radio'
@@ -33,15 +32,16 @@ class ValueBinding extends Base
 
   updateHandler: =>
     return if @context.$element.is( ':radio' ) and not @context.$element.is( ':checked' )
-    @value =
+    value =
       switch @context.$element.attr( 'type' )
         when 'checkbox' then @context.$element.prop( 'checked' )
         else @context.$element.val()
-    @updateBinding( @value )
+    @updateBinding( @value = value ) unless @value is value
 
   update: ->
-    if @context.$element.is( ':focus' )
-      if @live
-        @updateHandler()
-    else
-      @setValue()
+    @setValue()
+
+  write: ->
+    return if @context.$element.is( ':focus' ) and not @live
+
+    @updateHandler()

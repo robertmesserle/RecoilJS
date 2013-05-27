@@ -13,20 +13,24 @@ class DirtyCheck
     waitTime = now - @lastCheck
     @lastCheck = now
     if waitTime > Recoil.throttle then waitTime = 0
-    timeout = @originalMethods.setTimeout =>
+    callback = =>
       @timeout = null
-      for binding in Recoil.bindings then binding.update()
+      for binding in Recoil.bindings.write then binding.write()
+      for binding in Recoil.bindings.read then binding.update()
       @cleanBindings()
-    , waitTime
-    @timeout = timeout if waitTime
+    if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
+    else callback()
 
   @cleanBindings: ->
-    count = Recoil.bindings.length
-    return unless count
-    for index in [ count - 1..0 ]
-      binding = Recoil.bindings[ index ]
-      element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
-      Recoil.bindings.splice( index, 1 ) unless $.contains( document.body, element )
+    for type in [ 'read', 'write' ]
+      list = Recoil.bindings[ type ]
+      count = list.length
+      return unless count
+      for index in [ count - 1..0 ]
+        binding = list[ index ]
+        element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
+        list.splice( index, 1 ) unless $.contains( document.body, element )
+      console.log type, list.length
 
   # Instance
 
@@ -72,5 +76,5 @@ class DirtyCheck
     $ ->
       $( document )
         .ajaxComplete( -> DirtyCheck.update() )
-        .on( 'keydown click', -> DirtyCheck.update() )
-        .on( 'load', 'script', -> DirtyCheck.update() )
+        .on( 'keydown click', -> DirtyCheck.originalMethods.setTimeout -> DirtyCheck.update() )
+        .on( 'load', 'script', -> DirtyCheck.originalMethods.setTimeout -> DirtyCheck.update() )

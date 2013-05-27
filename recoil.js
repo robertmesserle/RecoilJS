@@ -14,7 +14,7 @@ DirtyCheck = (function() {
   DirtyCheck.timeout = null;
 
   DirtyCheck.update = function() {
-    var now, timeout, waitTime,
+    var callback, now, waitTime,
       _this = this;
 
     if (this.timeout) {
@@ -26,40 +26,49 @@ DirtyCheck = (function() {
     if (waitTime > Recoil.throttle) {
       waitTime = 0;
     }
-    timeout = this.originalMethods.setTimeout(function() {
-      var binding, _i, _len, _ref;
+    callback = function() {
+      var binding, _i, _j, _len, _len1, _ref, _ref1;
 
       _this.timeout = null;
-      _ref = Recoil.bindings;
+      _ref = Recoil.bindings.write;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         binding = _ref[_i];
+        binding.write();
+      }
+      _ref1 = Recoil.bindings.read;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        binding = _ref1[_j];
         binding.update();
       }
       return _this.cleanBindings();
-    }, waitTime);
+    };
     if (waitTime) {
-      return this.timeout = timeout;
+      return this.timeout = this.originalMethods.setTimeout(callback, waitTime);
+    } else {
+      return callback();
     }
   };
 
   DirtyCheck.cleanBindings = function() {
-    var binding, count, element, index, _i, _ref, _ref1, _ref2, _results;
+    var binding, count, element, index, list, type, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
 
-    count = Recoil.bindings.length;
-    if (!count) {
-      return;
-    }
-    _results = [];
-    for (index = _i = _ref = count - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
-      binding = Recoil.bindings[index];
-      element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
-      if (!$.contains(document.body, element)) {
-        _results.push(Recoil.bindings.splice(index, 1));
-      } else {
-        _results.push(void 0);
+    _ref = ['read', 'write'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      type = _ref[_i];
+      list = Recoil.bindings[type];
+      count = list.length;
+      if (!count) {
+        return;
       }
+      for (index = _j = _ref1 = count - 1; _ref1 <= 0 ? _j <= 0 : _j >= 0; index = _ref1 <= 0 ? ++_j : --_j) {
+        binding = list[index];
+        element = ((_ref2 = binding.context.$placeholder) != null ? _ref2.get(0) : void 0) || ((_ref3 = binding.context.$element) != null ? _ref3.get(0) : void 0);
+        if (!$.contains(document.body, element)) {
+          list.splice(index, 1);
+        }
+      }
+      console.log(type, list.length);
     }
-    return _results;
   };
 
   DirtyCheck.prototype.elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
@@ -136,9 +145,13 @@ DirtyCheck = (function() {
       return $(document).ajaxComplete(function() {
         return DirtyCheck.update();
       }).on('keydown click', function() {
-        return DirtyCheck.update();
+        return DirtyCheck.originalMethods.setTimeout(function() {
+          return DirtyCheck.update();
+        });
       }).on('load', 'script', function() {
-        return DirtyCheck.update();
+        return DirtyCheck.originalMethods.setTimeout(function() {
+          return DirtyCheck.update();
+        });
       });
     });
   };
@@ -252,7 +265,10 @@ Recoil = (function() {
 
   Recoil.throttle = 50;
 
-  Recoil.bindings = [];
+  Recoil.bindings = {
+    read: [],
+    write: []
+  };
 
   Recoil.views = {};
 
@@ -350,7 +366,7 @@ Base = (function() {
 
   Base.prototype.pushBinding = function() {
     if (this.context.$element.data('static') == null) {
-      return Recoil.bindings.push(this);
+      return Recoil.bindings.read.push(this);
     }
   };
 
@@ -1049,24 +1065,14 @@ ValueBinding = (function(_super) {
     }
     this.bindEvents();
     ValueBinding.__super__.constructor.apply(this, arguments);
+    Recoil.bindings.write.push(this);
   }
 
   ValueBinding.prototype.bindEvents = function() {
-    var eventType;
-
-    eventType = (function() {
-      switch (this.context.$element.attr('type')) {
-        case 'radio':
-        case 'checkbox':
-          return 'change';
-        default:
-          if (this.live) {
-            return 'blur';
-          }
-      }
-    }).call(this);
-    if (eventType) {
-      return this.context.$element.on(eventType, this.updateHandler);
+    switch (this.context.$element.attr('type')) {
+      case 'radio':
+      case 'checkbox':
+        return this.context.$element.on('change', this.updateHandler);
     }
   };
 
@@ -1100,10 +1106,12 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.updateHandler = function() {
+    var value;
+
     if (this.context.$element.is(':radio') && !this.context.$element.is(':checked')) {
       return;
     }
-    this.value = (function() {
+    value = (function() {
       switch (this.context.$element.attr('type')) {
         case 'checkbox':
           return this.context.$element.prop('checked');
@@ -1111,17 +1119,20 @@ ValueBinding = (function(_super) {
           return this.context.$element.val();
       }
     }).call(this);
-    return this.updateBinding(this.value);
+    if (this.value !== value) {
+      return this.updateBinding(this.value = value);
+    }
   };
 
   ValueBinding.prototype.update = function() {
-    if (this.context.$element.is(':focus')) {
-      if (this.live) {
-        return this.updateHandler();
-      }
-    } else {
-      return this.setValue();
+    return this.setValue();
+  };
+
+  ValueBinding.prototype.write = function() {
+    if (this.context.$element.is(':focus') && !this.live) {
+      return;
     }
+    return this.updateHandler();
   };
 
   return ValueBinding;
