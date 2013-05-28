@@ -49,6 +49,7 @@ class ForBinding extends Base
       extras[ @itemName ]         = item
     if @indexName
       extras[ @indexName ]        = index
+    DirtyCheck.cleanBindings()
     new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   generateFunction: ( str ) ->
