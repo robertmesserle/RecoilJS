@@ -2,6 +2,7 @@
 class DirtyCheck
 
   # Static
+
   @originalMethods: {}
   @instance: null
   @lastCheck: 0
@@ -16,19 +17,9 @@ class DirtyCheck
     callback = =>
       @timeout = null
       # Iterate over writes first
-      if Recoil.bindings.write.length
-        for index in [ Recoil.bindings.write.length - 1..0 ]
-          binding = Recoil.bindings.write[ index ]
-          element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
-          if $.contains( document.body, element ) then binding.write()
-          else Recoil.bindings.write.splice( index, 1 )
-      # Iterate over reads
-      if Recoil.bindings.read.length
-        for index in [ Recoil.bindings.read.length - 1..0 ]
-          binding = Recoil.bindings.read[ index ]
-          element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
-          if $.contains( document.body, element ) then binding.update()
-          else Recoil.bindings.read.splice( index, 1 )
+      for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
+        for binding in Recoil.bindings[ set.type ] when binding?
+          binding[ set.method ]?()
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
 
