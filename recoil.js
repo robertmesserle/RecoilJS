@@ -192,7 +192,7 @@ Router = (function() {
   };
 
   Router.prototype.handleChange = function() {
-    var hash, route, _i, _len, _ref, _ref1;
+    var hash, ret, route, _i, _len, _ref, _ref1;
 
     hash = location.hash.replace(/^#/, '');
     _ref = this.routes.sort(function(a, b) {
@@ -204,7 +204,9 @@ Router = (function() {
         return route.handler(this.getParams(hash, route));
       }
     }
-    return (_ref1 = this.defaultRoute) != null ? _ref1.handler(hash) : void 0;
+    ret = (_ref1 = this.defaultRoute) != null ? _ref1.handler(hash) : void 0;
+    DirtyCheck.update();
+    return ret;
   };
 
   Router.prototype.createSpecialEvent = function() {
