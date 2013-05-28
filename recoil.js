@@ -191,7 +191,7 @@ Router = (function() {
     return $(window).on('hashchange', this.handleChange);
   };
 
-  Router.prototype.handleChange = function(event) {
+  Router.prototype.handleChange = function() {
     var hash, route, _i, _len, _ref, _ref1;
 
     hash = location.hash.replace(/^#/, '');
@@ -321,6 +321,10 @@ Recoil = (function() {
     var _ref;
 
     return (_ref = Router.getInstance()).mapDefaultRoute.apply(_ref, arguments);
+  };
+
+  Recoil.triggerRouteChange = function() {
+    return Router.getInstance().handleChange();
   };
 
   Recoil.createTransition = function(type, id, callback) {
@@ -660,13 +664,17 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.update = function() {
-    var callback, outro, _ref,
+    var callback, controller, outro, view, _ref,
       _this = this;
 
-    if (this.controller !== controller) {
+    if (this.binding) {
+      controller = this.parseBinding(this.binding);
+    }
+    view = this.context.$element.data('view') || (controller != null ? controller.view : void 0);
+    if (this.controller !== controller || this.view !== view) {
       callback = function() {
         _this.controller = controller;
-        _this.view = _this.controller.view;
+        _this.view = view;
         return _this.loadView();
       };
       outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
@@ -1350,6 +1358,6 @@ Core = (function() {
   return Core;
 
 })();
-if ( typeof define === 'function' && define.amd ) define( Recoil )
+if ( typeof define === 'function' && define.amd ) define( function () { return Recoil } )
 else root.Recoil = Recoil
 } )( this, jQuery )
