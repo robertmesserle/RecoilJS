@@ -30,26 +30,30 @@ DirtyCheck = (function() {
       var binding, element, index, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _results;
 
       _this.timeout = null;
-      for (index = _i = _ref = Recoil.bindings.write.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
-        binding = Recoil.bindings.write[index];
-        element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
-        if ($.contains(document.body, element)) {
-          binding.write();
-        } else {
-          Recoil.bindings.write.splice(index, 1);
+      if (Recoil.bindings.write.length) {
+        for (index = _i = _ref = Recoil.bindings.write.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
+          binding = Recoil.bindings.write[index];
+          element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
+          if ($.contains(document.body, element)) {
+            binding.write();
+          } else {
+            Recoil.bindings.write.splice(index, 1);
+          }
         }
       }
-      _results = [];
-      for (index = _j = _ref3 = Recoil.bindings.read.length - 1; _ref3 <= 0 ? _j <= 0 : _j >= 0; index = _ref3 <= 0 ? ++_j : --_j) {
-        binding = Recoil.bindings.read[index];
-        element = ((_ref4 = binding.context.$placeholder) != null ? _ref4.get(0) : void 0) || ((_ref5 = binding.context.$element) != null ? _ref5.get(0) : void 0);
-        if ($.contains(document.body, element)) {
-          _results.push(binding.read());
-        } else {
-          _results.push(Recoil.bindings.read.splice(index, 1));
+      if (Recoil.bindings.read.length) {
+        _results = [];
+        for (index = _j = _ref3 = Recoil.bindings.read.length - 1; _ref3 <= 0 ? _j <= 0 : _j >= 0; index = _ref3 <= 0 ? ++_j : --_j) {
+          binding = Recoil.bindings.read[index];
+          element = ((_ref4 = binding.context.$placeholder) != null ? _ref4.get(0) : void 0) || ((_ref5 = binding.context.$element) != null ? _ref5.get(0) : void 0);
+          if ($.contains(document.body, element)) {
+            _results.push(binding.update());
+          } else {
+            _results.push(Recoil.bindings.read.splice(index, 1));
+          }
         }
+        return _results;
       }
-      return _results;
     };
     if (waitTime) {
       return this.timeout = this.originalMethods.setTimeout(callback, waitTime);
