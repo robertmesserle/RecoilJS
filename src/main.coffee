@@ -25,6 +25,7 @@ class Recoil
   # Router Methods
   @mapRoute: -> Router.getInstance().mapRoute arguments...
   @mapDefaultRoute: -> Router.getInstance().mapDefaultRoute arguments...
+  @triggerRouteChange: -> Router.getInstance().handleChange()
 
   # Transition Methods
   @createTransition: ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback
