@@ -31,10 +31,12 @@ class ComposeBinding extends Base
       new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: @context.extras )
 
   update: ->
-    if @controller isnt controller
+    controller = @parseBinding @binding if @binding
+    view = @context.$element.data( 'view' ) or controller?.view
+    if @controller isnt controller or @view isnt view
       callback = =>
         @controller = controller
-        @view = @controller.view
+        @view = view
         @loadView()
       outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       outro?( @context.$element, callback ) or callback()
