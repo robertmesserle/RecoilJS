@@ -691,9 +691,9 @@ ComposeBinding = (function(_super) {
     }
     view = this.context.$element.data('view') || (controller != null ? controller.view : void 0);
     if (this.controller !== controller || this.view !== view) {
+      this.controller = controller;
+      this.view = view;
       callback = function() {
-        _this.controller = controller;
-        _this.view = view;
         return _this.loadView();
       };
       outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
