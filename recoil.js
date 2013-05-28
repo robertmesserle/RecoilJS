@@ -27,19 +27,27 @@ DirtyCheck = (function() {
       waitTime = 0;
     }
     callback = function() {
-      var binding, _i, _j, _len, _len1, _ref, _ref1, _results;
+      var binding, element, index, _i, _j, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _results;
 
       _this.timeout = null;
-      _ref = Recoil.bindings.write;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        binding = _ref[_i];
-        binding.write();
+      for (index = _i = _ref = Recoil.bindings.write.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
+        binding = Recoil.bindings.write[index];
+        element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
+        if ($.contains(document.body, element)) {
+          binding.write();
+        } else {
+          Recoil.bindings.write.splice(index, 1);
+        }
       }
-      _ref1 = Recoil.bindings.read;
       _results = [];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        binding = _ref1[_j];
-        _results.push(binding.update());
+      for (index = _j = _ref3 = Recoil.bindings.read.length - 1; _ref3 <= 0 ? _j <= 0 : _j >= 0; index = _ref3 <= 0 ? ++_j : --_j) {
+        binding = Recoil.bindings.read[index];
+        element = ((_ref4 = binding.context.$placeholder) != null ? _ref4.get(0) : void 0) || ((_ref5 = binding.context.$element) != null ? _ref5.get(0) : void 0);
+        if ($.contains(document.body, element)) {
+          _results.push(binding.read());
+        } else {
+          _results.push(Recoil.bindings.read.splice(index, 1));
+        }
       }
       return _results;
     };
@@ -48,29 +56,6 @@ DirtyCheck = (function() {
     } else {
       return callback();
     }
-  };
-
-  DirtyCheck.cleanBindings = function() {
-    return this.originalMethods.setTimeout(function() {
-      var binding, count, element, index, list, type, _i, _j, _len, _ref, _ref1, _ref2, _ref3;
-
-      _ref = ['read', 'write'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        list = Recoil.bindings[type];
-        count = list.length;
-        if (!count) {
-          return;
-        }
-        for (index = _j = _ref1 = count - 1; _ref1 <= 0 ? _j <= 0 : _j >= 0; index = _ref1 <= 0 ? ++_j : --_j) {
-          binding = list[index];
-          element = ((_ref2 = binding.context.$placeholder) != null ? _ref2.get(0) : void 0) || ((_ref3 = binding.context.$element) != null ? _ref3.get(0) : void 0);
-          if (!$.contains(document.body, element)) {
-            list.splice(index, 1);
-          }
-        }
-      }
-    });
   };
 
   DirtyCheck.prototype.elementList = typeof InstallTrigger !== 'undefined' ? [HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement] : [Element];
@@ -642,7 +627,6 @@ ComposeBinding = (function(_super) {
     }
     this.html = data;
     this.context.$element.html(this.html);
-    DirtyCheck.cleanBindings();
     this.parseChildren();
     if ((_ref = this.controller) != null) {
       if (typeof _ref.afterRender === "function") {
@@ -927,7 +911,6 @@ ForBinding = (function(_super) {
     if (this.indexName) {
       extras[this.indexName] = index;
     }
-    DirtyCheck.cleanBindings();
     return new Parser({
       $element: $item,
       scope: this.context.scope,
@@ -1051,8 +1034,7 @@ IfBinding = (function(_super) {
     } else {
       this.context.stopParsing = true;
       this.context.skipBindings = true;
-      this.context.$element.detach();
-      return DirtyCheck.cleanBindings();
+      return this.context.$element.detach();
     }
   };
 

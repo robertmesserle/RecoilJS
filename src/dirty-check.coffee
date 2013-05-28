@@ -15,21 +15,20 @@ class DirtyCheck
     if waitTime > Recoil.throttle then waitTime = 0
     callback = =>
       @timeout = null
-      for binding in Recoil.bindings.write then binding.write()
-      for binding in Recoil.bindings.read then binding.update()
+      # Iterate over writes first
+      for index in [ Recoil.bindings.write.length - 1..0 ]
+        binding = Recoil.bindings.write[ index ]
+        element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
+        if $.contains( document.body, element ) then binding.write()
+        else Recoil.bindings.write.splice( index, 1 )
+      # Iterate over reads
+      for index in [ Recoil.bindings.read.length - 1..0 ]
+        binding = Recoil.bindings.read[ index ]
+        element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
+        if $.contains( document.body, element ) then binding.read()
+        else Recoil.bindings.read.splice( index, 1 )
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
-
-  @cleanBindings: ->
-    @originalMethods.setTimeout ->
-      for type in [ 'read', 'write' ]
-        list = Recoil.bindings[ type ]
-        count = list.length
-        return unless count
-        for index in [ count - 1..0 ]
-          binding = list[ index ]
-          element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
-          list.splice( index, 1 ) unless $.contains( document.body, element )
 
   # Instance
 

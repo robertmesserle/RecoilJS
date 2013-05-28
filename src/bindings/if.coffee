@@ -14,7 +14,6 @@ class IfBinding extends Base
       @context.stopParsing    = true
       @context.skipBindings   = true
       @context.$element.detach()
-      DirtyCheck.cleanBindings()
 
   update: ->
     value = !! @parseBinding @binding

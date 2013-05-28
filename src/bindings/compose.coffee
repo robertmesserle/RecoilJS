@@ -20,7 +20,6 @@ class ComposeBinding extends Base
   renderView: ( data = @html ) =>
     @html = data
     @context.$element.html( @html )
-    DirtyCheck.cleanBindings()
     @parseChildren()
     @controller?.afterRender? @context.$element, @context.parent, @context.root
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
