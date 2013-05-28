@@ -25,7 +25,9 @@ class Router
     for route in @routes.sort( ( a, b ) -> b.path.length - a.path.length )
       if route.regex.test( hash )
         return route.handler( @getParams( hash, route ) )
-    return @defaultRoute?.handler( hash )
+    ret = @defaultRoute?.handler( hash )
+    DirtyCheck.update()
+    return ret
 
   createSpecialEvent: ->
     $.extend $.event.special[ @event ],
