@@ -14,7 +14,7 @@ module.exports = ( grunt ) ->
   footer =
     js:
       """
-      if ( typeof define === 'function' && define.amd ) define( Recoil )
+      if ( typeof define === 'function' && define.amd ) define( function () { return Recoil } )
       else root.Recoil = Recoil
       } )( this, jQuery )
       """
