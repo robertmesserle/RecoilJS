@@ -24,7 +24,9 @@ class Router
     hash = location.hash.replace /^#/, ''
     for route in @routes.sort( ( a, b ) -> b.path.length - a.path.length )
       if route.regex.test( hash )
-        return route.handler( @getParams( hash, route ) )
+        ret = route.handler( @getParams( hash, route ) )
+        DirtyCheck.update()
+        return ret
     ret = @defaultRoute?.handler( hash )
     DirtyCheck.update()
     return ret

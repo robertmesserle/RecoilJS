@@ -201,7 +201,9 @@ Router = (function() {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       route = _ref[_i];
       if (route.regex.test(hash)) {
-        return route.handler(this.getParams(hash, route));
+        ret = route.handler(this.getParams(hash, route));
+        DirtyCheck.update();
+        return ret;
       }
     }
     ret = (_ref1 = this.defaultRoute) != null ? _ref1.handler(hash) : void 0;
