@@ -20,7 +20,7 @@ class Router
   bindEvent: ->
     $( window ).on 'hashchange', @handleChange
 
-  handleChange: ( event ) =>
+  handleChange: =>
     hash = location.hash.replace /^#/, ''
     for route in @routes.sort( ( a, b ) -> b.path.length - a.path.length )
       if route.regex.test( hash )
