@@ -16,6 +16,8 @@
 
       DataBindingController.prototype.title = 'Data Binding';
 
+      DataBindingController.prototype.searchTerm = '';
+
       DataBindingController.prototype.bindings = Data;
 
       function DataBindingController() {}

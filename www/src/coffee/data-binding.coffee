@@ -9,6 +9,8 @@ define ( require ) ->
     category: 'Documentation'
     title: 'Data Binding'
 
+    searchTerm: ''
+
     bindings: Data
 
     constructor: ->

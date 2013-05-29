@@ -21,6 +21,7 @@
     border-style solid
     padding 0 40px
     color white
+    position relative
     h1
       font-size 30px
       margin 0
@@ -28,6 +29,32 @@
       font-weight 100
       font-family $alt-font
       text-transform uppercase
+    .search-wrapper
+      position absolute
+      width 220px
+      bottom 33px
+      right 40px
+      height 60px
+      color hsl( 0, 0, 75% )
+      i
+        position absolute
+        bottom 5px
+        left 0
+      input
+        color hsl( 0, 0, 90% )
+        position absolute
+        bottom 0
+        right 0
+        left 20px
+        border-width 0 0 1px 0
+        border-color hsl( 0, 0, 50% )
+        border-style solid
+        background transparent
+        box-shadow none
+        font-size 18px
+        font-family $font
+        font-weight 100
+        outline none
 
   .section-wrapper
     position absolute
