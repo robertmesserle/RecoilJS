@@ -1,0 +1,60 @@
+
+html
+body
+  margin 0
+  padding 0
+  font-family $font
+  font-weight 100
+  color $gray
+  *
+    box-sizing border-box
+
+body
+  background-size 50px 50px
+
+p
+  font-weight 100
+
+.highlight
+  background rgba( $red, 0.25 )
+
+a
+  color hsl( 200, 50%, 50% )
+  &:hover
+    color lighten( $red, 20 )
+  &:active
+    color darken( $red, 10 )
+
+.blue
+  color $blue
+
+hr
+  border none
+  height 1px
+  background hsl( 0, 0, 95% )
+
+code
+  font-family Consolas, "Liberation Mono", Courier, monospace
+  font-size 13px
+  background #f0f0f0
+  color hsl( 0, 0%, 50% )
+  line-height 1.5em
+  display inline-block
+  padding 0 3px
+  &.block
+    display block
+    border-left 10px #ddd solid
+    margin 5px 0 10px
+    padding 7px 10px 5px
+    &.important
+      border-color $blue
+    .block
+      padding-left 20px
+  .string
+    color hsl( 0, 25%, 50% )
+  .keyword
+    color hsl( 200, 25%, 50% )
+  .name
+    color hsl( 80, 25%, 50% )
+  .comment
+    color hsl( 0, 0%, 70% )

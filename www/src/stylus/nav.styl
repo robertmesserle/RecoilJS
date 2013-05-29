@@ -1,0 +1,82 @@
+@import 'nib'
+
+nav
+  $stripe1 = hsl( 200, 50, 22 )
+  $stripe2 = hsl( 200, 50, 20 )
+  position absolute
+  top 0
+  left 0
+  bottom 0
+  width 220px
+  box-shadow 5px 0 15px rgba( black, 0.25 )
+  padding 115px 0 20px 20px
+  background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
+  background-size 50px 50px
+  color rgba( black, 0.8 )
+  overflow hidden
+  header
+    $stripe1 = hsl( 0, 0, 12 )
+    $stripe2 = hsl( 0, 0, 10 )
+    $border  = rgba( hsl( 200, 50%, 50% ), 0.5 )
+    position absolute
+    top 20px
+    left 0
+    right -1px
+    height 95px
+    background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
+    background-size 50px 50px
+    background-position 20px 0
+    border-width 1px 0
+    border-color $border
+    border-style solid
+    color #666
+    text-indent -9999px
+    overflow hidden
+    box-shadow 0 0 15px $border
+    &::after
+      content ''
+      position absolute
+      top 0
+      left 0
+      right 0
+      bottom 0
+      background-image url(/img/wide-logo-sidebar.png)
+      background-position center
+      background-repeat no-repeat
+  section
+    h1
+      font-size 26px
+      font-weight 100
+      padding 1.5em 0 0.25em
+      margin 0
+      color white
+    a
+      display block
+      font-family $alt-font
+      font-size 12px
+      text-transform uppercase
+      letter-spacing 1px
+      line-height 25px
+      padding 0
+      margin 0
+      border-radius 5px 0 0 5px
+      transition all 0.25s
+      font-weight 100
+      opacity 0.6
+      color white
+      text-decoration none
+      i[class^='icon-']
+        font-size 14px
+        width 30px
+        text-align center
+        display inline-block
+      &:not( .active )
+        cursor pointer
+        &:hover
+          padding-left 8px
+          opacity 1
+      &:hover
+        color white
+      &.active
+        background rgba( white, 0.25 )
+        opacity 1

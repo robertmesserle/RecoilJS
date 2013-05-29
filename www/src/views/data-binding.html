@@ -1,0 +1,116 @@
+<section class="column-layout">
+  <article>
+    <h1>String Interpolation</h1>
+    <code class="important block">#\{ <span class="blue">:string</span> }</code>
+    <dl class="important">
+      <dt>:string</dt>
+      <dd>An expression that parses to a <i>string</i>.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Compose Binding</h1>
+    <code class="important block">data-compose=<span class="blue">":scope"</span> data-view=<span class="blue">":view"</span></code>
+    <dl class="important">
+      <dt>:scope</dt>
+      <dd>An object that will act as the default scope for all contained elements.</dd>
+
+      <dt>:view</dt>
+      <dd>A string containing a valid view name or HTML filename.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Context Binding</h1>
+    <code class="important block">data-context=<span class="blue">":scope"</span></code>
+    <dl class="important">
+      <dt>:scope</dt>
+      <dd>An object that will act as the default scope for all contained elements.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>CSS Binding</h1>
+    <code class="important block">data-css=<span class="blue">":cssObject"</span></code>
+    <dl class="important">
+      <dt>:cssObject</dt>
+      <dd>An object that will be passed into <a href="http://api.jquery.com/css/">jQuery.fn.css()</a>.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Event Binding</h1>
+    <code class="important block">data-[<span class="blue">:eventType</span>]=<span class="blue">":expression"</span></code>
+    <dl class="important">
+      <dt>:eventType</dt>
+      <dd>A string representing a valid JavaScript event type (ie. <code>click</code>).</dd>
+
+      <dt>:expression</dt>
+      <dd>An expression to be evaluated when the defined event occurs.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Iteration</h1>
+    <code class="important block">data-for="<span class="blue">:identifier</span> in <span class="blue">:set</span> when <span class="blue">:condition</span>"</code>
+    <dl class="important">
+      <dt>:identifier</dt>
+      <dd>An identifier that will be used to reference the current item being iterated over.</dd>
+
+      <dt>:set</dt>
+      <dd>An array of items that will be iterated over.</dd>
+
+      <dt>:condition</dt>
+      <dd>An expression that will be run against each item, determining whether or not the item should be included.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>HTML Binding</h1>
+    <code class="important block">data-html=<span class="blue">":htmlString"</span></code>
+    <dl class="important">
+      <dt>:htmlString</dt>
+      <dd>A string of HTML that will be inserted into the DOM element.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>If Binding</h1>
+    <code class="important block">data-if=<span class="blue">":ifExpression"</span></code>
+    <dl class="important">
+      <dt>:htmlString</dt>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Static Binding</h1>
+    <code class="important block">data-static</code>
+  </article>
+
+  <article>
+    <h1>Update Binding</h1>
+    <code class="important block">data-update=<span class="blue">":updateExpression"</span></code>
+    <dl class="important">
+      <dt>:updateMethod</dt>
+      <dd>An expression that will be run each time the current DOM element is updated.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Value Binding</h1>
+    <code class="important block">data-value=<span class="blue">":value"</span></code>
+    <dl class="important">
+      <dt>:value</dt>
+      <dd>A variable or function that will be bound to the DOM element.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Visible Binding</h1>
+    <code class="important block">data-visible=<span class="blue">":visibleExpression"</span></code>
+    <dl class="important">
+      <dt>:visibleExpression</dt>
+      <dd>An expression that will be evaluated to determine whether or not to hide the current element.</dd>
+    </dl>
+  </article>
+</section>

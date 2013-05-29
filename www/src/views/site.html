@@ -1,0 +1,20 @@
+<nav>
+  <header>RecoilJS</header>
+  <section data-for="category in navSections">
+    <h1>
+      #{ category.title }
+    </h1>
+    <$ data-for="section in category.sections">
+      <a href="#{ section.href }" class="#{ if section.controller and activeSection instanceof section.controller then 'active' else '' }">
+        <i class="#{ section.icon }"></i> #{ section.title }
+      </a>
+    </$>
+  </section>
+</nav>
+
+<section id="main-content">
+  <header>
+    <h1>#{ activeSection.category } // <span class="blue">#{ activeSection.title }</span></h1>
+  </header>
+  <div class="section-wrapper" data-compose="activeSection"></div>
+</section>

@@ -1,0 +1,110 @@
+#portfolio
+  .portfolio-wrapper
+    position absolute
+    top 135px
+    left 40px
+    right 40px
+    bottom 40px
+    .spinner
+      text-align center
+      padding 50px
+      position relative
+      top 0
+      i
+        display block
+        margin-bottom 20px
+        color #ccc
+    .sites
+      padding 10px 0 0
+      margin 0
+      list-style none
+      li
+        position relative
+        float left
+        margin 0 40px 40px 0
+        width 350px
+        height 222px
+        cursor pointer
+        transition all 0.35s
+        .spinner
+          width 100%
+          height 100%
+          line-height 222px
+          position absolute
+          text-align center
+          top 0
+          left 0
+        .contents
+          width 100%
+          height 100%
+          position absolute
+          top 0
+          left 0
+          padding 10px
+          .viewport
+            width 330px
+            height 202px
+            position relative
+            border-radius 5px
+            overflow hidden
+            border 3px solid darken( $gray, 4 )
+            transition all 0.35s ease-out
+            overflow hidden
+            top 0
+            .image-wrapper
+              width 100%
+              height 100%
+              position absolute
+              overflow hidden
+              top 0
+              left 0
+              padding 0
+              img
+                width 100%
+                height 100%
+                display block
+          .info-wrapper
+            padding 5px 10px
+            position absolute
+            bottom 0
+            left 0
+            right 0
+            background rgba( black, 0.65 )
+            color rgba( white, 0.9 )
+            transition all 0.35s ease-out
+            &::before
+            &::after
+              position absolute
+              top -10px
+              content ''
+              width 0
+              height 0
+              border-width 5px
+              border-style solid
+            &::before
+              left 0
+              border-color transparent rgba( black, 0.3 ) rgba( black, 0.3 ) transparent
+            &::after
+              right 0
+              border-color transparent transparent rgba( black, 0.3 ) rgba( black, 0.3 )
+            h1
+              font-size 26px
+              font-weight 100
+              margin 0
+            h2
+              font-size 12px
+              font-weight 100
+              text-transform uppercase
+              font-family $alt-font
+              letter-spacing 1px
+              margin 0
+              opacity 0.8
+        &:hover
+          .viewport
+            top -10px
+            border-color $red
+            box-shadow 0 0 20px $red
+          .info-wrapper
+            background rgba( black, 0.8 )
+            color $red
+            bottom -10px

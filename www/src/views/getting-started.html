@@ -1,0 +1,103 @@
+<section>
+  <article>
+    <h1>Dependencies</h1>
+
+    <p>There is really only one dependency for using RecoilJS:</p>
+    <dl>
+      <dt>jQuery</dt>
+      <dd><a href="http://code.jquery.com/jquery-1.9.1.min.js">http://code.jquery.com/jquery-1.9.1.min.js</a></dd>
+    </dl>
+
+    <p>However, if you want CoffeeScript syntax to be supported in your bindings, you will want to include CoffeeScript as well:</p>
+    <dl>
+      <dt>CoffeeScript</dt>
+      <dd><a href="https://github.com/jashkenas/coffee-script/blob/master/extras/coffee-script.js">https://github.com/jashkenas/coffee-script/blob/master/extras/coffee-script.js</a></dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Including RecoilJS</h1>
+
+    <p>First, you're going to want to <a href="#download">download</a> a copy of recoil.js.  Once you have the JavaScript file, you can include it in your page one of two ways:</p>
+
+    <ol>
+      <li>
+        Include the file with a standard script tag:
+        <code class="block">
+          &lt;<span class="name">script</span>
+          <span class="keyword">src=</span><span class="string">"recoil.js"</span>&gt;&lt;<span class="name">/script</span>&gt;
+        </code>
+      </li>
+      <li>
+        Include the file via AMD with RequireJS:
+        <code class="block">
+          <span class="name">require</span>(
+          [ <span class="string">"recoil"</span> ],
+          <span class="keyword">function</span> () { ... }
+          )
+        </code>
+      </li>
+    </ol>
+
+    <p>For the purpose of getting started, I'm going to assume the first method.</p>
+  </article>
+
+  <article>
+    <h1>HTML Setup</h1>
+    <p>Setting up your HTML file is incredibly easy in that <i>technically</i>, you just have to include the JS files and you're set; however, you can optionally specify the scope of your application with the <code>data-app</code> attribute.  Here is a sample HTML file:</p>
+
+    <code class="block">
+      <div class="line"><span class="comment">&lt;!DOCTYPE html&gt;</span></div>
+      <div class="line">&lt;<span class="name">html</span> <span class="keyword">lang</span>=<span class="string">"en"</span>&gt;</div>
+      <div class="block">
+        <div class="line">&lt;<span class="name">head</span>&gt;</div>
+        <div class="block">
+          <div class="line">&lt;<span class="name">meta</span> <span class="keyword">charset</span>=<span class="string">"utf-8"</span> /&gt;</div>
+          <div class="line">&lt;<span class="name">title</span>&gt;RecoilJS Sample&lt;<span class="name">/title</span>&gt;</div>
+          <div class="line">&lt;<span class="name">script</span> <span class="keyword">src</span>=<span class="string">"jquery.js"</span>&gt;&lt;<span class="name">script</span>&gt;</div>
+          <div class="line">
+            &lt;<span class="name">script</span> <span class="keyword">src</span>=<span class="string">"coffee-script.js"</span>&gt;&lt;<span class="name">script</span>&gt;
+            <span class="comment">&lt;!-- optional --&gt;</span>
+          </div>
+          <div class="line">&lt;<span class="name">script</span> <span class="keyword">src</span>=<span class="string">"recoil.js"</span>&gt;&lt;<span class="name">script</span>&gt;</div>
+          <div class="line">
+            &lt;<span class="name">script</span> <span class="keyword">src</span>=<span class="string">"app.js"</span>&gt;&lt;<span class="name">script</span>&gt;
+            <span class="comment">&lt;!-- your application --&gt;</span>
+          </div>
+        </div>
+        <div class="line">&lt;<span class="name">/head</span>&gt;</div>
+        <div class="line">&lt;<span class="name">body</span>&gt;</div>
+        <div class="block">
+          <div class="line">&lt;<span class="name">div</span> <span class="keyword">data-app</span>&gt;</div>
+          <div class="block">...</div>
+          <div class="line">&lt;<span class="name">/div</span>&gt;</div>
+        </div>
+        <div class="line">&lt;<span class="name">/body</span>&gt;</div>
+      </div>
+      <div class="line">&lt;<span class="name">/html</span>&gt;</div>
+    </code>
+    <p>In this example, the <code>&lt;div&gt;</code> tag represents the scope of your app, and all parsing will start here.  This tag can contain HTML, or it can be empty and have content loaded in through an external view.</p>
+  </article>
+
+  <article>
+    <p>The next thing your app is going to need is a Controller.  This can be any JavaScript object.  You can bind this object using the following code:</p>
+    <code class="block">
+      <div class="line"><span class="keyword">var</span> controller = {</div>
+      <div class="block"><span class="name">title</span>: <span class="string">"Hello, World!"</span></div>
+      <div class="line">}</div>
+      <div class="line">Recoil.init( <span class="string">"sample"</span>, controller )</div>
+    </code>
+    <p>As you can see, our Controller can be incredibly simple - in this case, consisting of only one <code>title</code> property.  Let's add some HTML!</p>
+    <code class="block">
+      <div class="line">&lt;<span class="name">div</span> <span class="keyword">data-app</span>=<span class="string">"sample"</span>&gt;</div>
+      <div class="block">#{ '#{ title }' }</div>
+      <div class="line">&lt;<span class="name">/div</span>&gt;</div>
+    </code>
+    <p>The title has now been rendered into the HTML through the use of String Interpolation.</p>
+  </article>
+
+  <article>
+    <h1>That's it!</h1>
+    <p>Now that you're up and running with a basic Hello World app, let's dive deeper into <a href="#data-binding">Data Binding</a>.</p>
+  </article>
+</section>

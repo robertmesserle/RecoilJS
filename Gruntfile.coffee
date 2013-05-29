@@ -21,7 +21,7 @@ module.exports = ( grunt ) ->
 
   grunt.initConfig
     coffee:
-      compile:
+      core:
         expand: true
         cwd: 'src'
         src: [ '*.coffee', 'bindings/*.coffee' ]
@@ -29,22 +29,39 @@ module.exports = ( grunt ) ->
         ext: '.js'
         options:
           bare: true
+      www:
+        expand: true
+        cwd: 'www/src/coffee'
+        src: [ '*.coffee' ]
+        dest: 'www/pub/js'
+        ext: '.js'
     concat:
-      options:
+      core:
         stripBanners: true
         banner: "#{ header.banner }\n\n#{ header.js }\n"
         footer: "#{ footer.js }"
-      dist:
-        src: [
-          'tmp/dirty-check.js'
-          'tmp/router.js'
-          'tmp/main.js'
-          'tmp/bindings/base.js'
-          'tmp/bindings/*.js'
-          'tmp/parser.js'
-          'tmp/core.js'
+        cwd: 'tmp'
+        expand: true
+        src: [ 'dirty-check.js', 'router.js', 'main.js', 'bindings/base.js', 'bindings/*.js', 'parser.js', 'core.js' ]
+        dest: '../recoil.js'
+      wwwVendorJS:
+        src: [ 'www/src/vendor/js/*.js' ]
+        dest: 'www/pub/vendor/vendor.js'
+      wwwVendorCSS:
+        src: [ 'www/src/vendor/css/*.css' ]
+        dest: 'www/pub/vendor/vendor.css'
+    copy:
+      www:
+        files: [
+          { cwd: 'www/src', src: [ '*.html', 'js/*.js', 'vendor/font/**', 'views/*.html', 'img/**' ], dest: '../pub/', expand: true }
+          { src: 'recoil.js', dest: 'www/pub/js/recoil.js' }
         ]
-        dest: 'recoil.js'
+    stylus:
+      compile:
+        options:
+          paths: [ 'www/src/stylus' ]
+        files:
+          'www/pub/css/master.css': 'www/src/stylus/master.styl'
     uglify:
       options:
         mangle: false
@@ -53,8 +70,10 @@ module.exports = ( grunt ) ->
         files: 'recoil.min.js': [ 'recoil.js' ]
     watch:
       scripts:
-        files: [ 'src/*.coffee', 'src/**/*.coffee' ]
-        tasks: [ 'coffee', 'concat', 'uglify', 'clean' ]
+        files: [ 'src/*.coffee', 'src/**/*.coffee', 'www/src/**' ]
+        tasks: [ 'coffee', 'concat', 'uglify', 'copy', 'stylus', 'clean' ]
+        options:
+          livereload: 3001
     connect:
       server:
         options:
@@ -68,5 +87,7 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-connect'
+  grunt.loadNpmTasks 'grunt-contrib-stylus'
+  grunt.loadNpmTasks 'grunt-contrib-copy'
 
-  grunt.registerTask 'default', [ 'coffee', 'concat', 'uglify', 'clean' ]
+  grunt.registerTask 'default', [ 'coffee', 'concat', 'uglify', 'copy', 'stylus', 'clean' ]

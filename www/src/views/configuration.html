@@ -1,0 +1,66 @@
+<section class="column-layout">
+  <article>
+    <h1>Initialization</h1>
+    <code class="important block">
+      Recoil.init(
+      <span class="blue">:scope</span>
+      )
+    </code>
+    <dl class="important">
+      <dt>:scope</dt>
+      <dd>The initial scope of your application.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Transitions</h1>
+    <code class="important block">
+      Recoil.createTransition(
+      <span class="blue">:type</span>,
+      <span class="blue">:viewName</span>,
+      <span class="blue">:function</span> )
+    </code>
+    <dl class="important">
+      <dt>:type</dt>
+      <dd>
+        A string representing the type of transition.
+        <i>Options: [ intro, outro ]</i>
+      </dd>
+
+      <dt>:viewName</dt>
+      <dd>The name(s) of the view(s) that this transition will be applied to.</dd>
+
+      <dt>:function</dt>
+      <dd>A function that performs the transition tasks.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>View Path</h1>
+    <code class="important block">
+      Recoil.setViewPath(
+      <span class="blue">:path</span>
+      )
+    </code>
+    <dl class="important">
+      <dt>:path</dt>
+      <dd>The base path where your views are stored.</dd>
+    </dl>
+  </article>
+
+  <article>
+    <h1>Update Throttling</h1>
+    <code class="important block">
+      Recoil.setMaxUpdateFrequency(
+      <span class="blue">:frequency</span>
+      )
+    </code>
+    <dl class="important">
+      <dt>:frequency</dt>
+      <dd>
+        The maximum frequency that the global update method will be allowed to run.
+        <i>Default: 50ms</i>
+      </dd>
+    </dl>
+  </article>
+</section>
