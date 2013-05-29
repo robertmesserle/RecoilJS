@@ -71,12 +71,14 @@ class Base
 
   wrap: ->
     return unless @context.unwrapped
+    return unless @logic
     @context.unwrapped = false
     return unless $.contains( document.body, @context.$contents.get( 0 ) )
     @context.$element.insertBefore( @context.$contents ).append( @context.$contents )
 
   unwrap: ->
     return if @context.unwrapped
+    return unless @logic
     @context.unwrapped  = true
     @context.$contents = @context.$element.contents().insertAfter( @context.$element )
     @context.$element.detach()
