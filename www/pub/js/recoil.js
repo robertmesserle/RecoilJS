@@ -519,6 +519,9 @@ Base = (function() {
     if (!this.context.unwrapped) {
       return;
     }
+    if (!this.logic) {
+      return;
+    }
     this.context.unwrapped = false;
     if (!$.contains(document.body, this.context.$contents.get(0))) {
       return;
@@ -528,6 +531,9 @@ Base = (function() {
 
   Base.prototype.unwrap = function() {
     if (this.context.unwrapped) {
+      return;
+    }
+    if (!this.logic) {
       return;
     }
     this.context.unwrapped = true;
@@ -834,7 +840,7 @@ ForBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('for'))) {
       return;
     }
-    this.context.stopParsing = true;
+    this.context.skipChildren = true;
     this.getParts();
     this.getTemplate();
     this.parseItems();
@@ -1043,11 +1049,10 @@ IfBinding = (function(_super) {
 
   IfBinding.prototype.setValue = function() {
     if (this.value) {
-      delete this.context.stopParsing;
+      delete this.context.skipChildren;
       return this.context.$element.insertAfter(this.context.$placeholder);
     } else {
       this.context.stopParsing = true;
-      this.context.skipBindings = true;
       return this.context.$element.detach();
     }
   };
@@ -1087,7 +1092,6 @@ TextNode = (function(_super) {
       return;
     }
     this.context.stopParsing = true;
-    this.context.skipBindings = true;
     this.element = this.context.$element.get(0);
     this.updateValue();
     TextNode.__super__.constructor.apply(this, arguments);
@@ -1152,7 +1156,7 @@ ValueBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('value'))) {
       return;
     }
-    this.context.stopParsing = true;
+    this.context.skipChildren = true;
     this.live = this.context.$element.data('live') != null;
     this.setValue();
     if (this.context.$element.is('select')) {
@@ -1298,12 +1302,12 @@ Parser = (function() {
     _ref = this.bindings;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       binding = _ref[_i];
-      new binding(context);
-      if (context.skipBindings) {
-        break;
+      if (context.stopParsing) {
+        return;
       }
+      new binding(context);
     }
-    if (context.stopParsing) {
+    if (context.skipChildren) {
       return;
     }
     $contents = context.$contents || $element.contents();

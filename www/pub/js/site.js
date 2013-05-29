@@ -1,66 +1,15 @@
 (function() {
   define(function(require) {
-    var Recoil, SiteController;
+    var NavData, Recoil, SiteController;
 
     Recoil = require('./recoil');
+    NavData = require('./data/nav');
     return SiteController = (function() {
       SiteController.prototype.view = 'site';
 
       SiteController.prototype.activeSection = null;
 
-      SiteController.prototype.navSections = [
-        {
-          title: 'About',
-          sections: [
-            {
-              title: 'Home',
-              href: '#home',
-              icon: 'icon-home',
-              controller: require('./home')
-            }, {
-              title: 'Download',
-              href: '#download',
-              icon: 'icon-download',
-              controller: require('./download')
-            }
-          ]
-        }, {
-          title: 'Documentation',
-          sections: [
-            {
-              title: 'Data Binding',
-              href: '#data-binding',
-              icon: 'icon-random',
-              controller: require('./data-binding')
-            }, {
-              title: 'Configuration',
-              href: '#configuration',
-              icon: 'icon-cog',
-              controller: require('./configuration')
-            }
-          ]
-        }, {
-          title: 'Tutorials',
-          sections: [
-            {
-              title: 'Getting Started',
-              href: '#getting-started',
-              icon: 'icon-play',
-              controller: require('./getting-started')
-            }, {
-              title: 'Todo App',
-              href: '#tutorials/todo-app',
-              icon: 'icon-list',
-              controller: require('./todo')
-            }, {
-              title: 'Phonebook',
-              href: '#tutorials/phonebook',
-              icon: 'icon-phone',
-              controller: require('./phonebook')
-            }
-          ]
-        }
-      ];
+      SiteController.prototype.navSections = NavData;
 
       function SiteController() {
         this.setupRoutes();
