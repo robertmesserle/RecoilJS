@@ -10,9 +10,11 @@ a:active{color:#933}
 .blue{color:#4095bf}
 hr{border:none;height:1px;background:#f2f2f2}
 code{font-family:Consolas,"Liberation Mono",Courier,monospace;font-size:13px;background:#f0f0f0;color:#808080;line-height:1.5em;display:inline-block;padding:0 3px;}
-code.block{display:block;border-left:10px #ddd solid;margin:5px 0 10px;padding:7px 10px 5px;}
+code.block{display:block;border-left:10px #ddd solid;margin:5px 0 10px;padding:7px 10px;position:relative;}
 code.block.important{border-color:#4095bf}
 code.block .block{padding-left:20px}
+code.block .foreground{position:absolute;top:7px;left:10px}
+code.block .invisible{color:rgba(255,255,255,0)}
 code .string{color:#9f6060}
 code .keyword{color:#608a9f}
 code .name{color:#8a9f60}

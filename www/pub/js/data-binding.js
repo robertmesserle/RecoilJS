@@ -51,6 +51,9 @@
         if (binding.title.toLowerCase().match(term)) {
           return true;
         }
+        if (binding.syntax.toLowerCase().match(term)) {
+          return true;
+        }
         _ref = binding.args || [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           arg = _ref[_i];
@@ -61,16 +64,17 @@
       };
 
       DataBindingController.prototype.highlight = function(text) {
-        var regex, regexString;
+        var newText, regex, regexString;
 
         if (!this.searchTerm) {
-          return text;
+          return text.replace('#{', '#\\{');
         }
         regexString = this.searchTerm.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
         regex = new RegExp(regexString, 'gi');
-        return text.replace(regex, function(match) {
+        newText = text.replace(regex, function(match) {
           return "<span class=\"highlight\">" + match + "</span>";
         });
+        return newText.replace('#{', '#\\{');
       };
 
       return DataBindingController;

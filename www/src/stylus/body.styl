@@ -48,11 +48,18 @@ code
     display block
     border-left 10px #ddd solid
     margin 5px 0 10px
-    padding 7px 10px 5px
+    padding 7px 10px
+    position relative
     &.important
       border-color $blue
     .block
       padding-left 20px
+    .foreground
+      position absolute
+      top 7px
+      left 10px
+    .invisible
+      color rgba( white, 0 )
   .string
     color hsl( 0, 25%, 50% )
   .keyword
