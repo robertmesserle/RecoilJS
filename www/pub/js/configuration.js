@@ -3,23 +3,25 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var ConfigurationController, SectionController;
+    var ConfigurationController, Data, DocumentationController, _ref;
 
-    SectionController = require('./section-controller');
+    DocumentationController = require('./documentation');
+    Data = require('./data/configuration');
     return ConfigurationController = (function(_super) {
       __extends(ConfigurationController, _super);
 
-      ConfigurationController.prototype.view = 'configuration';
-
-      ConfigurationController.prototype.category = 'Documentation';
+      function ConfigurationController() {
+        _ref = ConfigurationController.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
 
       ConfigurationController.prototype.title = 'Configuration';
 
-      function ConfigurationController() {}
+      ConfigurationController.prototype.bindings = Data;
 
       return ConfigurationController;
 
-    })(SectionController);
+    })(DocumentationController);
   });
 
 }).call(this);

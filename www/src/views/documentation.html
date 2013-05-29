@@ -1,0 +1,16 @@
+<section class="column-layout" data-for="binding in bindings">
+  <article data-visible="test binding">
+    <h1 data-html="highlight binding.title"></h1>
+    <code class="important block">
+      <div class="invisible" data-html="highlight binding.syntax"></div>
+      <div class="foreground" data-html="formatSyntax binding"></div>
+    </code>
+    <dl class="important" data-for="arg in binding.args" data-if="binding.args">
+      <dt data-html="highlight arg.name"></dt>
+      <dd data-html="arg.html"></dd>
+    </dl>
+    <div class="notes" data-for="p in binding.p" data-if="binding.p">
+      <p data-html="p"></p>
+    </div>
+  </article>
+</section>
