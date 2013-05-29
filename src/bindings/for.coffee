@@ -2,7 +2,7 @@ class ForBinding extends Base
 
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'for' )
-    @context.stopParsing = true
+    @context.skipChildren = true
     @getParts()
     @getTemplate()
     @parseItems()

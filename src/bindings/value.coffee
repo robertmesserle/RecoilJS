@@ -2,7 +2,7 @@ class ValueBinding extends Base
 
   constructor: ( @context  ) ->
     return unless @binding = @context.$element.data( 'value' )
-    @context.stopParsing = true
+    @context.skipChildren = true
     @live = @context.$element.data( 'live' )?
     @setValue()
     @updateHandler() if @context.$element.is( 'select' )

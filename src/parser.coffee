@@ -12,10 +12,10 @@ class Parser
     context.$element = $element
 
     for binding in @bindings
+      return if context.stopParsing
       new binding context
-      break if context.skipBindings
 
-    return if context.stopParsing
+    return if context.skipChildren
 
     $contents = context.$contents or $element.contents()
     $contents.each ( index, element ) =>

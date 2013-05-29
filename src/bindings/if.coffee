@@ -8,11 +8,10 @@ class IfBinding extends Base
 
   setValue: ->
     if @value
-      delete @context.stopParsing
+      delete @context.skipChildren
       @context.$element.insertAfter( @context.$placeholder )
     else
-      @context.stopParsing    = true
-      @context.skipBindings   = true
+      @context.stopParsing = true
       @context.$element.detach()
 
   update: ->
