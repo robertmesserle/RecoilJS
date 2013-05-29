@@ -1,4 +1,4 @@
-<nav>
+<nav class="primary">
   <header>RecoilJS</header>
   <section data-for="category in navSections">
     <h1>
@@ -15,9 +15,9 @@
 <section id="main-content">
   <header>
     <h1>#{ activeSection.category } // <span class="blue">#{ activeSection.title }</span></h1>
-    <div class="search-wrapper">
+    <div class="search-wrapper" data-if="activeSection.searchEnabled">
       <i class="icon-search"></i>
-      <input type="text" class="search" placeholder="Search..." />
+      <input type="text" class="search" placeholder="Search..." data-value="activeSection.searchTerm" data-live/>
     </div>
   </header>
   <div class="section-wrapper" data-compose="activeSection"></div>

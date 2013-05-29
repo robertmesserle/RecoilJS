@@ -1,9 +1,9 @@
 <section class="column-layout" data-for="binding in bindings">
-  <article>
-    <h1>#{ binding.title }</h1>
-    <code class="important block" data-html="formatSyntax( binding )"></code>
+  <article data-visible="test binding">
+    <h1 data-html="highlight binding.title"></h1>
+    <code class="important block" data-html="formatSyntax binding"></code>
     <dl class="important" data-for="arg in binding.args" data-if="binding.args">
-      <dt>#{ arg.name }</dt>
+      <dt data-html="highlight arg.name"></dt>
       <dd data-html="arg.html"></dd>
     </dl>
   </article>

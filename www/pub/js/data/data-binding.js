@@ -73,7 +73,7 @@
         args: [
           {
             name: ':condition',
-            'An expression that will be run to determine whether or not to render the element.': 'An expression that will be run to determine whether or not to render the element.'
+            html: 'An expression that will be run to determine whether or not to render the element.'
           }
         ]
       }, {

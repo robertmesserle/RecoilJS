@@ -59,6 +59,7 @@ module.exports = ( grunt ) ->
       compile:
         options:
           paths: [ 'www/src/stylus' ]
+          import: [ 'nib' ]
         files:
           'www/pub/css/master.css': 'www/src/stylus/master.styl'
     uglify:

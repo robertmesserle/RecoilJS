@@ -50,7 +50,7 @@ define ( require ) -> [
     title: 'If Binding'
     syntax: 'data-if=":condition"'
     args: [
-      { name: ':condition', 'An expression that will be run to determine whether or not to render the element.' }
+      { name: ':condition', html: 'An expression that will be run to determine whether or not to render the element.' }
     ]
   }
   {

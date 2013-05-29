@@ -1,18 +1,16 @@
 class IfBinding extends Base
 
+  if: true
+
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'if' )
-    @update()
-    @insertPlaceholder()
     super
+    @update()
 
   setValue: ->
-    if @value
-      delete @context.skipChildren
-      @context.$element.insertAfter( @context.$placeholder )
-    else
-      @context.stopParsing = true
-      @context.$element.detach()
+    @context.stopParsing = not @value
+    if @value then @context.$element.insertAfter( @context.$placeholder )
+    else @context.$element.detach()
 
   update: ->
     value = !! @parseBinding @binding

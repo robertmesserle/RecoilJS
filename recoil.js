@@ -392,7 +392,7 @@ var Base;
 Base = (function() {
   function Base() {
     this.logic = this.context.$element.data('logic') != null;
-    if (this.logic) {
+    if (this.logic || this["if"]) {
       this.insertPlaceholder();
     }
     if (this.update) {
@@ -1037,22 +1037,22 @@ var IfBinding,
 IfBinding = (function(_super) {
   __extends(IfBinding, _super);
 
+  IfBinding.prototype["if"] = true;
+
   function IfBinding(context) {
     this.context = context;
     if (!(this.binding = this.context.$element.data('if'))) {
       return;
     }
-    this.update();
-    this.insertPlaceholder();
     IfBinding.__super__.constructor.apply(this, arguments);
+    this.update();
   }
 
   IfBinding.prototype.setValue = function() {
+    this.context.stopParsing = !this.value;
     if (this.value) {
-      delete this.context.skipChildren;
       return this.context.$element.insertAfter(this.context.$placeholder);
     } else {
-      this.context.stopParsing = true;
       return this.context.$element.detach();
     }
   };
@@ -1156,6 +1156,7 @@ ValueBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('value'))) {
       return;
     }
+    console.log('how did it get here?');
     this.context.skipChildren = true;
     this.live = this.context.$element.data('live') != null;
     this.setValue();
@@ -1329,9 +1330,9 @@ Core = (function() {
   function Core($element, controller) {
     this.$element = $element;
     this.controller = controller;
-    this.afterRender = __bind(this.afterRender, this);
+    this.addComposition = __bind(this.addComposition, this);
     this.checkForLogicTags();
-    this.afterRender();
+    this.addComposition();
   }
 
   Core.prototype.checkForLogicTags = function() {
@@ -1348,7 +1349,7 @@ Core = (function() {
     return this.$element.html(html);
   };
 
-  Core.prototype.afterRender = function() {
+  Core.prototype.addComposition = function() {
     if (this.controller.view) {
       this.$element.data('compose', '$scope');
     }

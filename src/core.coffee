@@ -2,7 +2,7 @@ class Core
 
   constructor: ( @$element, @controller ) ->
     @checkForLogicTags()
-    @afterRender()
+    @addComposition()
 
   checkForLogicTags: ->
     html = @$element.html()
@@ -11,7 +11,7 @@ class Core
     html = html.replace /<!--\$-->/g, '</div>'
     @$element.html html
 
-  afterRender: =>
+  addComposition: =>
     if @controller.view
       @$element.data( 'compose', '$scope' )
     new Parser $element: @$element, scope: @controller, root: @controller
