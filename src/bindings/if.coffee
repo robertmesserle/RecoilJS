@@ -6,10 +6,15 @@ class IfBinding extends Base
     return unless @binding = @context.$element.data( 'if' )
     super
     @update()
-
+    # Define child parser if initial value is false
+    unless @value then @parseChildren = ->
+      new Parser $.extend {}, @context, $element: @context.$element.contents()
+      delete @parseChildren
   setValue: ->
     @context.stopParsing = not @value
-    if @value then @context.$element.insertAfter( @context.$placeholder )
+    if @value
+      @context.$element.insertAfter( @context.$placeholder )
+      @parseChildren?()
     else @context.$element.detach()
 
   update: ->
