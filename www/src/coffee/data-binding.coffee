@@ -23,10 +23,6 @@ define ( require ) ->
       syntax = syntax.replace( '#{', '#\\{' )
       return syntax
 
-    search: =>
-      return @bindings unless @searchTerm
-      for binding in @bindings when @test binding then binding
-
     test: ( binding ) =>
       term = @searchTerm.toLowerCase()
       return true unless @searchTerm

@@ -26,7 +26,6 @@
       function DataBindingController() {
         this.highlight = __bind(this.highlight, this);
         this.test = __bind(this.test, this);
-        this.search = __bind(this.search, this);
       }
 
       DataBindingController.prototype.formatSyntax = function(binding) {
@@ -40,23 +39,6 @@
         }
         syntax = syntax.replace('#{', '#\\{');
         return syntax;
-      };
-
-      DataBindingController.prototype.search = function() {
-        var binding, _i, _len, _ref, _results;
-
-        if (!this.searchTerm) {
-          return this.bindings;
-        }
-        _ref = this.bindings;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          binding = _ref[_i];
-          if (this.test(binding)) {
-            _results.push(binding);
-          }
-        }
-        return _results;
       };
 
       DataBindingController.prototype.test = function(binding) {
