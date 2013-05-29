@@ -36,7 +36,6 @@ class ComposeBinding extends Base
     if @controller isnt controller or @view isnt view
       @controller = controller
       @view = view
-      callback = =>
-        @loadView()
+      callback = => @loadView()
       outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       outro?( @context.$element, callback ) or callback()

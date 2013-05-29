@@ -537,8 +537,10 @@ Base = (function() {
       return;
     }
     this.context.unwrapped = false;
-    this.context.$contents.eq(0).before(this.context.$element);
-    return this.context.$element.append(this.context.$contents);
+    if (!$.contains(document.body, this.context.$contents.get(0))) {
+      return;
+    }
+    return this.context.$element.insertBefore(this.context.$contents).append(this.context.$contents);
   };
 
   Base.prototype.unwrap = function() {
@@ -965,7 +967,6 @@ ForBinding = (function(_super) {
   ForBinding.prototype.checkForChanges = function(collection) {
     var index, item, _i, _len, _ref;
 
-    return true;
     if (!this.collection) {
       return true;
     }

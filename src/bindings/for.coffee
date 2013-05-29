@@ -58,7 +58,6 @@ class ForBinding extends Base
     super str, args
 
   checkForChanges: ( collection ) =>
-    return true
     return true unless @collection
     return true unless collection.length is @collection.length
     for item, index in collection or []
