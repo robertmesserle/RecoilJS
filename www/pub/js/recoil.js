@@ -1046,12 +1046,21 @@ IfBinding = (function(_super) {
     }
     IfBinding.__super__.constructor.apply(this, arguments);
     this.update();
+    if (!this.value) {
+      this.parseChildren = function() {
+        new Parser($.extend({}, this.context, {
+          $element: this.context.$element.contents()
+        }));
+        return delete this.parseChildren;
+      };
+    }
   }
 
   IfBinding.prototype.setValue = function() {
     this.context.stopParsing = !this.value;
     if (this.value) {
-      return this.context.$element.insertAfter(this.context.$placeholder);
+      this.context.$element.insertAfter(this.context.$placeholder);
+      return typeof this.parseChildren === "function" ? this.parseChildren() : void 0;
     } else {
       return this.context.$element.detach();
     }
