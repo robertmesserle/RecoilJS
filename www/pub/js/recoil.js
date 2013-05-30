@@ -167,12 +167,22 @@ BaseModel = (function() {
     if (data == null) {
       data = {};
     }
+    this.storeInstance();
     this.unwrapProps();
     this.parseData(data);
     if (typeof this.initialize === "function") {
       this.initialize(data);
     }
   }
+
+  BaseModel.prototype.storeInstance = function() {
+    var _base, _ref;
+
+    if ((_ref = (_base = this.constructor).instances) == null) {
+      _base.instances = [];
+    }
+    return this.constructor.instances.push(this);
+  };
 
   BaseModel.prototype.unwrapProps = function() {
     var $props, key, prop, _ref;
@@ -241,6 +251,8 @@ var Model,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Model = (function() {
+  Model.models = [];
+
   function Model(meta) {
     var _ref;
 
@@ -257,6 +269,7 @@ Model = (function() {
 
     })(BaseModel);
     this.attachMeta();
+    this.constructor.models.push(this.model);
     return this.model;
   }
 

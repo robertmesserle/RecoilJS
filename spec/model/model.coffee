@@ -12,6 +12,19 @@ describe 'Recoil.Model', ->
   it 'should exist', ->
     expect( Recoil.Model? ).toBe true
 
+  it 'should be stored in global models list', ->
+    expect( Recoil.Model.models ).not.toBe( null )
+    expect( Recoil.Model.models instanceof Array ).toBe( true )
+    expect( Recoil.Model.models.length ).toBe( 1 )
+    expect( Recoil.Model.models[ 0 ] ).toBe( Person )
+
+  it 'should store instances in static property "instances"', ->
+    expect( Person.instances? ).toBe( false )
+    person = new Person
+    expect( Person.instances? ).toBe( true )
+    expect( Person.instances.length ).toBe( 1 )
+    expect( Person.instances[ 0 ] ).toBe( person )
+
   it 'should work without any data', ->
     person = new Person
     expect( person? ).toBe true
