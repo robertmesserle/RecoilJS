@@ -1043,6 +1043,7 @@ HTMLBinding = (function(_super) {
 })(Base);
 
 var IfBinding,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1052,44 +1053,50 @@ IfBinding = (function(_super) {
   IfBinding.prototype["if"] = true;
 
   function IfBinding(context) {
-    var _this = this;
-
     this.context = context;
+    this.reparse = __bind(this.reparse, this);
     if (!(this.binding = this.context.$element.data('if'))) {
       return;
     }
     IfBinding.__super__.constructor.apply(this, arguments);
-    this.update();
-    if (!this.value) {
-      this.reparse = function() {
-        var index;
-
-        index = Recoil.bindings.read.indexOf(_this);
-        Recoil.bindings.read.splice(index, 1);
-        new Parser(_this.context);
-        return delete _this.reparse;
-      };
-    }
+    this.update(false);
   }
 
-  IfBinding.prototype.setValue = function() {
+  IfBinding.prototype.reparse = function() {
+    var index;
+
+    index = Recoil.bindings.read.indexOf(this);
+    Recoil.bindings.read.splice(index, 1);
+    new Parser(this.context);
+    return delete this.reparse;
+  };
+
+  IfBinding.prototype.setValue = function(reparse) {
+    if (reparse == null) {
+      reparse = false;
+    }
     this.context.stopParsing = !this.value;
     if (this.value) {
       this.context.$element.insertAfter(this.context.$placeholder);
-      return typeof this.reparse === "function" ? this.reparse() : void 0;
+      if (reparse) {
+        return this.reparse();
+      }
     } else {
       return this.context.$element.detach();
     }
   };
 
-  IfBinding.prototype.update = function() {
+  IfBinding.prototype.update = function(reparse) {
     var value;
 
+    if (reparse == null) {
+      reparse = true;
+    }
     value = !!this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
       this.wrap();
-      this.setValue();
+      this.setValue(reparse);
       return this.unwrap();
     }
   };
