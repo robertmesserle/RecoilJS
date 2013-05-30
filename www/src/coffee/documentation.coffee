@@ -10,7 +10,16 @@ define ( require ) ->
     searchEnabled: true
     searchTerm: ''
 
+    listStyle: 'tile'
+
     constructor: ->
+
+    handleListButton: ( $element, style ) =>
+      console.log $element.get( 0 ), style, @listStyle
+      if style is @listStyle
+        $element.attr( 'disabled', true ).addClass( 'selected' )
+      else
+        $element.attr( 'disabled', false ).removeClass( 'selected' )
 
     formatSyntax: ( binding ) ->
       syntax = binding.syntax

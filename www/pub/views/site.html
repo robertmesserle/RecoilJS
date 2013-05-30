@@ -15,10 +15,18 @@
 <section id="main-content">
   <header data-if="activeSection?">
     <h1>#{ activeSection.category } // <span class="blue">#{ activeSection.title }</span></h1>
-    <div class="search-wrapper" data-if="activeSection.searchEnabled">
-      <i class="icon-search"></i>
-      <input type="text" class="search" placeholder="Search..." data-value="activeSection.searchTerm" data-live/>
-    </div>
+    <nav class="toolbar">
+      <button data-if="activeSection.handleListButton" data-update="activeSection.handleListButton( $element, 'list' )" data-click="activeSection.listStyle = 'list'">
+        <i class="icon-list"></i> List View
+      </button>
+      <button data-if="activeSection.handleListButton" data-update="activeSection.handleListButton( $element, 'tile' )" data-click="activeSection.listStyle = 'tile'">
+        <i class="icon-th-large"></i> Tile View
+      </button>
+      <div class="search-wrapper" data-if="activeSection.searchEnabled?">
+        <i class="icon-search"></i>
+        <input type="text" class="search" placeholder="Search..." data-value="activeSection.searchTerm" data-live/>
+      </div>
+    </nav>
   </header>
   <div class="section-wrapper" data-compose="activeSection"></div>
 </section>

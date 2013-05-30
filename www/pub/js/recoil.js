@@ -1137,20 +1137,19 @@ UpdateBinding = (function(_super) {
   __extends(UpdateBinding, _super);
 
   function UpdateBinding(context) {
-    var binding, csString;
-
     this.context = context;
-    if (!(binding = this.context.$element.data('update'))) {
+    if (!(this.binding = this.context.$element.data('update'))) {
       return;
     }
-    csString = "-> " + binding;
-    this.func = this.parseBinding(csString);
-    this.func();
+    this.csString = "-> " + this.binding;
+    this.parseBinding(this.csString)();
     UpdateBinding.__super__.constructor.apply(this, arguments);
   }
 
   UpdateBinding.prototype.update = function() {
-    return this.func();
+    try {
+      return this.parseBinding(this.csString)();
+    } catch (_error) {}
   };
 
   return UpdateBinding;
@@ -1294,7 +1293,7 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
-  Parser.prototype.bindings = [TextNode, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, IfBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
+  Parser.prototype.bindings = [TextNode, IfBinding, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
 
   function Parser(context) {
     var _this = this;

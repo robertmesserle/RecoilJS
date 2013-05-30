@@ -1,4 +1,4 @@
-<section class="column-layout" data-for="binding in bindings">
+<section class="#{ if listStyle is 'tile' then 'column-layout' else '' }" data-for="binding in bindings">
   <article data-visible="test binding">
     <h1 data-html="highlight binding.title"></h1>
     <code class="important block">

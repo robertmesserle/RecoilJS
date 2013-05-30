@@ -18,10 +18,22 @@
 
       DataBindingController.prototype.searchTerm = '';
 
+      DataBindingController.prototype.listStyle = 'tile';
+
       function DataBindingController() {
         this.highlight = __bind(this.highlight, this);
         this.test = __bind(this.test, this);
+        this.handleListButton = __bind(this.handleListButton, this);
       }
+
+      DataBindingController.prototype.handleListButton = function($element, style) {
+        console.log($element.get(0), style, this.listStyle);
+        if (style === this.listStyle) {
+          return $element.attr('disabled', true).addClass('selected');
+        } else {
+          return $element.attr('disabled', false).removeClass('selected');
+        }
+      };
 
       DataBindingController.prototype.formatSyntax = function(binding) {
         var arg, syntax, _i, _len, _ref;
