@@ -160,6 +160,71 @@ DirtyCheck = (function() {
 
 })();
 
+var BaseModel;
+
+BaseModel = (function() {
+  function BaseModel(data) {
+    if (data == null) {
+      data = {};
+    }
+    this.unwrapProps();
+    this.parseData(data);
+  }
+
+  BaseModel.prototype.unwrapProps = function() {
+    var key, prop, propObj, _ref, _results;
+
+    this._props = {};
+    _ref = this.props || {};
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      propObj = this._props[key] = new Property(prop);
+      _results.push(this[key] = propObj.value);
+    }
+    return _results;
+  };
+
+  BaseModel.prototype.parseData = function(data) {
+    var key, value, _results;
+
+    _results = [];
+    for (key in data) {
+      value = data[key];
+      this[key] = value;
+      _results.push(this._props[key].value = value);
+    }
+    return _results;
+  };
+
+  BaseModel.prototype.revert = function() {
+    var key, prop, _ref, _results;
+
+    _ref = this._props;
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push(this[key] = prop.value);
+    }
+    return _results;
+  };
+
+  BaseModel.prototype.save = function() {
+    var key, prop, _ref, _results;
+
+    _ref = this._props;
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push(prop.value = this[key]);
+    }
+    return _results;
+  };
+
+  return BaseModel;
+
+})();
+
 var Collection;
 
 Collection = (function() {
@@ -174,74 +239,33 @@ var Model,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Model = (function() {
-  Model.property = function(data) {
-    return new Property(data);
-  };
+  function Model(meta) {
+    var _ref;
 
-  Model.create = function(data) {
-    var RecoilModel, key, prop, _ref;
+    this.meta = meta != null ? meta : {};
+    this.model = (function(_super) {
+      __extends(model, _super);
 
-    if (data == null) {
-      data = {};
-    }
-    RecoilModel = (function(_super) {
-      __extends(RecoilModel, _super);
-
-      function RecoilModel() {
-        _ref = RecoilModel.__super__.constructor.apply(this, arguments);
+      function model() {
+        _ref = model.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
-      return RecoilModel;
+      return model;
 
-    })(Model);
-    for (key in data) {
-      prop = data[key];
-      RecoilModel.prototype[key] = prop;
-    }
-    return RecoilModel;
-  };
-
-  function Model(data) {
-    this.bindDefaultProps();
+    })(BaseModel);
+    this.attachMeta();
+    return this.model;
   }
 
-  Model.prototype.bindDefaultProps = function() {
-    var key, prop, _results;
+  Model.prototype.attachMeta = function() {
+    var key, value, _ref, _results;
 
-    this.props = {};
-    _results = [];
-    for (key in this) {
-      prop = this[key];
-      if (!(prop instanceof Property)) {
-        continue;
-      }
-      this.props[key] = prop;
-      _results.push(this[key] = prop.value);
-    }
-    return _results;
-  };
-
-  Model.prototype.revert = function() {
-    var key, prop, _ref, _results;
-
-    _ref = this.data;
+    _ref = this.meta;
     _results = [];
     for (key in _ref) {
-      prop = _ref[key];
-      _results.push(this[key] = prop.value);
-    }
-    return _results;
-  };
-
-  Model.prototype.save = function() {
-    var key, prop, _ref, _results;
-
-    _ref = this.data;
-    _results = [];
-    for (key in _ref) {
-      prop = _ref[key];
-      _results.push(prop.val = this[key]);
+      value = _ref[key];
+      _results.push(this.model.prototype[key] = value);
     }
     return _results;
   };
@@ -422,26 +446,6 @@ Recoil = (function() {
   Recoil.Collection = Collection;
 
   Recoil.Model = Model;
-
-  Recoil.createModel = function() {
-    return Model.create.apply(Model, arguments);
-  };
-
-  Recoil.createProperty = function() {
-    return (function(func, args, ctor) {
-      ctor.prototype = func.prototype;
-      var child = new ctor, result = func.apply(child, args);
-      return Object(result) === result ? result : child;
-    })(Property, arguments, function(){});
-  };
-
-  Recoil.createCollection = function() {
-    return (function(func, args, ctor) {
-      ctor.prototype = func.prototype;
-      var child = new ctor, result = func.apply(child, args);
-      return Object(result) === result ? result : child;
-    })(Collection, arguments, function(){});
-  };
 
   Recoil.mapRoute = function() {
     var _ref;

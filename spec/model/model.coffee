@@ -1,42 +1,61 @@
 describe 'Recoil.Model', ->
 
-  performTests = ( Person ) ->
+  Person = new Recoil.Model( {
+    props:
+      fname:  type: String, default: 'John'
+      lname:  type: String, default: 'Doe'
+      age:    type: Number
+      gender: type: Boolean, default: true
+    getFullName: -> "#{ @fname } #{ @lname }"
+  } )
 
-    it 'should exist', ->
-      expect( Recoil.Model? ).toBe true
+  it 'should exist', ->
+    expect( Recoil.Model? ).toBe true
 
-    it 'should work without any data', ->
-      person = new Person
-      expect( person? ).toBe true
-      expect( person.fname ).toBe 'John'
-      expect( person.lname ).toBe 'Doe'
-      expect( person.age ).toBe( null )
-      expect( person.gender ).toBe( true )
+  it 'should work without any data', ->
+    person = new Person
+    expect( person? ).toBe true
+    expect( person.fname ).toBe 'John'
+    expect( person.lname ).toBe 'Doe'
+    expect( person.age ).toBe( null )
+    expect( person.gender ).toBe( true )
 
-    it 'should support functions', ->
-      person = new Person
-      expect( person.getFullName() ).toBe( 'John Doe' )
+  it 'should support functions', ->
+    person = new Person
+    expect( person.getFullName() ).toBe( 'John Doe' )
 
-  describe 'CoffeeScript Syntax', ->
+  it 'should support setting values', ->
+    person = new Person fname: 'Robert', lname: 'Messerle', age: 23, gender: true
+    expect( person.getFullName() ).toBe( 'Robert Messerle' )
+    expect( person.age ).toBe( 23 )
+    expect( person.gender ).toBe( true )
 
-    class Person extends Recoil.Model
-      fname:  @property type: String, default: 'John'
-      lname:  @property type: String, default: 'Doe'
-      age:    @property type: Number
-      gender: @property type: Boolean, default: true
+  it 'should support reverting', ->
+    person = new Person fname: 'Robert', lname: 'Messerle', age: 23, gender: true
+    person.fname = 'John'
+    person.lname = 'Doe'
+    person.age = 18
+    person.gender = false
+    person.revert()
+    expect( person.getFullName() ).toBe( 'Robert Messerle' )
+    expect( person.age ).toBe( 23 )
+    expect( person.gender ).toBe( true )
 
-      getFullName: -> "#{ @fname } #{ @lname }"
-
-    performTests( Person )
-
-  describe 'JavaScript Syntax', ->
-
-    Person = Recoil.createModel( {
-      fname: Recoil.createProperty type: String, default: 'John'
-      lname: Recoil.createProperty type: String, default: 'Doe'
-      age:   Recoil.createProperty type: Number
-      gender:Recoil.createProperty type: Boolean, default: true
-      getFullName: -> "#{ @fname } #{ @lname }"
-    } )
-
-    performTests( Person )
+  it 'should support saving', ->
+    person = new Person
+    expect( person.getFullName() ).toBe( 'John Doe' )
+    expect( person.age ).toBe( null )
+    expect( person.gender ).toBe( true )
+    # Overwrite values
+    person.fname = 'Jane'
+    person.age = 18
+    person.gender = false
+    expect( person.getFullName() ).toBe( 'Jane Doe' )
+    expect( person.age ).toBe( 18 )
+    expect( person.gender ).toBe( false )
+    # Save, then revert - revert should not do anything
+    person.save()
+    person.revert()
+    expect( person.getFullName() ).toBe( 'Jane Doe' )
+    expect( person.age ).toBe( 18 )
+    expect( person.gender ).toBe( false )
