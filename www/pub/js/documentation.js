@@ -27,7 +27,6 @@
       }
 
       DataBindingController.prototype.handleListButton = function($element, style) {
-        console.log($element.get(0), style, this.listStyle);
         if (style === this.listStyle) {
           return $element.attr('disabled', true).addClass('selected');
         } else {

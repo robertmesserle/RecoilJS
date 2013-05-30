@@ -15,7 +15,6 @@ define ( require ) ->
     constructor: ->
 
     handleListButton: ( $element, style ) =>
-      console.log $element.get( 0 ), style, @listStyle
       if style is @listStyle
         $element.attr( 'disabled', true ).addClass( 'selected' )
       else
