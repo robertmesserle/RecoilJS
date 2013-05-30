@@ -10,7 +10,7 @@ define ( require ) ->
     searchEnabled: true
     searchTerm: ''
 
-    listStyle: 'tile'
+    listStyle: 'list'
 
     constructor: ->
 

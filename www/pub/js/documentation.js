@@ -18,7 +18,7 @@
 
       DataBindingController.prototype.searchTerm = '';
 
-      DataBindingController.prototype.listStyle = 'tile';
+      DataBindingController.prototype.listStyle = 'list';
 
       function DataBindingController() {
         this.highlight = __bind(this.highlight, this);
