@@ -1,7 +1,7 @@
 describe 'Recoil.Model', ->
 
   Person = new Recoil.Model( {
-    props:
+    $props:
       fname:  type: String, default: 'John'
       lname:  type: String, default: 'Doe'
       age:    type: Number

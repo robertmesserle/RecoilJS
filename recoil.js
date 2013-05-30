@@ -169,20 +169,22 @@ BaseModel = (function() {
     }
     this.unwrapProps();
     this.parseData(data);
+    if (typeof this.initialize === "function") {
+      this.initialize(data);
+    }
   }
 
   BaseModel.prototype.unwrapProps = function() {
-    var key, prop, propObj, _ref, _results;
+    var $props, key, prop, _ref;
 
-    this._props = {};
-    _ref = this.props || {};
-    _results = [];
+    $props = {};
+    _ref = this.$props;
     for (key in _ref) {
       prop = _ref[key];
-      propObj = this._props[key] = new Property(prop);
-      _results.push(this[key] = propObj.value);
+      $props[key] = new Property(prop);
+      this[key] = $props[key].value;
     }
-    return _results;
+    return this.$props = $props;
   };
 
   BaseModel.prototype.parseData = function(data) {
@@ -192,7 +194,7 @@ BaseModel = (function() {
     for (key in data) {
       value = data[key];
       this[key] = value;
-      _results.push(this._props[key].value = value);
+      _results.push(this.$props[key].value = value);
     }
     return _results;
   };
@@ -200,7 +202,7 @@ BaseModel = (function() {
   BaseModel.prototype.revert = function() {
     var key, prop, _ref, _results;
 
-    _ref = this._props;
+    _ref = this.$props;
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
@@ -212,7 +214,7 @@ BaseModel = (function() {
   BaseModel.prototype.save = function() {
     var key, prop, _ref, _results;
 
-    _ref = this._props;
+    _ref = this.$props;
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
