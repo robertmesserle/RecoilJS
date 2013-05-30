@@ -20,15 +20,25 @@
         title: 'Documentation',
         sections: [
           {
-            title: 'Data Binding',
-            href: '#data-binding',
-            icon: 'icon-random',
-            controller: require('../data-binding')
-          }, {
             title: 'Configuration',
             href: '#configuration',
             icon: 'icon-cog',
             controller: require('../configuration')
+          }, {
+            title: 'Data Binding',
+            href: '#data-binding',
+            icon: 'icon-exchange',
+            controller: require('../data-binding')
+          }, {
+            title: 'Model',
+            href: '#model',
+            icon: 'icon-book',
+            controller: require('../model')
+          }, {
+            title: 'Router',
+            href: '#router',
+            icon: 'icon-random',
+            controller: require('../router')
           }
         ]
       }, {

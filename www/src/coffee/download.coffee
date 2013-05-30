@@ -1,6 +1,6 @@
 define ( require ) ->
 
-  SectionController = require './section-controller'
+  SectionController = require './section'
 
   class DownloadController extends SectionController
 

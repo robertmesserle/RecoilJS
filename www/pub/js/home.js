@@ -5,7 +5,7 @@
   define(function(require) {
     var HomeController, SectionController;
 
-    SectionController = require('./section-controller');
+    SectionController = require('./section');
     return HomeController = (function(_super) {
       __extends(HomeController, _super);
 

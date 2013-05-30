@@ -5,7 +5,7 @@
   define(function(require) {
     var GettingStartedController, SectionController;
 
-    SectionController = require('./section-controller');
+    SectionController = require('./section');
     return GettingStartedController = (function(_super) {
       __extends(GettingStartedController, _super);
 

@@ -5,7 +5,7 @@
   define(function(require) {
     var DownloadController, SectionController;
 
-    SectionController = require('./section-controller');
+    SectionController = require('./section');
     return DownloadController = (function(_super) {
       __extends(DownloadController, _super);
 

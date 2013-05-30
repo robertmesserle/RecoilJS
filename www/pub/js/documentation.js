@@ -6,7 +6,7 @@
   define(function(require) {
     var DataBindingController, SectionController;
 
-    SectionController = require('./section-controller');
+    SectionController = require('./section');
     return DataBindingController = (function(_super) {
       __extends(DataBindingController, _super);
 

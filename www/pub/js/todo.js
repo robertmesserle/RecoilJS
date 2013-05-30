@@ -5,7 +5,7 @@
   define(function(require) {
     var SectionController, TodoController;
 
-    SectionController = require('./section-controller');
+    SectionController = require('./section');
     return TodoController = (function(_super) {
       __extends(TodoController, _super);
 
