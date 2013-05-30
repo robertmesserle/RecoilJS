@@ -4,7 +4,7 @@ class ComposeBinding extends Base
     return unless @binding = @context.$element.data( 'compose' )
     @controller   = @parseBinding @binding if @binding
     @view         = @context.$element.data( 'view' ) or @controller?.view
-    @loadView()
+    @loadView() if @view
     super
 
   loadView: ->
@@ -33,8 +33,8 @@ class ComposeBinding extends Base
     controller = @parseBinding @binding if @binding
     view = @context.$element.data( 'view' ) or controller?.view
     if @controller isnt controller or @view isnt view
+      outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       @controller = controller
       @view = view
       callback = => @loadView()
-      outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       outro?( @context.$element, callback ) or callback()

@@ -619,7 +619,9 @@ ComposeBinding = (function(_super) {
       this.controller = this.parseBinding(this.binding);
     }
     this.view = this.context.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
-    this.loadView();
+    if (this.view) {
+      this.loadView();
+    }
     ComposeBinding.__super__.constructor.apply(this, arguments);
   }
 
@@ -681,12 +683,12 @@ ComposeBinding = (function(_super) {
     }
     view = this.context.$element.data('view') || (controller != null ? controller.view : void 0);
     if (this.controller !== controller || this.view !== view) {
+      outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       this.controller = controller;
       this.view = view;
       callback = function() {
         return _this.loadView();
       };
-      outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       return (typeof outro === "function" ? outro(this.context.$element, callback) : void 0) || callback();
     }
   };
@@ -1040,6 +1042,8 @@ IfBinding = (function(_super) {
   IfBinding.prototype["if"] = true;
 
   function IfBinding(context) {
+    var _this = this;
+
     this.context = context;
     if (!(this.binding = this.context.$element.data('if'))) {
       return;
@@ -1047,11 +1051,13 @@ IfBinding = (function(_super) {
     IfBinding.__super__.constructor.apply(this, arguments);
     this.update();
     if (!this.value) {
-      this.parseChildren = function() {
-        new Parser($.extend({}, this.context, {
-          $element: this.context.$element.contents()
-        }));
-        return delete this.parseChildren;
+      this.reparse = function() {
+        var index;
+
+        index = Recoil.bindings.read.indexOf(_this);
+        Recoil.bindings.read.splice(index, 1);
+        new Parser(_this.context);
+        return delete _this.reparse;
       };
     }
   }
@@ -1060,7 +1066,7 @@ IfBinding = (function(_super) {
     this.context.stopParsing = !this.value;
     if (this.value) {
       this.context.$element.insertAfter(this.context.$placeholder);
-      return typeof this.parseChildren === "function" ? this.parseChildren() : void 0;
+      return typeof this.reparse === "function" ? this.reparse() : void 0;
     } else {
       return this.context.$element.detach();
     }
@@ -1165,7 +1171,6 @@ ValueBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('value'))) {
       return;
     }
-    console.log('how did it get here?');
     this.context.skipChildren = true;
     this.live = this.context.$element.data('live') != null;
     this.setValue();
@@ -1307,7 +1312,13 @@ Parser = (function() {
     var $contents, binding, context, _i, _len, _ref,
       _this = this;
 
-    context = $.extend({}, this.context);
+    context = {
+      $element: $element,
+      scope: this.context.scope,
+      parent: this.context.parent,
+      root: this.context.root,
+      extras: this.context.extras
+    };
     context.$element = $element;
     _ref = this.bindings;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {

@@ -7,14 +7,17 @@ class IfBinding extends Base
     super
     @update()
     # Define child parser if initial value is false
-    unless @value then @parseChildren = ->
-      new Parser $.extend {}, @context, $element: @context.$element.contents()
-      delete @parseChildren
+    unless @value then @reparse = =>
+      # Remove binding from global list
+      index = Recoil.bindings.read.indexOf( this )
+      Recoil.bindings.read.splice( index, 1 )
+      new Parser @context
+      delete @reparse
   setValue: ->
     @context.stopParsing = not @value
     if @value
       @context.$element.insertAfter( @context.$placeholder )
-      @parseChildren?()
+      @reparse?()
     else @context.$element.detach()
 
   update: ->

@@ -13,7 +13,7 @@
 </nav>
 
 <section id="main-content">
-  <header>
+  <header data-if="activeSection?">
     <h1>#{ activeSection.category } // <span class="blue">#{ activeSection.title }</span></h1>
     <div class="search-wrapper" data-if="activeSection.searchEnabled">
       <i class="icon-search"></i>

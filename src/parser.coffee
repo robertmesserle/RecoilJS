@@ -8,7 +8,7 @@ class Parser
       @parseNode( $element )
 
   parseNode: ( $element ) ->
-    context = $.extend {}, @context
+    context = $element: $element, scope: @context.scope, parent: @context.parent, root: @context.root, extras: @context.extras
     context.$element = $element
 
     for binding in @bindings
