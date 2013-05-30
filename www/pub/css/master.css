@@ -87,3 +87,8 @@ nav.primary section a.active{background:rgba(255,255,255,0.25);opacity:1;-ms-fil
 #portfolio .portfolio-wrapper .sites li .contents .info-wrapper h2{font-size:12px;font-weight:100;text-transform:uppercase;font-family:'Century Gothic',sans-serif;letter-spacing:1px;margin:0;opacity:.8;filter:alpha(opacity=80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)"}
 #portfolio .portfolio-wrapper .sites li:hover .viewport{top:-10px;border-color:#bf4040;-webkit-box-shadow:0 0 20px #bf4040;box-shadow:0 0 20px #bf4040}
 #portfolio .portfolio-wrapper .sites li:hover .info-wrapper{background:rgba(0,0,0,0.8);color:#bf4040;bottom:-10px}
+@media ( max-width: 1400px ){#main-content > header .toolbar button{display:none}
+#main-content > header .toolbar .search-wrapper{-webkit-box-shadow:none;box-shadow:none}
+}@media ( max-width: 1200px ){#main-content > header h1 .category{display:none}
+}@media ( max-width: 900px ){#main-content > header h1{display:none}
+}

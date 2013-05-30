@@ -14,7 +14,7 @@
 
 <section id="main-content">
   <header data-if="activeSection?">
-    <h1>#{ activeSection.category } // <span class="blue">#{ activeSection.title }</span></h1>
+    <h1><span class="category">#{ activeSection.category } // </span><span class="blue">#{ activeSection.title }</span></h1>
     <nav class="toolbar">
       <button data-if="activeSection.handleListButton" data-update="activeSection.handleListButton( $element, 'list' )" data-click="activeSection.listStyle = 'list'">
         <i class="icon-list"></i> List View
