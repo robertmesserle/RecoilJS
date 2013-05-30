@@ -709,6 +709,7 @@ ContextBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('context'))) {
       return;
     }
+    this.$template = this.context.$element.contents().clone();
     this.setValue();
     ContextBinding.__super__.constructor.apply(this, arguments);
   }
@@ -731,7 +732,16 @@ ContextBinding = (function(_super) {
   };
 
   ContextBinding.prototype.update = function() {
-    return this.setValue();
+    var index, value;
+
+    value = this.parseBinding(this.binding);
+    if (this.value === value) {
+      return;
+    }
+    this.context.$element.html(this.$template.clone());
+    index = Recoil.bindings.read.indexOf(this);
+    Recoil.bindings.read.splice(index, 1);
+    return new Parser(this.context);
   };
 
   return ContextBinding;
@@ -1142,13 +1152,14 @@ UpdateBinding = (function(_super) {
       return;
     }
     this.csString = "-> " + this.binding;
-    this.parseBinding(this.csString)();
+    this.func = this.parseBinding(this.csString, false);
+    this.func.call(this)();
     UpdateBinding.__super__.constructor.apply(this, arguments);
   }
 
   UpdateBinding.prototype.update = function() {
     try {
-      return this.parseBinding(this.csString)();
+      return this.func.call(this)();
     } catch (_error) {}
   };
 

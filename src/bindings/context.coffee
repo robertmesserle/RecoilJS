@@ -2,6 +2,7 @@ class ContextBinding extends Base
 
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'context' )
+    @$template = @context.$element.contents().clone()
     @setValue()
     super
 
@@ -17,4 +18,11 @@ class ContextBinding extends Base
       parent: @context.scope
 
   update: ->
-    @setValue()
+    value = @parseBinding @binding
+    return if @value is value
+    @context.$element.html @$template.clone()
+    # Remove self from bindings
+    index = Recoil.bindings.read.indexOf( this )
+    Recoil.bindings.read.splice( index, 1 )
+    # Re-parse element
+    new Parser @context
