@@ -160,6 +160,135 @@ DirtyCheck = (function() {
 
 })();
 
+var Collection;
+
+Collection = (function() {
+  function Collection() {}
+
+  return Collection;
+
+})();
+
+var Model,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Model = (function() {
+  Model.property = function(data) {
+    return new Property(data);
+  };
+
+  Model.create = function(data) {
+    var RecoilModel, key, prop, _ref;
+
+    if (data == null) {
+      data = {};
+    }
+    RecoilModel = (function(_super) {
+      __extends(RecoilModel, _super);
+
+      function RecoilModel() {
+        _ref = RecoilModel.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      return RecoilModel;
+
+    })(Model);
+    for (key in data) {
+      prop = data[key];
+      RecoilModel.prototype[key] = prop;
+    }
+    return RecoilModel;
+  };
+
+  function Model(data) {
+    this.bindDefaultProps();
+  }
+
+  Model.prototype.bindDefaultProps = function() {
+    var key, prop, _results;
+
+    this.props = {};
+    _results = [];
+    for (key in this) {
+      prop = this[key];
+      if (!(prop instanceof Property)) {
+        continue;
+      }
+      this.props[key] = prop;
+      _results.push(this[key] = prop.value);
+    }
+    return _results;
+  };
+
+  Model.prototype.revert = function() {
+    var key, prop, _ref, _results;
+
+    _ref = this.data;
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push(this[key] = prop.value);
+    }
+    return _results;
+  };
+
+  Model.prototype.save = function() {
+    var key, prop, _ref, _results;
+
+    _ref = this.data;
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push(prop.val = this[key]);
+    }
+    return _results;
+  };
+
+  return Model;
+
+})();
+
+var Property;
+
+Property = (function() {
+  Property.prototype.type = null;
+
+  Property.prototype.model = null;
+
+  Property.prototype["default"] = null;
+
+  Property.prototype.value = null;
+
+  function Property(data) {
+    if (data == null) {
+      data = {};
+    }
+    this.parseData(data);
+  }
+
+  Property.prototype.parseData = function(data) {
+    if (data.type != null) {
+      this.type = data.type;
+    }
+    if (data.model != null) {
+      this.model = data.model;
+    }
+    if (data["default"] != null) {
+      this["default"] = this.type != null ? this.type(data["default"]) : data["default"];
+    }
+    if (data.value != null) {
+      return this.value = this.type != null ? this.type(data.value) : data.value;
+    } else {
+      return this.value = this["default"];
+    }
+  };
+
+  return Property;
+
+})();
+
 var Router,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -172,17 +301,12 @@ Router = (function() {
 
   Router.prototype.event = 'hashchange';
 
-  Router.prototype.mode = document.documentMode;
-
-  Router.prototype.support = (root["on" + Router.event] != null) && ((Router.mode == null) || Router.mode > 7);
-
   Router.prototype.routes = [];
 
   Router.prototype.defaultRoute = null;
 
   function Router() {
-    this.handleChange = __bind(this.handleChange, this);    this.createSpecialEvent();
-    this.bindEvent();
+    this.handleChange = __bind(this.handleChange, this);    this.bindEvent();
   }
 
   Router.prototype.bindEvent = function() {
@@ -207,26 +331,6 @@ Router = (function() {
     ret = (_ref1 = this.defaultRoute) != null ? _ref1.handler(hash) : void 0;
     DirtyCheck.update();
     return ret;
-  };
-
-  Router.prototype.createSpecialEvent = function() {
-    var _this = this;
-
-    return $.extend($.event.special[this.event], {
-      start: function() {
-        if (_this.support) {
-          return false;
-        }
-        _this.HashListener = new HashListener(_this.event);
-        return $(_this.HashListener.start);
-      },
-      teardown: function() {
-        if (_this.support) {
-          return false;
-        }
-        return $(_this.HashListener.stop);
-      }
-    });
   };
 
   Router.prototype.getRegex = function(path) {
@@ -311,6 +415,32 @@ Recoil = (function() {
       var child = new ctor, result = func.apply(child, args);
       return Object(result) === result ? result : child;
     })(Recoil, arguments, function(){});
+  };
+
+  Recoil.Property = Property;
+
+  Recoil.Collection = Collection;
+
+  Recoil.Model = Model;
+
+  Recoil.createModel = function() {
+    return Model.create.apply(Model, arguments);
+  };
+
+  Recoil.createProperty = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Property, arguments, function(){});
+  };
+
+  Recoil.createCollection = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Collection, arguments, function(){});
   };
 
   Recoil.mapRoute = function() {

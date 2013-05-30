@@ -24,7 +24,7 @@ module.exports = ( grunt ) ->
       core:
         expand: true
         cwd: 'src'
-        src: [ '*.coffee', 'bindings/*.coffee' ]
+        src: [ '*.coffee', '**/*.coffee' ]
         dest: 'tmp'
         ext: '.js'
         options:
@@ -41,7 +41,7 @@ module.exports = ( grunt ) ->
           stripBanners: true
           banner: "#{ header.banner }\n\n#{ header.js }\n"
           footer: "#{ footer.js }"
-        src: [ 'tmp/dirty-check.js', 'tmp/router.js', 'tmp/main.js', 'tmp/bindings/base.js', 'tmp/bindings/*.js', 'tmp/parser.js', 'tmp/core.js' ]
+        src: [ 'tmp/dirty-check.js', 'tmp/model/*.js', 'tmp/model/model.js', 'tmp/router.js', 'tmp/main.js', 'tmp/bindings/base.js', 'tmp/bindings/*.js', 'tmp/parser.js', 'tmp/core.js' ]
         dest: 'recoil.js'
       wwwVendorJS:
         src: [ 'www/src/vendor/js/*.js' ]
@@ -70,7 +70,7 @@ module.exports = ( grunt ) ->
         files: 'recoil.min.js': [ 'recoil.js' ]
     watch:
       scripts:
-        files: [ 'Gruntfile.coffee', 'src/*.coffee', 'src/**/*.coffee', 'www/src/**' ]
+        files: [ 'Gruntfile.coffee', 'src/*.coffee', 'src/**/*.coffee', 'www/src/**', 'spec/**/*.coffee' ]
         tasks: [ 'coffee', 'concat', 'uglify', 'copy', 'stylus', 'clean:tmp' ]
         options:
           livereload: 3001

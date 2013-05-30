@@ -1,8 +1,8 @@
-<section class="home-wrapper">
+<section>
   <article class="has-icon">
     <i class="icon-magic"></i>
     <h1>What is RecoilJS?</h1>
-    <p>RecoilJS is a light-weight JavaScript framework that provides tools such as data-binding and routing, without getting in your way as a developer, or pushing any particular structure.</p>
+    <p>Recoil is a light-weight JavaScript framework that provides tools such as data-binding and routing, without getting in your way as a developer, or pushing any particular structure.</p>
   </article>
   <article class="has-icon">
     <i class="icon-asterisk"></i>
@@ -21,6 +21,13 @@
 
       <dt>Routing</dt>
       <dd>Recoil provides a simple router that lets you easily handle all hash changes to provide linkable URL's within single-page applications.</dd>
+
+      <dt>You can bind to anything!</dt>
+      <dd>In most data-binding frameworks, you are limited to models that you control.  This was a primary goal for Recoil, as it helps keep Recoil out of your way.</dd>
     </dl>
+  </article>
+  <article>
+    <h1>How does it work?</h1>
+    <p>Recoil works by using a process called dirty-checking.  Basically, when the user interacts with the page, Recoil takes note that the data may have changed and iterates through your data-bindings to see if any UI updates are necessary to keep everything in sync.  Contrary to many initial assumptions, this does not rely on intervals or timeouts, and instead relies on user-interaction to trigger a dirty check.  While it may sound like a lot of work, it all takes place very efficiently resulting in smooth, seamless UI updates.</p>
   </article>
 </section>

@@ -8,13 +8,10 @@ class Router
   # Instance
 
   event:    'hashchange'
-  mode:     document.documentMode
-  support:  root[ "on#{ @event }" ]? and ( not @mode? or @mode > 7 )
   routes:   []
   defaultRoute: null
 
   constructor: ->
-    @createSpecialEvent()
     @bindEvent()
 
   bindEvent: ->
@@ -30,16 +27,6 @@ class Router
     ret = @defaultRoute?.handler( hash )
     DirtyCheck.update()
     return ret
-
-  createSpecialEvent: ->
-    $.extend $.event.special[ @event ],
-      start: =>
-        return false if @support
-        @HashListener = new HashListener @event
-        $ @HashListener.start
-      teardown: =>
-        return false if @support
-        $ @HashListener.stop
 
   getRegex: ( path ) ->
     parts = path.split( '/' )
