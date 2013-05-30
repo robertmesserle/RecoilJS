@@ -101,8 +101,7 @@
         padding-left 120px
         position relative
         > i
-          $stripe1 = hsl( 200, 50, 20 )
-          $stripe2 = hsl( 200, 50, 22 )
+          stripes hsl( 200, 50, 20 ), hsl( 200, 50, 22 )
           position absolute
           top -5px
           left 20px
@@ -111,8 +110,6 @@
           text-align center
           width 80px
           padding-top 10px
-          background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
-          background-size 50px 50px
           display block
           border-radius 5px
           color white

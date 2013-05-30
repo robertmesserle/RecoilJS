@@ -1,6 +1,5 @@
 nav.primary
-  $stripe1 = hsl( 200, 50, 22 )
-  $stripe2 = hsl( 200, 50, 20 )
+  stripes hsl( 200, 50, 22 ), hsl( 200, 50, 20 )
   position absolute
   top 0
   left 0
@@ -8,21 +7,16 @@ nav.primary
   width 220px
   box-shadow 5px 0 15px rgba( black, 0.25 )
   padding 115px 0 20px 20px
-  background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
-  background-size 50px 50px
   color rgba( black, 0.8 )
   overflow hidden
   header
-    $stripe1 = hsl( 0, 0, 12 )
-    $stripe2 = hsl( 0, 0, 10 )
+    stripes hsl( 0, 0, 12 ), hsl( 0, 0, 10 )
     $border  = rgba( hsl( 200, 50%, 50% ), 0.5 )
     position absolute
     top 20px
     left 0
     right -1px
     height 95px
-    background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
-    background-size 50px 50px
     background-position 20px 0
     border-width 1px 0
     border-color $border
