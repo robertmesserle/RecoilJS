@@ -1,0 +1,6 @@
+*.psd
+/spec
+/src
+/samples
+/lib
+/www/src
