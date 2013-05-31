@@ -6,7 +6,10 @@ describe 'Recoil.Model', ->
       lname:  type: String, default: 'Doe'
       age:    type: Number
       gender: type: Boolean, default: true
-    getFullName: -> "#{ @fname } #{ @lname }"
+    $virtual:
+      name:
+        read: -> "#{ @fname } #{ @lname }"
+        write: ( value ) -> [ @fname, @lname ] = value.split( /\s+/g )
   } )
 
   it 'should exist', ->
@@ -33,13 +36,21 @@ describe 'Recoil.Model', ->
     expect( person.age ).toBe( null )
     expect( person.gender ).toBe( true )
 
-  it 'should support functions', ->
+  it 'should support reading virtuals', ->
     person = new Person
-    expect( person.getFullName() ).toBe( 'John Doe' )
+    expect( person.name() ).toBe( 'John Doe' )
+
+  it 'should support writing to virtuals', ->
+    person = new Person
+    expect( person.name() ).toBe( 'John Doe' )
+    person.name 'Jane Doe'
+    expect( person.name() ).toBe( 'Jane Doe' )
+    expect( person.fname ).toBe( 'Jane' )
+    expect( person.lname ).toBe( 'Doe' )
 
   it 'should support setting values', ->
     person = new Person fname: 'Robert', lname: 'Messerle', age: 23, gender: true
-    expect( person.getFullName() ).toBe( 'Robert Messerle' )
+    expect( person.name() ).toBe( 'Robert Messerle' )
     expect( person.age ).toBe( 23 )
     expect( person.gender ).toBe( true )
 
@@ -50,25 +61,25 @@ describe 'Recoil.Model', ->
     person.age = 18
     person.gender = false
     person.revert()
-    expect( person.getFullName() ).toBe( 'Robert Messerle' )
+    expect( person.name() ).toBe( 'Robert Messerle' )
     expect( person.age ).toBe( 23 )
     expect( person.gender ).toBe( true )
 
   it 'should support saving', ->
     person = new Person
-    expect( person.getFullName() ).toBe( 'John Doe' )
+    expect( person.name() ).toBe( 'John Doe' )
     expect( person.age ).toBe( null )
     expect( person.gender ).toBe( true )
     # Overwrite values
     person.fname = 'Jane'
     person.age = 18
     person.gender = false
-    expect( person.getFullName() ).toBe( 'Jane Doe' )
+    expect( person.name() ).toBe( 'Jane Doe' )
     expect( person.age ).toBe( 18 )
     expect( person.gender ).toBe( false )
     # Save, then revert - revert should not do anything
     person.save()
     person.revert()
-    expect( person.getFullName() ).toBe( 'Jane Doe' )
+    expect( person.name() ).toBe( 'Jane Doe' )
     expect( person.age ).toBe( 18 )
     expect( person.gender ).toBe( false )

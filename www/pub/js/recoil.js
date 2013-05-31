@@ -169,6 +169,7 @@ BaseModel = (function() {
     }
     this.storeInstance();
     this.unwrapProps();
+    this.createVirtuals();
     this.parseData(data);
     if (typeof this.initialize === "function") {
       this.initialize(data);
@@ -188,13 +189,34 @@ BaseModel = (function() {
     var $props, key, prop, _ref;
 
     $props = {};
-    _ref = this.$props;
+    _ref = this.$props || {};
     for (key in _ref) {
       prop = _ref[key];
       $props[key] = new Property(prop);
       this[key] = $props[key].value;
     }
     return this.$props = $props;
+  };
+
+  BaseModel.prototype.createVirtuals = function() {
+    var key, prop, _ref, _results,
+      _this = this;
+
+    _ref = this.$virtual || {};
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push((function(key, prop) {
+        return _this[key] = function(value) {
+          if ((value != null) && prop.write) {
+            return prop.write.call(_this, value);
+          } else {
+            return prop.read.call(_this);
+          }
+        };
+      })(key, prop));
+    }
+    return _results;
   };
 
   BaseModel.prototype.parseData = function(data) {

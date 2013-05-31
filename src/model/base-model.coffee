@@ -3,6 +3,7 @@ class BaseModel
   constructor: ( data = {} ) ->
     @storeInstance()
     @unwrapProps()
+    @createVirtuals()
     @parseData( data )
     @initialize?( data )
 
@@ -12,10 +13,19 @@ class BaseModel
 
   unwrapProps: ->
     $props = {}
-    for key, prop of @$props
+    for key, prop of @$props or {}
       $props[ key ] = new Property prop
       @[ key ] = $props[ key ].value
     @$props = $props
+
+  createVirtuals: ->
+    for key, prop of @$virtual or {}
+      do ( key, prop ) =>
+        @[ key ] = ( value ) =>
+          if value? and prop.write
+            prop.write.call( this, value )
+          else
+            prop.read.call( this )
   
   parseData: ( data ) ->
     for key, value of data
