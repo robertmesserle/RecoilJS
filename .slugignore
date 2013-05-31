@@ -4,3 +4,8 @@
 /samples
 /lib
 /www/src
+/Gruntfile.coffee
+/readme.md
+/recoil.js
+/recoil.min.js
+/spec.html
