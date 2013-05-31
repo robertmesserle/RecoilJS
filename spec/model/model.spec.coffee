@@ -13,8 +13,8 @@ describe 'Recoil.Model', ->
       legal:
         read: -> @age >= 21
     $static:
-      men:   -> for person in @instances when person.gender then person
-      women: -> for person in @instances when not person.gender then person
+      men:   -> for person in @items when person.gender then person
+      women: -> for person in @items when not person.gender then person
   } )
 
   it 'should exist', ->
@@ -26,12 +26,12 @@ describe 'Recoil.Model', ->
     expect( Recoil.Model.models.length ).toBe( 1 )
     expect( Recoil.Model.models[ 0 ] ).toBe( Person )
 
-  it 'should store instances in static property "instances"', ->
-    expect( Person.instances ).toEqual null
+  it 'should store items in static property "items"', ->
+    expect( Person.items ).toEqual null
     person = new Person
-    expect( Person.instances ).not.toEqual null
-    expect( Person.instances.length ).toBe( 1 )
-    expect( Person.instances[ 0 ] ).toBe( person )
+    expect( Person.items ).not.toEqual null
+    expect( Person.items.length ).toBe( 1 )
+    expect( Person.items[ 0 ] ).toBe( person )
 
   it 'should work without any data', ->
     person = new Person
@@ -52,23 +52,23 @@ describe 'Recoil.Model', ->
 
     it 'should support reading virtuals', ->
       person = new Person
-      expect( person.name() ).toBe( 'John Doe' )
-      expect( person.legal() ).toBe( false )
+      expect( person.name ).toBe( 'John Doe' )
+      expect( person.legal ).toBe( false )
 
-      person.age = 21
-      expect( person.legal() ).toBe( true )
+      person.set 'age', 21
+      expect( person.legal ).toBe( true )
 
     it 'should support writing to virtuals', ->
       person = new Person
-      expect( person.name() ).toBe( 'John Doe' )
-      person.name 'Jane Doe'
-      expect( person.name() ).toBe( 'Jane Doe' )
+      expect( person.name ).toBe( 'John Doe' )
+      person.set 'name', 'Jane Doe'
+      expect( person.name ).toBe( 'Jane Doe' )
       expect( person.fname ).toBe( 'Jane' )
       expect( person.lname ).toBe( 'Doe' )
 
     it 'should allow setting of virtuals in constructor', ->
       person = new Person name: 'Robert Messerle'
-      expect( person.name() ).toBe( 'Robert Messerle' )
+      expect( person.name ).toBe( 'Robert Messerle' )
       expect( person.fname ).toBe( 'Robert' )
       expect( person.lname ).toBe( 'Messerle' )
 
@@ -81,28 +81,29 @@ describe 'Recoil.Model', ->
       person.age = 18
       person.gender = false
       person.revert()
-      expect( person.name() ).toBe( 'Robert Messerle' )
+      expect( person.name ).toBe( 'Robert Messerle' )
       expect( person.age ).toBe( 23 )
       expect( person.gender ).toBe( true )
 
     it 'should support saving', ->
       person = new Person
-      expect( person.name() ).toBe( 'John Doe' )
+      expect( person.name ).toBe( 'John Doe' )
       expect( person.age ).toBe( null )
       expect( person.gender ).toBe( true )
       
       person.fname    = 'Jane'
       person.age      = 18
       person.gender   = false
+      person.update()
 
-      expect( person.name() ).toBe( 'Jane Doe' )
+      expect( person.name ).toBe( 'Jane Doe' )
       expect( person.age ).toBe( 18 )
       expect( person.gender ).toBe( false )
       
       person.save()
       person.revert()
 
-      expect( person.name() ).toBe( 'Jane Doe' )
+      expect( person.name ).toBe( 'Jane Doe' )
       expect( person.age ).toBe( 18 )
       expect( person.gender ).toBe( false )
 
