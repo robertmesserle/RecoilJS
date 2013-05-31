@@ -2,6 +2,7 @@
   "name": "RecoilJS",
   "version": "0.1.0",
   "main": "www/server.coffee",
+  "engine": "node 0.10.5"
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-coffee": "~0.7.0",
@@ -14,7 +15,7 @@
     "grunt-contrib-stylus": "~0.5.0"
   },
   "dependencies": {
-    "express": "~3.2.4",
+    "express": "~3.2.5",
     "coffee-script": "~1.6.2"
   }
 }
