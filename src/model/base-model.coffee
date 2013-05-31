@@ -28,12 +28,20 @@ class BaseModel
   
   _parseData: ( data ) ->
     for key, value of data
+      @set( key, value, false )
+    @update()
+    @save()
 
   # Public
 
-  set: ( key, value ) ->
-    @[ key ] = value
-    @update()
+  set: ( key, value, update = true ) ->
+    if typeof key is 'object'
+      obj = key
+      for key, value of obj
+        @set key, value, false
+    else
+      @[ key ] = value
+    @update() if update
   
   revert: ->
     for key, prop of @_props
