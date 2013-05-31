@@ -12,6 +12,9 @@ describe 'Recoil.Model', ->
         write: ( value ) -> [ @fname, @lname ] = value.split( /\s+/g )
       legal:
         read: -> @age >= 21
+    $static:
+      men:   -> for person in @instances when person.gender then person
+      women: -> for person in @instances when not person.gender then person
   } )
 
   it 'should exist', ->
@@ -113,3 +116,14 @@ describe 'Recoil.Model', ->
         person.revert()
         expect( person.fname ).toBe 'John'
         expect( person.lname ).toBe 'Doe'
+
+  describe '$static', ->
+
+    it 'should support statics', ->
+      expect( Person.men ).not.toBe( null )
+      expect( Person.men() instanceof Array ).toBe( true )
+      expect( Person.women() instanceof Array ).toBe( true )
+      expect( Person.men()[ 0 ].gender ).toBe( true )
+      expect( Person.women()[ 0 ].gender ).toBe( false )
+
+

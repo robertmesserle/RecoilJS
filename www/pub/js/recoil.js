@@ -303,9 +303,31 @@ Model = (function() {
 
     })(BaseModel);
     this.attachMeta();
+    this.attachStatic();
     this.constructor.models.push(this.model);
     return this.model;
   }
+
+  Model.prototype.attachStatic = function() {
+    var key, prop, _ref, _results,
+      _this = this;
+
+    _ref = this.meta.$static || {};
+    _results = [];
+    for (key in _ref) {
+      prop = _ref[key];
+      _results.push((function(key, prop) {
+        if (typeof prop === 'function') {
+          return _this.model[key] = function() {
+            return prop.apply(_this.model, arguments);
+          };
+        } else {
+          return _this.model[key] = prop;
+        }
+      })(key, prop));
+    }
+    return _results;
+  };
 
   Model.prototype.attachMeta = function() {
     var key, value, _ref, _results;
