@@ -167,82 +167,100 @@ BaseModel = (function() {
     if (data == null) {
       data = {};
     }
-    this.storeInstance();
-    this.unwrapProps();
-    this.createVirtuals();
-    this.parseData(data);
+    this._storeItem();
+    this._unwrapProps();
+    this._createVirtuals();
+    this._parseData(data);
     if (typeof this.initialize === "function") {
       this.initialize(data);
     }
   }
 
-  BaseModel.prototype.storeInstance = function() {
+  BaseModel.prototype._storeItem = function() {
     var _base, _ref;
 
-    if ((_ref = (_base = this.constructor).instances) == null) {
-      _base.instances = [];
+    if ((_ref = (_base = this.constructor).items) == null) {
+      _base.items = [];
     }
-    return this.constructor.instances.push(this);
+    return this.constructor.items.push(this);
   };
 
-  BaseModel.prototype.unwrapProps = function() {
-    var $props, key, prop, _ref;
+  BaseModel.prototype._unwrapProps = function() {
+    var key, prop, _ref, _ref1, _ref2, _results;
 
-    $props = {};
-    _ref = this.$props || {};
-    for (key in _ref) {
-      prop = _ref[key];
-      $props[key] = new Property(prop);
-      this[key] = $props[key].value;
+    if ((_ref = this._history) == null) {
+      this._history = {};
     }
-    return this.$props = $props;
-  };
-
-  BaseModel.prototype.createVirtuals = function() {
-    var key, prop, _ref, _results,
-      _this = this;
-
-    _ref = this.$virtual || {};
+    if ((_ref1 = this._props) == null) {
+      this._props = {};
+    }
+    _ref2 = this.$props || {};
     _results = [];
-    for (key in _ref) {
-      prop = _ref[key];
-      _results.push((function(key, prop) {
-        return _this[key] = function(value) {
-          if ((value != null) && prop.write) {
-            return prop.write.call(_this, value);
-          } else {
-            return prop.read.call(_this);
-          }
-        };
-      })(key, prop));
+    for (key in _ref2) {
+      prop = _ref2[key];
+      this._props[key] = new Property(prop);
+      _results.push(this[key] = this._history[key] = this._props[key].value);
     }
     return _results;
   };
 
-  BaseModel.prototype.parseData = function(data) {
-    var key, value, _results;
+  BaseModel.prototype._createVirtuals = function() {
+    var key, prop, _ref, _ref1, _ref2, _results;
 
+    if ((_ref = this._history) == null) {
+      this._history = {};
+    }
+    if ((_ref1 = this._virtuals) == null) {
+      this._virtuals = {};
+    }
+    _ref2 = this.$virtual || {};
     _results = [];
+    for (key in _ref2) {
+      prop = _ref2[key];
+      _results.push(this[key] = this._history[key] = prop.read.call(this));
+    }
+    return _results;
+  };
+
+  BaseModel.prototype._parseData = function(data) {
+    var key, value;
+
     for (key in data) {
       value = data[key];
-      if (this.$virtual[key] != null) {
-        _results.push(this[key](value));
-      } else {
-        this[key] = value;
-        _results.push(this.$props[key].value = value);
-      }
+      this.set(key, value, false);
     }
-    return _results;
+    this.update();
+    return this.save();
+  };
+
+  BaseModel.prototype.set = function(key, value, update) {
+    var obj;
+
+    if (update == null) {
+      update = true;
+    }
+    if (typeof key === 'object') {
+      obj = key;
+      for (key in obj) {
+        value = obj[key];
+        this.set(key, value, false);
+      }
+    } else {
+      this[key] = value;
+    }
+    if (update) {
+      return this.update();
+    }
   };
 
   BaseModel.prototype.revert = function() {
     var key, prop, _ref, _results;
 
-    _ref = this.$props;
+    _ref = this._props;
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
-      _results.push(this[key] = prop.value);
+      _results.push(this[key] = this._history[key] = prop.value);
     }
     return _results;
   };
@@ -250,7 +268,7 @@ BaseModel = (function() {
   BaseModel.prototype.save = function() {
     var key, prop, _ref, _results;
 
-    _ref = this.$props;
+    _ref = this._props;
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
@@ -262,6 +280,39 @@ BaseModel = (function() {
         }
       } else {
         _results.push(prop.value = this[key]);
+      }
+    }
+    return _results;
+  };
+
+  BaseModel.prototype.update = function() {
+    var key, newValue, prop, virtual, _ref, _ref1, _ref2, _results;
+
+    _ref = this.$virtual;
+    for (key in _ref) {
+      virtual = _ref[key];
+      if (!(this[key] !== this._history[key])) {
+        continue;
+      }
+      virtual.write.call(this, this[key]);
+      this._history[key] = this[key];
+    }
+    _ref1 = this._props;
+    for (key in _ref1) {
+      prop = _ref1[key];
+      if (this[key] !== this._history[key]) {
+        this._history[key] = this[key];
+      }
+    }
+    _ref2 = this.$virtual;
+    _results = [];
+    for (key in _ref2) {
+      virtual = _ref2[key];
+      newValue = virtual.read.call(this);
+      if (this[key] !== newValue) {
+        _results.push(this[key] = this._history[key] = newValue);
+      } else {
+        _results.push(void 0);
       }
     }
     return _results;
