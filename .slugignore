@@ -1,11 +1,11 @@
 *.psd
-/spec
-/src
-/samples
-/lib
-/www/src
+/spec/*
+/src/*
+/samples/*
+/lib/*
+/www/src/*
 /Gruntfile.coffee
 /readme.md
 /recoil.js
 /recoil.min.js
-/spec.html
+spec.html
