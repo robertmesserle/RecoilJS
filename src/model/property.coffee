@@ -9,11 +9,10 @@ class Property
     @parseData( data )
 
   parseData: ( data ) ->
-    @type = data.type
-    @model = data.model
-    @validate = data.validate
+    @type       = data.type or ( value ) -> value
+    @model      = data.model
     if data.default?
-      @default = if @type? then @type( data.default ) else data.default
+      @default = @type data.default
     if data.value?
-      @value = if @type? then @type( data.value ) else data.value
-    else @value = @default
+      @value = @type data.value
+    @value ?= @default
