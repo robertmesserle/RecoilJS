@@ -225,8 +225,12 @@ BaseModel = (function() {
     _results = [];
     for (key in data) {
       value = data[key];
-      this[key] = value;
-      _results.push(this.$props[key].value = value);
+      if (this.$virtual[key] != null) {
+        _results.push(this[key](value));
+      } else {
+        this[key] = value;
+        _results.push(this.$props[key].value = value);
+      }
     }
     return _results;
   };

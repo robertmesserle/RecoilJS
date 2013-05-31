@@ -29,8 +29,11 @@ class BaseModel
   
   parseData: ( data ) ->
     for key, value of data
-      @[ key ] = value
-      @$props[ key ].value = value
+      if @$virtual[ key ]?
+        @[ key ]( value )
+      else
+        @[ key ] = value
+        @$props[ key ].value = value
   
   revert: ->
     for key, prop of @$props

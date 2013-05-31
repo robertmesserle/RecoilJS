@@ -10,6 +10,8 @@ describe 'Recoil.Model', ->
       name:
         read: -> "#{ @fname } #{ @lname }"
         write: ( value ) -> [ @fname, @lname ] = value.split( /\s+/g )
+      legal:
+        read: -> @age >= 21
   } )
 
   it 'should exist', ->
@@ -39,6 +41,10 @@ describe 'Recoil.Model', ->
   it 'should support reading virtuals', ->
     person = new Person
     expect( person.name() ).toBe( 'John Doe' )
+    expect( person.legal() ).toBe( false )
+
+    person.age = 21
+    expect( person.legal() ).toBe( true )
 
   it 'should support writing to virtuals', ->
     person = new Person
@@ -47,6 +53,12 @@ describe 'Recoil.Model', ->
     expect( person.name() ).toBe( 'Jane Doe' )
     expect( person.fname ).toBe( 'Jane' )
     expect( person.lname ).toBe( 'Doe' )
+
+  it 'should allow setting of virtuals in constructor', ->
+    person = new Person name: 'Robert Messerle'
+    expect( person.name() ).toBe( 'Robert Messerle' )
+    expect( person.fname ).toBe( 'Robert' )
+    expect( person.lname ).toBe( 'Messerle' )
 
   it 'should support setting values', ->
     person = new Person fname: 'Robert', lname: 'Messerle', age: 23, gender: true
@@ -70,16 +82,18 @@ describe 'Recoil.Model', ->
     expect( person.name() ).toBe( 'John Doe' )
     expect( person.age ).toBe( null )
     expect( person.gender ).toBe( true )
-    # Overwrite values
-    person.fname = 'Jane'
-    person.age = 18
-    person.gender = false
+    
+    person.fname    = 'Jane'
+    person.age      = 18
+    person.gender   = false
+    
     expect( person.name() ).toBe( 'Jane Doe' )
     expect( person.age ).toBe( 18 )
     expect( person.gender ).toBe( false )
-    # Save, then revert - revert should not do anything
+    
     person.save()
     person.revert()
+
     expect( person.name() ).toBe( 'Jane Doe' )
     expect( person.age ).toBe( 18 )
     expect( person.gender ).toBe( false )
