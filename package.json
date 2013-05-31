@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "main": "www/server.coffee",
   "engines": {
-    "node": "0.10.5",
-    "npm": "1.2.18"
+    "node": "0.10.9",
+    "npm": "1.2.24"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
