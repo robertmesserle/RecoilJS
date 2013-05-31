@@ -254,7 +254,15 @@ BaseModel = (function() {
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
-      _results.push(prop.value = this[key]);
+      if (prop.validate != null) {
+        if (prop.validate.call(this, this[key])) {
+          _results.push(prop.value = this[key]);
+        } else {
+          _results.push(void 0);
+        }
+      } else {
+        _results.push(prop.value = this[key]);
+      }
     }
     return _results;
   };
@@ -334,12 +342,9 @@ Property = (function() {
   }
 
   Property.prototype.parseData = function(data) {
-    if (data.type != null) {
-      this.type = data.type;
-    }
-    if (data.model != null) {
-      this.model = data.model;
-    }
+    this.type = data.type;
+    this.model = data.model;
+    this.validate = data.validate;
     if (data["default"] != null) {
       this["default"] = this.type != null ? this.type(data["default"]) : data["default"];
     }

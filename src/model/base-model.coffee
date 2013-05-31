@@ -5,7 +5,7 @@ class BaseModel
     @unwrapProps()
     @createVirtuals()
     @parseData( data )
-    @initialize?( data )
+    @initialize? data
 
   storeInstance: ->
     @constructor.instances ?= []
@@ -41,4 +41,8 @@ class BaseModel
   
   save: ->
     for key, prop of @$props
-      prop.value = @[ key ]
+      if prop.validate?
+        if prop.validate.call( this, @[ key ] )
+          prop.value = @[ key ]
+      else
+        prop.value = @[ key ]
