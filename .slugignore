@@ -1,5 +1,6 @@
 *.psd
 /spec/*
+/spec/**/*.*
 /src/*
 /samples/*
 /lib/*
