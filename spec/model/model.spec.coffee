@@ -48,6 +48,22 @@ describe 'Recoil.Model', ->
     expect( person.age ).toBe 23
     expect( person.gender ).toBe true
 
+  describe '#set', ->
+
+    it 'should support setting a property value', ->
+      person = new Person
+      person.set 'fname', 'Jane'
+      expect( person.name ).toBe 'Jane Doe'
+      expect( person.fname ).toBe 'Jane'
+
+    it 'should support setting multiple properties at once', ->
+      person = new Person
+      expect( person.name ).toBe 'John Doe'
+      person.set fname: 'Foo', lname: 'Bar'
+      expect( person.fname ).toBe 'Foo'
+      expect( person.lname ).toBe 'Bar'
+      expect( person.name ).toBe 'Foo Bar'
+
   describe '#virtual', ->
 
     it 'should support reading virtuals', ->
