@@ -501,6 +501,10 @@ Recoil = (function() {
 
   Recoil.events = 'blur focus focusin focusout load resize scroll unload click\ndblclick mousedown mouseup mousemove mouseover mouseout mouseenter\nmouseleave change select submit keydown keypress keyup error'.split(/\s+/g);
 
+  Recoil["eval"] = function(func) {
+    return eval(func.toString());
+  };
+
   Recoil.init = function() {
     return (function(func, args, ctor) {
       ctor.prototype = func.prototype;
@@ -713,8 +717,7 @@ Base = (function() {
       }
       return _results;
     }).call(this)).join(' ');
-    this.context.$placeholder = $("<!-- Start Recoil Block: " + str + " -->").insertBefore(this.context.$element);
-    return $("<!-- End Recoil Block: " + str + " -->").insertAfter(this.context.$element);
+    return this.context.$placeholder = $("<!-- RecoilJS: " + str + " -->").insertBefore(this.context.$element);
   };
 
   Base.prototype.wrap = function() {
@@ -725,9 +728,6 @@ Base = (function() {
       return;
     }
     this.context.unwrapped = false;
-    if (!$.contains(document.body, this.context.$contents.get(0))) {
-      return;
-    }
     return this.context.$element.insertBefore(this.context.$contents).append(this.context.$contents);
   };
 
@@ -1257,7 +1257,7 @@ IfBinding = (function(_super) {
   function IfBinding(context) {
     this.context = context;
     this.reparse = __bind(this.reparse, this);
-    if (!(this.binding = this.context.$element.data('if'))) {
+    if ((this.binding = this.context.$element.data('if')) == null) {
       return;
     }
     IfBinding.__super__.constructor.apply(this, arguments);
@@ -1269,6 +1269,7 @@ IfBinding = (function(_super) {
 
     index = Recoil.bindings.read.indexOf(this);
     Recoil.bindings.read.splice(index, 1);
+    this.wrap();
     new Parser(this.context);
     return delete this.reparse;
   };

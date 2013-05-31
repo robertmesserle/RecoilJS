@@ -19,6 +19,9 @@ class Recoil
     mouseleave change select submit keydown keypress keyup error
     '''.split( /\s+/g )
 
+  # Used for Unit tests
+  @eval: ( func ) -> eval func.toString()
+
   # Global Methods
   @init: -> new Recoil( arguments... )
 

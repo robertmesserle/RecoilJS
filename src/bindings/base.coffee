@@ -66,14 +66,12 @@ class Base
   insertPlaceholder: ->
     return if @context.$placeholder
     str = ( for attr in @context.$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
-    @context.$placeholder = $( """<!-- Start Recoil Block: #{ str } -->""" ).insertBefore( @context.$element )
-    $( """<!-- End Recoil Block: #{ str } -->""" ).insertAfter( @context.$element )
+    @context.$placeholder = $( """<!-- RecoilJS: #{ str } -->""" ).insertBefore( @context.$element )
 
   wrap: ->
     return unless @context.unwrapped
     return unless @logic
     @context.unwrapped = false
-    return unless $.contains( document.body, @context.$contents.get( 0 ) )
     @context.$element.insertBefore( @context.$contents ).append( @context.$contents )
 
   unwrap: ->

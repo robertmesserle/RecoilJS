@@ -18,28 +18,28 @@ describe 'Recoil.Model', ->
   } )
 
   it 'should exist', ->
-    expect( Recoil.Model? ).toBe true
+    expect( Recoil.Model ).not.toBe null
 
   it 'should be stored in global models list', ->
-    expect( Recoil.Model.models ).not.toBe( null )
+    expect( Recoil.Model.models ).not.toEqual null
     expect( Recoil.Model.models instanceof Array ).toBe( true )
     expect( Recoil.Model.models.length ).toBe( 1 )
     expect( Recoil.Model.models[ 0 ] ).toBe( Person )
 
   it 'should store instances in static property "instances"', ->
-    expect( Person.instances? ).toBe( false )
+    expect( Person.instances ).toEqual null
     person = new Person
-    expect( Person.instances? ).toBe( true )
+    expect( Person.instances ).not.toEqual null
     expect( Person.instances.length ).toBe( 1 )
     expect( Person.instances[ 0 ] ).toBe( person )
 
   it 'should work without any data', ->
     person = new Person
-    expect( person? ).toBe true
+    expect( person ).not.toEqual null
     expect( person.fname ).toBe 'John'
     expect( person.lname ).toBe 'Doe'
-    expect( person.age ).toBe( null )
-    expect( person.gender ).toBe( true )
+    expect( person.age ).toEqual null
+    expect( person.gender ).toBe true
 
   it 'should support setting values', ->
     person = new Person fname: 'Robert', lname: 'Messerle', age: 23, gender: true
@@ -120,7 +120,7 @@ describe 'Recoil.Model', ->
   describe '$static', ->
 
     it 'should support statics', ->
-      expect( Person.men ).not.toBe( null )
+      expect( Person.men ).not.toEqual null
       expect( Person.men() instanceof Array ).toBe( true )
       expect( Person.women() instanceof Array ).toBe( true )
       expect( Person.men()[ 0 ].gender ).toBe( true )

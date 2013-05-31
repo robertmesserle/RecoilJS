@@ -1,14 +1,13 @@
 describe 'Recoil.Property', ->
 
   it 'should exist', ->
-    expect( typeof Recoil ).not.toBe( 'undefined' )
-    expect( typeof Recoil.Property ).not.toBe( 'undefined' )
+    expect( Recoil.Property? ).toBe true
 
   it 'should allow creation without any data', ->
     prop = new Recoil.Property
     expect( prop? ).toBe( true )
     expect( prop instanceof Recoil.Property ).toBe( true )
-    expect( prop.value ).toBe( null )
+    expect( prop.value ).toEqual( null )
 
   describe '#default', ->
     it 'should support default values', ->
@@ -33,4 +32,4 @@ describe 'Recoil.Property', ->
       expect( prop.value ).toBe( '0' )
     it 'should allow null values for boolean', ->
       prop = new Recoil.Property type: Boolean
-      expect( prop.value ).toBe( null )
+      expect( prop.value ).toEqual( null )

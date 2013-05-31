@@ -3,7 +3,7 @@ class IfBinding extends Base
   if: true
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'if' )
+    return unless ( @binding = @context.$element.data( 'if' ) )?
     super
     @update( false )
 
@@ -11,6 +11,7 @@ class IfBinding extends Base
     # Remove binding from global list
     index = Recoil.bindings.read.indexOf( this )
     Recoil.bindings.read.splice( index, 1 )
+    @wrap()
     new Parser @context
     delete @reparse
 
