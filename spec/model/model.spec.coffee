@@ -129,7 +129,7 @@ describe 'Recoil.Model', ->
       expect( person.age ).toBe( 23 )
       expect( person.gender ).toBe( true )
 
-    it 'should support saving', ->
+    it 'should support saving (no path)', ->
       person = new Person
       expect( person.name ).toBe( 'John Doe' )
       expect( person.age ).toBe( null )
@@ -150,6 +150,12 @@ describe 'Recoil.Model', ->
       expect( person.name ).toBe( 'Jane Doe' )
       expect( person.age ).toBe( 18 )
       expect( person.gender ).toBe( false )
+
+    describe '#save to server', ->
+
+      it 'should post a new record', ->
+
+      it 'should put an existing record', ->
 
   describe '$static', ->
 
@@ -236,3 +242,52 @@ describe 'Recoil.Model', ->
           name: ( value, oldValue ) ->
             catches.push value: value, oldValue: oldValue
       }
+
+  describe '#extend', ->
+
+    Animal = new Recoil.Model {
+      $props:
+        fname: type: String
+        lname: type: String
+        age:   type: Number
+      $virtual:
+        name:
+          read: -> "#{ @fname } #{ @lname }"
+          write: ( val ) -> [ @fname, @lname ] = val.split( /\s+/g )
+    }
+
+    Cat = new Recoil.Model {
+      $extend: Animal
+      $props:
+        breed: type: String
+    }
+
+    it 'should inherit properties', ->
+      expect( Cat._meta.$props.fname.type ).toBe String
+      expect( Cat._meta.$virtual.name.read ).toBeDefined()
+
+    it 'should allow use of inherited props', ->
+      ajax = new Cat name: 'Ajax Lo', age: 1
+      expect( ajax.fname ).toBe 'Ajax'
+      expect( ajax.lname ).toBe 'Lo'
+      expect( ajax.age ).toBe 1
+
+  describe '#escape', ->
+
+  describe '#unset', ->
+
+  describe '#toJSON', ->
+
+  describe '#fetch', ->
+
+  describe '#destroy', ->
+
+  describe '#isValid', ->
+
+  describe '#path', ->
+
+  describe '#parse', ->
+
+  describe '#clone', ->
+
+  describe '#isNew', ->

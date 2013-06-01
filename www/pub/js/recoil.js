@@ -396,6 +396,7 @@ Model = (function() {
     var _ref;
 
     this.meta = meta != null ? meta : {};
+    this.extendMeta();
     this.model = (function(_super) {
       __extends(model, _super);
 
@@ -413,6 +414,13 @@ Model = (function() {
     this.constructor.models.push(this.model);
     return this.model;
   }
+
+  Model.prototype.extendMeta = function() {
+    if (!this.meta.$extend) {
+      return;
+    }
+    return this.meta = $.extend(true, {}, this.meta.$extend._meta, this.meta);
+  };
 
   Model.prototype.attachStatic = function() {
     var key, prop, _ref, _results,
@@ -438,6 +446,7 @@ Model = (function() {
   Model.prototype.attachMeta = function() {
     var key, value, _ref, _results;
 
+    this.model._meta = this.meta;
     _ref = this.meta;
     _results = [];
     for (key in _ref) {
