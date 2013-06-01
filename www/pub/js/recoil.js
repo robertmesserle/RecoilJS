@@ -997,20 +997,25 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.renderView = function(data) {
-    var intro, _ref, _ref1;
+    var intro, _ref, _ref1, _ref2;
 
     if (data == null) {
       data = this.html;
     }
+    if ((_ref = this.controller) != null) {
+      if (typeof _ref.beforeRender === "function") {
+        _ref.beforeRender(this.context.$element, this.context.parent, this.context.root);
+      }
+    }
     this.html = data;
     this.context.$element.html(this.html);
     this.parseChildren();
-    if ((_ref = this.controller) != null) {
-      if (typeof _ref.afterRender === "function") {
-        _ref.afterRender(this.context.$element, this.context.parent, this.context.root);
+    if ((_ref1 = this.controller) != null) {
+      if (typeof _ref1.afterRender === "function") {
+        _ref1.afterRender(this.context.$element, this.context.parent, this.context.root);
       }
     }
-    intro = Recoil.transitions.intro[this.view] || ((_ref1 = this.controller) != null ? _ref1.intro : void 0) || null;
+    intro = Recoil.transitions.intro[this.view] || ((_ref2 = this.controller) != null ? _ref2.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.context.$element) : void 0;
   };
 

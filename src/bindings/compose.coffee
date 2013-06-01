@@ -18,6 +18,7 @@ class ComposeBinding extends Base
       @renderView( data )
 
   renderView: ( data = @html ) =>
+    @controller?.beforeRender? @context.$element, @context.parent, @context.root
     @html = data
     @context.$element.html( @html )
     @parseChildren()
