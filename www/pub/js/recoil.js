@@ -913,6 +913,46 @@ AttributeText = (function(_super) {
 
 })(Base);
 
+var AttrBinding,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+AttrBinding = (function(_super) {
+  __extends(AttrBinding, _super);
+
+  function AttrBinding(context) {
+    this.context = context;
+    if (!(this.binding = this.context.$element.data('attr'))) {
+      return;
+    }
+    this.setValue();
+    AttrBinding.__super__.constructor.apply(this, arguments);
+  }
+
+  AttrBinding.prototype.setValue = function() {
+    var key, value;
+
+    value = $.extend(true, {}, this.parseBinding(this.binding));
+    if (this.value === value) {
+      return;
+    }
+    if (this.value) {
+      for (key in this.value) {
+        this.value[key] = '';
+      }
+    }
+    this.context.$element.attr($.extend(true, this.value || {}, value));
+    return this.value = value;
+  };
+
+  AttrBinding.prototype.update = function() {
+    return this.setValue();
+  };
+
+  return AttrBinding;
+
+})(Base);
+
 var ComposeBinding,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
