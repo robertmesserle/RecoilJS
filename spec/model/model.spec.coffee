@@ -274,6 +274,16 @@ describe 'Recoil.Model', ->
 
   describe '#escape', ->
 
+    Tag = new Recoil.Model {
+      $props:
+        type: String
+        html: String
+    }
+
+    it 'should escape HTML tags', ->
+      div = new Tag type: 'div', html: '<div class="div"></div>'
+      expect( div.escape( 'html' ) ).toBe '&lt;div class="div"&gt;&lt;/div&gt;'
+
   describe '#unset', ->
 
   describe '#toJSON', ->

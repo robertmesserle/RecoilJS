@@ -68,6 +68,9 @@ class BaseModel
       valid = @_validates[ key ]?.call this, @[ key ]
       if valid? and not valid then return false
     return true
+
+  escape: ( key ) ->
+    return @[ key ].replace( /</g, '&lt;' ).replace( />/g, '&gt;' )
   
   save: ->
     return false unless @validate()

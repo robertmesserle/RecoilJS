@@ -310,6 +310,10 @@ BaseModel = (function() {
     return true;
   };
 
+  BaseModel.prototype.escape = function(key) {
+    return this[key].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  };
+
   BaseModel.prototype.save = function() {
     var key, prop, _ref;
 
