@@ -8,6 +8,7 @@ class Model
     @attachMeta()
     @attachStatic()
     @attachBuckets()
+    @initPaths()
     @constructor.models.push( @model )
     return @model
 
@@ -30,3 +31,18 @@ class Model
 
   attachBuckets: ->
     @model.items = []
+
+  initPaths: ->
+    $path     = @meta.$path
+    $paths    = @meta.$paths
+    rootPath  = $path or $paths?.root
+    if typeof rootPath isnt 'function'
+      pathString = rootPath
+      rootPath = -> pathString
+    paths =
+      root:   rootPath
+      get:    -> "#{ paths.root.call( @model ) }/#{ @id }"
+      put:    -> paths.get.call( this )
+      post:   -> paths.root.call( @model )
+      delete: -> paths.get.call( this )
+    @model.paths = paths

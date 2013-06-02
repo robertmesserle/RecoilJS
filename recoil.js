@@ -163,6 +163,23 @@ DirtyCheck = (function() {
 var BaseModel;
 
 BaseModel = (function() {
+  BaseModel.load = function(id) {
+    if (id != null) {
+      return this.loadOne(id);
+    }
+    return $.ajax({
+      url: this.paths.root()
+    });
+  };
+
+  BaseModel.loadOne = function(id) {
+    return $.ajax({
+      url: this.paths.get.call({
+        id: id
+      })
+    });
+  };
+
   function BaseModel(data) {
     if (data == null) {
       data = {};
@@ -320,6 +337,22 @@ BaseModel = (function() {
     return true;
   };
 
+  BaseModel.prototype.send = function() {
+    return $.ajax({
+      url: this.constructor.paths.get.call(this),
+      data: this.toJSON()
+    });
+  };
+
+  BaseModel.prototype.fetch = function() {
+    return $.ajax({
+      url: this.constructor.paths.get.call(this),
+      complete: function(data) {
+        return this.set(data);
+      }
+    });
+  };
+
   BaseModel.prototype.checkVirtuals = function() {
     var key, virtual, _ref, _results;
 
@@ -357,6 +390,18 @@ BaseModel = (function() {
       _results.push(this[key] = virtual.update());
     }
     return _results;
+  };
+
+  BaseModel.prototype.toJSON = function() {
+    var json, key, prop, _ref;
+
+    json = {};
+    _ref = this.props;
+    for (key in _ref) {
+      prop = _ref[key];
+      json[key] = prop.value;
+    }
+    return json;
   };
 
   BaseModel.prototype.update = function() {
@@ -403,6 +448,7 @@ Model = (function() {
     this.attachMeta();
     this.attachStatic();
     this.attachBuckets();
+    this.initPaths();
     this.constructor.models.push(this.model);
     return this.model;
   }
@@ -450,6 +496,36 @@ Model = (function() {
 
   Model.prototype.attachBuckets = function() {
     return this.model.items = [];
+  };
+
+  Model.prototype.initPaths = function() {
+    var $path, $paths, pathString, paths, rootPath;
+
+    $path = this.meta.$path;
+    $paths = this.meta.$paths;
+    rootPath = $path || ($paths != null ? $paths.root : void 0);
+    if (typeof rootPath !== 'function') {
+      pathString = rootPath;
+      rootPath = function() {
+        return pathString;
+      };
+    }
+    paths = {
+      root: rootPath,
+      get: function() {
+        return "" + (paths.root.call(this.model)) + "/" + this.id;
+      },
+      put: function() {
+        return paths.get.call(this);
+      },
+      post: function() {
+        return paths.root.call(this.model);
+      },
+      "delete": function() {
+        return paths.get.call(this);
+      }
+    };
+    return this.model.paths = paths;
   };
 
   return Model;

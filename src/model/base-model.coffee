@@ -1,5 +1,12 @@
 class BaseModel
 
+  @load: ( id ) ->
+    return @loadOne( id ) if id?
+    $.ajax url: @paths.root()
+
+  @loadOne: ( id ) ->
+    $.ajax url: @paths.get.call( id: id )
+
   constructor: ( data = {} ) ->
     @_createBuckets()
     @_storeItem()
@@ -76,6 +83,16 @@ class BaseModel
       prop.save()
     return true
 
+  send: ->
+    $.ajax
+      url: @constructor.paths.get.call( this )
+      data: @toJSON()
+
+  fetch: ->
+    $.ajax
+      url: @constructor.paths.get.call( this )
+      complete: ( data ) -> @set( data )
+
   checkVirtuals: ->
     for key, virtual of @virtuals when @[ key ] isnt virtual.value
       @[ key ] = virtual.set @[ key ]
@@ -88,6 +105,12 @@ class BaseModel
   updateVirtuals: ->
     for key, virtual of @virtuals
       @[ key ] = virtual.update()
+
+  toJSON: ->
+    json = {}
+    for key, prop of @props
+      json[ key ] = prop.value
+    return json
 
   update: ->
     @checkVirtuals()

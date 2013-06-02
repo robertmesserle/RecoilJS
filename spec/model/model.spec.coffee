@@ -295,6 +295,37 @@ describe 'Recoil.Model', ->
       expect( person.name ).toBe 'John Doe'
 
   describe '#toJSON', ->
+    Person = new Recoil.Model {
+      $props:
+        fname: type: String, default: 'John'
+        lname: type: String, default: 'Doe'
+        age:   type: Number, default: 18
+        male:  type: Boolean, default: true
+    }
+
+    it 'should convert to plain JSON', ->
+      person = new Person
+      expect( person.toJSON() ).toEqual fname: 'John', lname: 'Doe', age: 18, male: true
+
+  describe '#load', ->
+    $.ajax = ( obj ) -> obj
+    Person = new Recoil.Model {
+      $path:  '/person'
+      $props:
+        id:   type: Number
+        name: type: String
+    }
+    person = new Person id: 1, name: 'John Doe'
+
+    it 'should have the correct URLs', ->
+      expect( Person.load().url ).toBe '/person'
+      expect( Person.load( 1 ).url ).toBe '/person/1'
+      expect( person.send().url ).toBe '/person/1'
+      expect( person.send().data ).toEqual { id: 1, name: 'John Doe' }
+      expect( person.fetch().url ).toBe '/person/1'
+
+
+  describe '#send', ->
 
   describe '#fetch', ->
 
