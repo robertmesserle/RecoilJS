@@ -294,6 +294,34 @@ describe 'Recoil.Model', ->
       person.unset( 'name' )
       expect( person.name ).toBe 'John Doe'
 
+  describe '$props.model', ->
+    Person = new Recoil.Model {
+      $props:
+        fname: type: String, default: 'John'
+        lname: type: String, default: 'Doe'
+        father: type: -> Person
+        mother: type: -> Person
+    }
+    person = new Person
+      fname: 'Robert'
+      lname: 'Messerle'
+      father:
+        fname: 'Richard'
+        lname: 'Messerle'
+      mother:
+        fname: 'Betsy'
+        lname: 'Messerle'
+
+    it 'should store the properties', ->
+      expect( person.father.fname ).toBe 'Richard'
+      expect( person.father.lname ).toBe 'Messerle'
+      expect( person.mother.fname ).toBe 'Betsy'
+      expect( person.mother.lname ).toBe 'Messerle'
+
+    it 'should wrap the properties in the correct Model', ->
+      expect( person.father instanceof Person ).toBe true
+      expect( person.mother instanceof Person ).toBe true
+
   describe '#toJSON', ->
     Person = new Recoil.Model {
       $props:

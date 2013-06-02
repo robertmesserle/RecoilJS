@@ -553,10 +553,39 @@ Property = (function() {
     this.parseData(data);
   }
 
+  Property.prototype.parseType = function(type) {
+    var typeString;
+
+    if (!type) {
+      return (function(value) {
+        return value;
+      });
+    }
+    typeString = type.toString();
+    if (typeString.indexOf('[native code]') + 1) {
+      return type;
+    }
+    if (type instanceof Recoil.Model) {
+      return (function() {
+        return (function(func, args, ctor) {
+          ctor.prototype = func.prototype;
+          var child = new ctor, result = func.apply(child, args);
+          return Object(result) === result ? result : child;
+        })(type, arguments, function(){});
+      });
+    }
+    type = type();
+    return (function() {
+      return (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(type, arguments, function(){});
+    });
+  };
+
   Property.prototype.parseData = function(data) {
-    this.type = data.type || function(value) {
-      return value;
-    };
+    this.type = this.parseType(data.type);
     this.model = data.model;
     if (data["default"] != null) {
       this["default"] = this.type(data["default"]);
@@ -577,7 +606,7 @@ Property = (function() {
     if (subscribe) {
       this._subscribe.call(this.context, value, this.value);
     }
-    return this.value = value;
+    return this.value = this.type instanceof Recoil.Model ? new this.type(value) : this.type(value);
   };
 
   Property.prototype.unset = function() {
