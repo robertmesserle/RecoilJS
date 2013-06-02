@@ -109,7 +109,7 @@ class BaseModel
   toJSON: ->
     json = {}
     for key, prop of @props
-      json[ key ] = prop.value
+      json[ key ] = prop.value?.toJSON?() or prop.value
     return json
 
   update: ->

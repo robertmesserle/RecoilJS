@@ -393,13 +393,13 @@ BaseModel = (function() {
   };
 
   BaseModel.prototype.toJSON = function() {
-    var json, key, prop, _ref;
+    var json, key, prop, _ref, _ref1;
 
     json = {};
     _ref = this.props;
     for (key in _ref) {
       prop = _ref[key];
-      json[key] = prop.value;
+      json[key] = ((_ref1 = prop.value) != null ? typeof _ref1.toJSON === "function" ? _ref1.toJSON() : void 0 : void 0) || prop.value;
     }
     return json;
   };

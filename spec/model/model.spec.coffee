@@ -332,17 +332,51 @@ describe 'Recoil.Model', ->
       expect( person.pet instanceof Cat ).toBe true
 
   describe '#toJSON', ->
+    Cat = new Recoil.Model {
+      $props:
+        name: type: String
+    }
     Person = new Recoil.Model {
       $props:
-        fname: type: String, default: 'John'
-        lname: type: String, default: 'Doe'
-        age:   type: Number, default: 18
-        male:  type: Boolean, default: true
+        fname:  type: String, default: 'John'
+        lname:  type: String, default: 'Doe'
+        age:    type: Number
+        male:   type: Boolean
+        mother: type: -> Person
+        father: type: -> Person
+        pet:    type: Cat
     }
 
     it 'should convert to plain JSON', ->
-      person = new Person
-      expect( person.toJSON() ).toEqual fname: 'John', lname: 'Doe', age: 18, male: true
+      person = new Person {
+        fname: 'Robert'
+        lname: 'Messerle'
+        age:   28
+        male:  true
+        father:
+          fname: 'Richard'
+          lname: 'Messerle'
+          male:  true
+        pet:
+          name: 'Annabelle'
+      }
+      expect( person.toJSON() ).toEqual {
+        fname: 'Robert'
+        lname: 'Messerle'
+        age: 28
+        male: true
+        father:
+          fname: 'Richard'
+          lname: 'Messerle'
+          age:   null
+          male:  true
+          mother: null
+          father: null
+          pet: null
+        mother: null
+        pet:
+          name: 'Annabelle'
+      }
 
   describe '#load', ->
     $.ajax = ( obj ) -> obj
