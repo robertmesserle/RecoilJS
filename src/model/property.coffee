@@ -13,7 +13,7 @@ class Property
     return ( ( value ) -> value ) unless type
     typeString = type.toString()
     return type if typeString.indexOf( '[native code]' ) + 1
-    return ( -> new type arguments... ) if type instanceof Recoil.Model
+    return ( -> new type arguments... ) if type?.__super__?.constructor is BaseModel
     type = type()
     return ( -> new type arguments... )
 

@@ -295,12 +295,17 @@ describe 'Recoil.Model', ->
       expect( person.name ).toBe 'John Doe'
 
   describe '$props.model', ->
+    Cat = new Recoil.Model {
+      $props:
+        name: type: String
+    }
     Person = new Recoil.Model {
       $props:
         fname: type: String, default: 'John'
         lname: type: String, default: 'Doe'
         father: type: -> Person
         mother: type: -> Person
+        pet:    type: Cat
     }
     person = new Person
       fname: 'Robert'
@@ -311,16 +316,20 @@ describe 'Recoil.Model', ->
       mother:
         fname: 'Betsy'
         lname: 'Messerle'
+      pet:
+        name: 'Annabelle'
 
     it 'should store the properties', ->
       expect( person.father.fname ).toBe 'Richard'
       expect( person.father.lname ).toBe 'Messerle'
       expect( person.mother.fname ).toBe 'Betsy'
       expect( person.mother.lname ).toBe 'Messerle'
+      expect( person.pet.name ).toBe 'Annabelle'
 
     it 'should wrap the properties in the correct Model', ->
       expect( person.father instanceof Person ).toBe true
       expect( person.mother instanceof Person ).toBe true
+      expect( person.pet instanceof Cat ).toBe true
 
   describe '#toJSON', ->
     Person = new Recoil.Model {

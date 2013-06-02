@@ -554,7 +554,7 @@ Property = (function() {
   }
 
   Property.prototype.parseType = function(type) {
-    var typeString;
+    var typeString, _ref;
 
     if (!type) {
       return (function(value) {
@@ -565,7 +565,7 @@ Property = (function() {
     if (typeString.indexOf('[native code]') + 1) {
       return type;
     }
-    if (type instanceof Recoil.Model) {
+    if ((type != null ? (_ref = type.__super__) != null ? _ref.constructor : void 0 : void 0) === BaseModel) {
       return (function() {
         return (function(func, args, ctor) {
           ctor.prototype = func.prototype;
