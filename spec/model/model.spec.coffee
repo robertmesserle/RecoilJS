@@ -37,7 +37,6 @@ describe 'Recoil.Model', ->
       expect( person.fname ).toBe 'Robert'
       expect( person.lname ).toBe 'Messerle'
       expect( person.age ).toBe 23
-      expect( person.gender ).toBe true
 
   describe '#set', ->
 
@@ -53,7 +52,7 @@ describe 'Recoil.Model', ->
 
     it 'should support setting a property value', ->
       person = new Person
-      person.set 'fname', 'Jane'
+      person.set fname: 'Jane'
       expect( person.name ).toBe 'Jane Doe'
       expect( person.fname ).toBe 'Jane'
 
@@ -126,6 +125,7 @@ describe 'Recoil.Model', ->
       person.gender = false
       person.revert()
       expect( person.name ).toBe( 'Robert Messerle' )
+      console.log person.age
       expect( person.age ).toBe( 23 )
       expect( person.gender ).toBe( true )
 
@@ -285,6 +285,14 @@ describe 'Recoil.Model', ->
       expect( div.escape( 'html' ) ).toBe '&lt;div class="div"&gt;&lt;/div&gt;'
 
   describe '#unset', ->
+
+    Person = new Recoil.Model $props: name: default: 'John Doe'
+    it 'should revert to the default value', ->
+
+      person = new Person name: 'Jane Doe'
+      expect( person.name ).toBe 'Jane Doe'
+      person.unset( 'name' )
+      expect( person.name ).toBe 'John Doe'
 
   describe '#toJSON', ->
 

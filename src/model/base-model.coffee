@@ -5,7 +5,8 @@ class BaseModel
     @_storeItem()
     @_wrapProps()
     @_createVirtuals()
-    @_parseData( data )
+    @set( data, null, true, false )
+    @save()
     @_parseValidates()
     @_parseSubscribes()
     @initialize? data
@@ -13,60 +14,57 @@ class BaseModel
   # Private
 
   _createBuckets: ->
-    @_history     = {}
-    @_props       = {}
-    @_validates   = {}
-    @_subscribes  = {}
+    @props = {}
+    @virtuals = {}
 
   _storeItem: ->
     @constructor.items.push( this )
 
   _wrapProps: ->
     for key, prop of @$props or {}
-      @_props[ key ] = new Property prop
-      @[ key ] = @_history[ key ] = @_props[ key ].value
+      @props[ key ] = new Property prop, @context
+      @[ key ] = @props[ key ].value
 
   _createVirtuals: ->
     for key, prop of @$virtual or {}
-      @[ key ] = @_history[ key ] = prop.read.call( this )
-  
-  _parseData: ( data ) ->
-    for key, value of data
-      @set( key, value, false )
-    @update()
-    @save()
+      @virtuals[ key ] = virtual = new Virtual prop, this
+      @[ key ] = virtual.value
 
   _parseValidates: ->
     for key, value of @$validate
-      @_validates[ key ] = value
-    for key, value of @$props when value.validate?
-      @_validates[ key ] = value.validate
+      @props[ key ]._validate = value
 
   _parseSubscribes: ->
     for key, value of @$subscribe
-      @_subscribes[ key ] = value
-    for key, value of @$props when value.subscribe?
-      @_subscribes[ key ] = value.subscribe
+      @props[ key ]._subscribe = value
 
   # Public
 
-  set: ( key, value, update = true ) ->
+  set: ( key, value, update = true, subscribe = true ) ->
     if typeof key is 'object'
       obj = key
       for key, value of obj
-        @set key, value, false
+        @set key, value, false, subscribe
+      @update() if update
     else
-      @[ key ] = value
-    @update() if update
+      if @props[ key ]
+        @[ key ] = @props[ key ].set value, subscribe
+        @updateVirtuals() if update
+      else if @virtuals[ key ]
+        @[ key ] = @virtuals[ key ].set value, subscribe
+        @checkProps() if update
+
+  unset: ( key ) ->
+    @[ key ] = @props[ key ].unset()
   
   revert: ->
-    for key, prop of @_props
-      @[ key ] = @_history[ key ] = prop.value
+    for key, prop of @props
+      @[ key ] = prop.revert()
+      @updateVirtuals()
 
   validate: ->
-    for key, prop of @_props
-      valid = @_validates[ key ]?.call this, @[ key ]
-      if valid? and not valid then return false
+    for key, prop of @props
+      return false unless prop.validate()
     return true
 
   escape: ( key ) ->
@@ -74,30 +72,23 @@ class BaseModel
   
   save: ->
     return false unless @validate()
-    for key, prop of @_props
-      prop.value = @[ key ]
+    for key, prop of @props
+      prop.save()
     return true
 
+  checkVirtuals: ->
+    for key, virtual of @virtuals when @[ key ] isnt virtual.value
+      @[ key ] = virtual.set @[ key ]
+
+  checkProps: ->
+    for key, prop of @props when @[ key ] isnt prop.value
+      @[ key ] = prop.set @[ key ]
+    @updateVirtuals()
+
+  updateVirtuals: ->
+    for key, virtual of @virtuals
+      @[ key ] = virtual.update()
+
   update: ->
-    # Check virtuals first
-    for key, virtual of @$virtual
-      oldValue = @_history[ key ]
-      newValue = @[ key ]
-      continue if oldValue is newValue
-      virtual.write.call( this, newValue )
-      @_history[ key ] = newValue
-      @_subscribes[ key ]?.call this, newValue, oldValue
-    # Check properties
-    for key, prop of @_props when @[ key ] isnt @_history[ key ]
-      oldValue = @_history[ key ]
-      newValue = @[ key ]
-      continue if oldValue is newValue
-      @_history[ key ] = newValue
-      @_subscribes[ key ]?.call this, newValue, oldValue
-    # Update virtuals
-    for key, virtual of @$virtual
-      oldValue = @_history[ key ]
-      newValue = virtual.read.call( this )
-      continue if oldValue is newValue
-      @[ key ] = @_history[ key ] = newValue
-      @_subscribes[ key ]?.call this, newValue, oldValue
+    @checkVirtuals()
+    @checkProps()

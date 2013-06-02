@@ -27,8 +27,6 @@ describe 'Recoil.Property', ->
     it 'should convert default to the specified type', ->
       prop = new Recoil.Property type: String, default: 0
       expect( prop.default ).toBe( '0' )
-    it 'should convert value to the specified type', ->
-      prop = new Recoil.Property type: String, value: 0
       expect( prop.value ).toBe( '0' )
     it 'should allow null values for boolean', ->
       prop = new Recoil.Property type: Boolean
