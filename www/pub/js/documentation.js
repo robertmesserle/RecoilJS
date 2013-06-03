@@ -23,6 +23,8 @@
       function DataBindingController() {
         this.highlight = __bind(this.highlight, this);
         this.test = __bind(this.test, this);
+        this.formatSyntax = __bind(this.formatSyntax, this);
+        this.highlightTerms = __bind(this.highlightTerms, this);
         this.handleListButton = __bind(this.handleListButton, this);
       }
 
@@ -34,17 +36,43 @@
         }
       };
 
-      DataBindingController.prototype.formatSyntax = function(binding) {
-        var arg, syntax, _i, _len, _ref;
+      DataBindingController.prototype.highlightTerms = function(line, terms) {
+        var arg, _i, _len;
 
-        syntax = binding.syntax;
-        _ref = binding.args || [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          arg = _ref[_i];
-          syntax = syntax.replace(arg.name, "<span class=\"blue\">" + arg.name + "</span>");
+        if (terms == null) {
+          terms = [];
         }
-        syntax = syntax.replace('#{', '#\\{');
-        return syntax;
+        for (_i = 0, _len = terms.length; _i < _len; _i++) {
+          arg = terms[_i];
+          line = line.replace(arg.name, "<span class=\"important\">" + arg.name + "</span>");
+        }
+        line = line.replace('#{', '#\\{');
+        return line;
+      };
+
+      DataBindingController.prototype.formatSyntax = function(binding, highlight) {
+        var html, indent, lastIndent, line, _i, _len, _ref, _ref1, _ref2;
+
+        if (highlight == null) {
+          highlight = true;
+        }
+        html = '';
+        indent = lastIndent = 0;
+        _ref = binding.syntax.split(/\n/g);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          line = _ref[_i];
+          indent = ((_ref1 = line.match(/^\s+/)) != null ? (_ref2 = _ref1[0]) != null ? _ref2.length : void 0 : void 0) || 0;
+          if (indent > lastIndent) {
+            html += '<div class="block">';
+          } else if (indent < lastIndent) {
+            html += '</div>';
+          }
+          lastIndent = indent;
+          html += '<div>';
+          html += highlight ? this.highlightTerms(line, binding.args) : $.trim(line);
+          html += '</div>';
+        }
+        return html;
       };
 
       DataBindingController.prototype.test = function(binding) {

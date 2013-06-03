@@ -44,7 +44,6 @@ code
   line-height 1.5em
   display inline-block
   padding 0 3px
-  overflow auto
   white-space nowrap
   &.block
     display block
@@ -52,8 +51,15 @@ code
     margin 5px 0 10px
     padding 7px 10px
     position relative
+    overflow-x auto
+    overflow-y hidden
     &.important
       border-color $blue
+    .important
+      background $blue
+      color white
+      border-radius 3px
+      padding 2px 4px
     .block
       padding-left 20px
     .foreground

@@ -1,9 +1,9 @@
 define ( require ) ->
 
-  SectionController = require './section'
+  DocumentationController = require './documentation'
+  Data = require './data/model'
 
-  class Model
+  class ModelController extends DocumentationController
 
-    category: 'Documentation'
-    view: 'coming-soon'
     title: 'Model'
+    bindings: Data
