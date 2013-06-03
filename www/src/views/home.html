@@ -26,7 +26,8 @@
       <dd>In most data-binding frameworks, you are limited to models that you control.  This was a primary goal for Recoil, as it helps keep Recoil out of your way.</dd>
     </dl>
   </article>
-  <article>
+  <article class="has-icon">
+    <i class="icon-question-sign"></i>
     <h1>How does it work?</h1>
     <p>Recoil works by using a process called dirty-checking.  Basically, when the user interacts with the page, Recoil takes note that the data may have changed and iterates through your data-bindings to see if any UI updates are necessary to keep everything in sync.  Contrary to many initial assumptions, this does not rely on intervals or timeouts, and instead relies on user-interaction to trigger a dirty check.  While it may sound like a lot of work, it all takes place very efficiently resulting in smooth, seamless UI updates.</p>
   </article>
