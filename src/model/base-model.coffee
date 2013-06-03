@@ -1,11 +1,33 @@
 class BaseModel
 
-  @load: ( id ) ->
-    return @loadOne( id ) if id?
-    $.ajax url: @paths.root()
+  @getByField: ( field, value ) ->
+    for item in @items
+      return item if item[ field ] is value
 
-  @loadOne: ( id ) ->
-    $.ajax url: @paths.get.call( id: id )
+  @load: ( id, callback ) ->
+    return @loadOne( id, callback ) if id?
+    $.ajax
+      url: @paths.root()
+      success: ( data ) =>
+        for item in data
+          match = @getByField( 'id', item.id )
+          if match?
+            for field, value of data
+              match[ field ] = value
+            match.isNew = false
+          else
+            model = new this item
+            model.isNew = false
+        callback?( @items )
+
+  @loadOne: ( id, callback ) ->
+    $.ajax
+      url: @paths.get.call( id: id )
+      success: ( data ) =>
+        item = new this data
+        callback?( item )
+
+  isNew: true
 
   constructor: ( data = {} ) ->
     @_createBuckets()
@@ -84,9 +106,19 @@ class BaseModel
     return true
 
   send: ->
-    $.ajax
-      url: @constructor.paths.get.call( this )
+    ajax =
+      url: if @isNew then @constructor.paths.post.call( this ) else @constructor.paths.put.call( this )
       data: @toJSON()
+      type: if @isNew then 'POST' else 'PUT'
+      success: ( data ) =>
+        @isNew = false
+        return false unless data
+        for key, value of data
+          @[ key ] = @props[ key ].set value
+        @updateVirtuals()
+    $.ajax ajax
+    return ajax
+
 
   fetch: ->
     $.ajax

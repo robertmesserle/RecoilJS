@@ -163,22 +163,65 @@ DirtyCheck = (function() {
 var BaseModel;
 
 BaseModel = (function() {
-  BaseModel.load = function(id) {
+  BaseModel.getByField = function(field, value) {
+    var item, _i, _len, _ref;
+
+    _ref = this.items;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      item = _ref[_i];
+      if (item[field] === value) {
+        return item;
+      }
+    }
+  };
+
+  BaseModel.load = function(id, callback) {
+    var _this = this;
+
     if (id != null) {
-      return this.loadOne(id);
+      return this.loadOne(id, callback);
     }
     return $.ajax({
-      url: this.paths.root()
+      url: this.paths.root(),
+      success: function(data) {
+        var field, item, match, model, value, _i, _len;
+
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          item = data[_i];
+          match = _this.getByField('id', item.id);
+          if (match != null) {
+            for (field in data) {
+              value = data[field];
+              match[field] = value;
+            }
+            match.isNew = false;
+          } else {
+            model = new _this(item);
+            model.isNew = false;
+          }
+        }
+        return typeof callback === "function" ? callback(_this.items) : void 0;
+      }
     });
   };
 
-  BaseModel.loadOne = function(id) {
+  BaseModel.loadOne = function(id, callback) {
+    var _this = this;
+
     return $.ajax({
       url: this.paths.get.call({
         id: id
-      })
+      }),
+      success: function(data) {
+        var item;
+
+        item = new _this(data);
+        return typeof callback === "function" ? callback(item) : void 0;
+      }
     });
   };
+
+  BaseModel.prototype.isNew = true;
 
   function BaseModel(data) {
     if (data == null) {
@@ -338,10 +381,29 @@ BaseModel = (function() {
   };
 
   BaseModel.prototype.send = function() {
-    return $.ajax({
-      url: this.constructor.paths.get.call(this),
-      data: this.toJSON()
-    });
+    var ajax,
+      _this = this;
+
+    ajax = {
+      url: this.isNew ? this.constructor.paths.post.call(this) : this.constructor.paths.put.call(this),
+      data: this.toJSON(),
+      type: this.isNew ? 'POST' : 'PUT',
+      success: function(data) {
+        var key, value;
+
+        _this.isNew = false;
+        if (!data) {
+          return false;
+        }
+        for (key in data) {
+          value = data[key];
+          _this[key] = _this.props[key].set(value);
+        }
+        return _this.updateVirtuals();
+      }
+    };
+    $.ajax(ajax);
+    return ajax;
   };
 
   BaseModel.prototype.fetch = function() {

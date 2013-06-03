@@ -125,7 +125,6 @@ describe 'Recoil.Model', ->
       person.gender = false
       person.revert()
       expect( person.name ).toBe( 'Robert Messerle' )
-      console.log person.age
       expect( person.age ).toBe( 23 )
       expect( person.gender ).toBe( true )
 
@@ -378,25 +377,63 @@ describe 'Recoil.Model', ->
           name: 'Annabelle'
       }
 
-  describe '#load', ->
-    $.ajax = ( obj ) -> obj
+  describe 'Ajax Calls', ->
+
+    beforeEach ->
+      $._ajax = $.ajax
+      $.ajax = ( obj ) -> obj
+
+    afterEach ->
+      $.ajax = $._ajax
+      delete $._ajax
+
     Person = new Recoil.Model {
       $path:  '/person'
       $props:
         id:   type: Number
         name: type: String
     }
-    person = new Person id: 1, name: 'John Doe'
 
     it 'should have the correct URLs', ->
+      $.ajax = ( obj ) -> obj
+      person = new Person id: 1, name: 'John Doe'
       expect( Person.load().url ).toBe '/person'
       expect( Person.load( 1 ).url ).toBe '/person/1'
-      expect( person.send().url ).toBe '/person/1'
+      expect( person.send().url ).toBe '/person'
       expect( person.send().data ).toEqual { id: 1, name: 'John Doe' }
       expect( person.fetch().url ).toBe '/person/1'
 
+    it 'load the list of items from the backend', ->
+      $.ajax = ( obj ) ->
+        obj.success [
+          { id: 1, name: 'foo' }
+          { id: 2, name: 'bar' }
+          { id: 3, name: 'baz' }
+        ]
+      Person.load()
+      expect( Person.items.length ).toBe 3
+      $.ajax = ( obj ) ->
+        obj.success { id: 1, name: 'foo' }
+      expect( Person.items[ 0 ].send().url ).toBe '/person/1'
 
-  describe '#send', ->
+    it 'should update the data after a post', ->
+      Person.items = []
+      person = new Person name: 'foo'
+      $.ajax = ( obj ) -> obj.success id: 2, name: 'foo'
+      expect( Person.items.length ).toBe 1
+      expect( person.id ).toBeNull()
+      expect( person.send().url ).toBe '/person'
+      expect( person.id ).toBe 2
+      expect( person.send().url ).toBe '/person/2'
+
+    it 'should load one', ->
+      Person.items = []
+      expect( Person.items.length ).toBe 0
+      $.ajax = ( obj ) -> obj.success id: 1, name: 'foo'
+      Person.load 1, ( item ) ->
+        expect( Person.items.length ).toBe 1
+        expect( item.id ).toBe 1
+        expect( item.name ).toBe 'foo'
 
   describe '#fetch', ->
 
