@@ -1240,6 +1240,7 @@ ComposeBinding = (function(_super) {
       }
     }
     this.html = data;
+    this.context.$element.scrollTop(0);
     this.context.$element.html(this.html);
     this.parseChildren();
     if ((_ref1 = this.controller) != null) {

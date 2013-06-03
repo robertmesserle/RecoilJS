@@ -12,7 +12,7 @@ hr{border:none;height:1px;background:#f2f2f2}
 code{font-family:Consolas,"Liberation Mono",Courier,monospace;font-size:13px;background:#f0f0f0;color:#808080;line-height:1.5em;display:inline-block;padding:0 3px;white-space:nowrap;}
 code.block{display:block;border-left:10px #ddd solid;margin:5px 0 10px;padding:7px 10px;position:relative;overflow-x:auto;overflow-y:hidden;}
 code.block.important{border-color:#4095bf}
-code.block .important{background:#4095bf;color:#fff;-webkit-border-radius:3px;border-radius:3px;padding:2px 4px}
+code.block .important{background:#6ac;color:#fff;-webkit-border-radius:3px;border-radius:3px;padding:2px 4px}
 code.block .block{padding-left:20px}
 code.block .foreground{position:absolute;top:7px;left:10px}
 code.block .invisible{color:rgba(255,255,255,0)}
