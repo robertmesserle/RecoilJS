@@ -21,7 +21,7 @@ define ( require ) -> [
     syntax: """
       $props: {
         :propName : {
-          type : :type
+          type : :type,
           default : :default
         }
       }
