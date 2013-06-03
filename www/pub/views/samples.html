@@ -1,71 +1,86 @@
 <form>
-  <fieldset>
-    <legend>Update on Blur</legend>
-    <p>Edit the number in the 'Phone Number' field, and the 'Formatted Number' should update immediately.</p>
-    <div class="field">
-      <label>Phone Number</label>
-      <input type="text" data-value="phoneNumber" />
-    </div>
-    <div class="field">
-      <label>Formatted Number</label>
-      <input type="text" data-value="formattedPhoneNumber" disabled />
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend>Filtering</legend>
-    <p>Here is a list of JavaScript event types.  Enter some text in the search field, and the list should update automatically.</p>
-    <div class="field">
-      <label>Search</label>
-      <input type="text" data-value="searchTerm" data-live />
-    </div>
-    <div class="field">
-      <label>Results for "#{ searchTerm }"</label>
-      <ul class="input disabled" data-for="keyword in filteredEvents">
-        <li data-html="getHighlightedTerm keyword"></li>
-      </ul>
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend>Forms: Select</legend>
-    <div class="field">
-      <label for="select">Select an event:</label>
-      <select name="select" id="select" data-value="selectValue" data-for="option in selectOptions" data-live>
-        <option value="#{ option }">#{ option }</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="selectValue">Selected event:</label>
-      <input type="text" name="selectedOption" id="selectedOption" disabled data-value="selectValue">
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend>Form: Checkbox</legend>
-    <div class="field">
-      <label for="checkbox">
-        <input type="checkbox" name="checkbox" id="checkbox" data-value="checkboxValue">
-        A wild checkbox appears!
-      </label>
-    </div>
-    <div class="field">
-      <p>The checkbox is #{ if checkboxValue then 'checked' else 'unchecked' }.</p>
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend>Form: Radio Button</legend>
-    <div class="field">
-      <label for="radio1">
-        <input type="radio" name="radio" id="radio1" value="Option 1" data-value="radioOption"> Option 1
-      </label>
-      <label for="radio2">
-        <input type="radio" name="radio" id="radio2" value="Option 2" data-value="radioOption"> Option 2
-      </label>
-      <label for="radio3">
-        <input type="radio" name="radio" id="radio3" value="Option 3" data-value="radioOption"> Option 3
-      </label>
-    </div>
-    <div class="field">
-      <label for="radio-results">Selected option:</label>
-      <input type="text" name="radio-results" id="radio-results" disabled data-value="radioOption">
-    </div>
-  </fieldset>
+  <article class="has-icon">
+    <i class="icon-phone"></i>
+    <h1>Update on Blur</h1>
+    <fieldset>
+      <p>Edit the number in the 'Phone Number' field, and the 'Formatted Number' should update immediately.</p>
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="text" data-value="phoneNumber" />
+      </div>
+      <div class="field">
+        <label>Formatted Number</label>
+        <input type="text" data-value="formattedPhoneNumber" disabled />
+      </div>
+    </fieldset>
+  </article>
+  <article class="has-icon">
+    <i class="icon-search"></i>
+    <h1>Filtering</h1>
+    <fieldset>
+      <p>Here is a list of JavaScript event types.  Enter some text in the search field, and the list should update automatically.</p>
+      <div class="field">
+        <label>Search</label>
+        <input type="text" data-value="searchTerm" data-live />
+      </div>
+      <div class="field">
+        <label>Results for "#{ searchTerm }"</label>
+        <ul class="input disabled" data-for="keyword in filteredEvents">
+          <li data-html="getHighlightedTerm keyword"></li>
+        </ul>
+      </div>
+    </fieldset>
+  </article>
+  <article class="has-icon">
+    <i class="icon-tasks"></i>
+    <h1>Forms: Select</h1>
+    <fieldset>
+      <div class="field">
+        <label for="select">Select an event:</label>
+        <select name="select" id="select" data-value="selectValue" data-for="option in selectOptions" data-live>
+          <option value="#{ option }">#{ option }</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="selectValue">Selected event:</label>
+        <input type="text" name="selectedOption" id="selectedOption" disabled data-value="selectValue">
+      </div>
+    </fieldset>
+  </article>
+  <article class="has-icon">
+    <i class="icon-check-sign"></i>
+    <h1>Form: Checkbox</h1>
+    <fieldset>
+      <div class="field">
+        <label for="checkbox">
+          <input type="checkbox" name="checkbox" id="checkbox" data-value="checkboxValue">
+          A wild checkbox appears!
+        </label>
+      </div>
+      <div class="field">
+        <p>The checkbox is #{ if checkboxValue then 'checked' else 'unchecked' }.</p>
+      </div>
+    </fieldset>
+  </article>
+  <article class="has-icon">
+    <i class="icon-circle-blank"></i>
+    <h1>Form: Radio Button</h1>
+    <fieldset>
+      <div class="field">
+        <label for="radio1">
+          <input type="radio" name="radio" id="radio1" value="Option 1" data-value="radioOption"> Option 1
+        </label>
+        <label for="radio2">
+          <input type="radio" name="radio" id="radio2" value="Option 2" data-value="radioOption"> Option 2
+        </label>
+        <label for="radio3">
+          <input type="radio" name="radio" id="radio3" value="Option 3" data-value="radioOption"> Option 3
+        </label>
+      </div>
+      <div class="field">
+        <label for="radio-results">Selected option:</label>
+        <input type="text" name="radio-results" id="radio-results" disabled data-value="radioOption">
+      </div>
+    </fieldset>
+  </article>
 </form>
