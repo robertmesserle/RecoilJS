@@ -4,6 +4,7 @@ define ( require ) -> [
     sections: [
       { title: 'Home', href: '#home', icon: 'icon-home', controller: require '../home' }
       { title: 'Download', href: '#download', icon: 'icon-download', controller: require '../download' }
+      { title: 'Samples', href: '#samples', icon: 'icon-tasks', controller: require '../samples' }
     ]
   }
   {

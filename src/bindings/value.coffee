@@ -11,9 +11,10 @@ class ValueBinding extends Base
     Recoil.bindings.write.push( this )
 
   bindEvents: ->
+    change = @context.$element.is( 'select' )
     switch @context.$element.attr( 'type' )
-      when 'radio', 'checkbox'
-        @context.$element.on 'change', @updateHandler
+      when 'radio', 'checkbox' then change = true
+    if change then @context.$element.on 'change', @updateHandler
 
   getValue: ->
     if @context.$element.attr( 'type' ) is 'radio'

@@ -1792,10 +1792,16 @@ ValueBinding = (function(_super) {
   }
 
   ValueBinding.prototype.bindEvents = function() {
+    var change;
+
+    change = this.context.$element.is('select');
     switch (this.context.$element.attr('type')) {
       case 'radio':
       case 'checkbox':
-        return this.context.$element.on('change', this.updateHandler);
+        change = true;
+    }
+    if (change) {
+      return this.context.$element.on('change', this.updateHandler);
     }
   };
 
