@@ -17,7 +17,7 @@
           }
         ]
       }, {
-        title: 'Documentation',
+        title: 'Reference',
         sections: [
           {
             title: 'Configuration',

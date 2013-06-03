@@ -7,15 +7,12 @@
   overflow hidden
   > header
     padding 0
-    $stripe1 = hsl( 0, 0, 12 )
-    $stripe2 = hsl( 0, 0, 10 )
+    stripes hsl( 0, 0, 12 ), hsl( 0, 0, 10 )
     position absolute
     top 20px
     left 0
     right 0
     height 95px
-    background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
-    background-size 50px 50px
     border-width 1px 0
     border-color $border
     border-style solid
@@ -102,7 +99,7 @@
         padding-left 120px
         position relative
         > i
-          stripes hsl( 200, 50, 20 ), hsl( 200, 50, 22 )
+          stripes hsl( 200, 80, 32 ), hsl( 200, 80, 30 )
           position absolute
           top -5px
           left 20px
@@ -114,6 +111,7 @@
           display block
           border-radius 5px
           color white
+          text-shadow 0 0 10px rgba( white, 0.8 )
           &:not([class^="icon-"])
             font-family $alt-font
             font-style normal

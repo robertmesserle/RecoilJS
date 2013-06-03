@@ -7,7 +7,7 @@ define ( require ) -> [
     ]
   }
   {
-    title: 'Documentation'
+    title: 'Reference'
     sections: [
       { title: 'Configuration', href: '#configuration', icon: 'icon-cog', controller: require '../configuration' }
       { title: 'Data Binding', href: '#data-binding', icon: 'icon-exchange', controller: require '../data-binding' }
