@@ -9,7 +9,7 @@
     return TodoController = (function(_super) {
       __extends(TodoController, _super);
 
-      TodoController.prototype.view = 'coming-soon';
+      TodoController.prototype.view = 'todo';
 
       TodoController.prototype.category = 'Tutorials';
 

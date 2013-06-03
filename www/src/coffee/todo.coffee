@@ -4,7 +4,7 @@ define ( require ) ->
 
   class TodoController extends SectionController
 
-    view: 'coming-soon'
+    view: 'todo'
     category: 'Tutorials'
     title: 'Todo App'
 
