@@ -92,8 +92,8 @@
       padding 20px
       border 1px solid hsl( 0, 0, 85% )
       margin-bottom 20px
-      border-radius 5px
-      background linear-gradient( white, hsl( 0, 0, 98 ) )
+      border-radius 3px
+      background linear-gradient( white, hsl( 0, 0, 99 ) )
       box-shadow 3px 3px 6px rgba( black, 0.05 )
       &.has-icon
         padding-left 120px
@@ -101,7 +101,7 @@
         > i
           stripes hsl( 200, 80, 32 ), hsl( 200, 80, 30 )
           position absolute
-          top -5px
+          top -10px
           left 20px
           bottom -5px
           font-size 60px
@@ -109,9 +109,20 @@
           width 80px
           padding-top 10px
           display block
-          border-radius 5px
           color white
           text-shadow 0 0 10px rgba( white, 0.8 )
+          border-radius 0 0 5px 5px
+          box-shadow 2px 2px 5px rgba( black, 0.25 )
+          &::after
+            content ''
+            right -10px
+            border-width 5px
+            border-style solid
+            width 0
+            height 0
+            position absolute
+            border-color transparent transparent hsl( 200, 80, 15 ) hsl( 200, 60, 20 )
+            top 0
           &:not([class^="icon-"])
             font-family $alt-font
             font-style normal
