@@ -3,10 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Data, DocumentationController, RouterController, _ref;
+    var DocumentationController, RouterController, _ref;
 
     DocumentationController = require('./reference');
-    Data = require('./data/router');
     return RouterController = (function(_super) {
       __extends(RouterController, _super);
 
@@ -17,7 +16,7 @@
 
       RouterController.prototype.title = 'Router';
 
-      RouterController.prototype.bindings = Data;
+      RouterController.prototype.data = require('./data/router');
 
       return RouterController;
 

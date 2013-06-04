@@ -17,11 +17,11 @@
         <ol data-for="item in item.items">
           <li data-for="line in item">
             <p data-html="line" data-if="typeof line is 'string'"></p>
-            <pre data-if="line.type is 'code'" data-update="hljs.highlightBlock( $element.get( 0 ) )">#{ line.code }</pre>
+            <pre data-if="line.type is 'code'" data-init="hljs.highlightBlock( $element.get( 0 ) )">#{ line.code }</pre>
           </li>
         </ol>
       </$>
-      <pre data-if="item.type is 'code'" data-update="hljs.highlightBlock( $element.get( 0 ), null, true )" data-html="parse item.code"></pre>
+      <pre data-if="item.type is 'code'" data-init="hljs.highlightBlock( $element.get( 0 ), null, true )" data-html="parse item.code"></pre>
     </div>
   </article>
 </section>
