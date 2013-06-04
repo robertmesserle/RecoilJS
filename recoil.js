@@ -1903,9 +1903,9 @@ UpdateBinding = (function(_super) {
   }
 
   UpdateBinding.prototype.update = function() {
-    var _base;
-
-    return typeof (_base = this.func.call(this)) === "function" ? _base() : void 0;
+    try {
+      return this.func.call(this)();
+    } catch (_error) {}
   };
 
   return UpdateBinding;
