@@ -14,11 +14,14 @@
         }
         return $articles.each(function(index, element) {
           return $(element).css({
-            opacity: 0
+            opacity: 0,
+            left: -20,
+            position: 'relative'
           }).transit({
             opacity: 1,
-            delay: index * 50,
-            duration: 350
+            left: 0,
+            delay: index * 75,
+            duration: 450
           });
         });
       };
@@ -26,7 +29,7 @@
       SectionController.prototype.outro = function($dom, callback) {
         return $dom.children().transit({
           opacity: 0,
-          duration: 350,
+          duration: 250,
           complete: function() {
             return callback();
           }
