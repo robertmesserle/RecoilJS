@@ -107,5 +107,5 @@ class Base
     return unless @bindings
     for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
       bindings = @bindings[ set.type ]
-      for binding in bindings
+      for binding in bindings.slice( 0 )
         binding[ set.method ]()

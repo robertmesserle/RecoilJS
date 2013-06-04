@@ -1146,11 +1146,12 @@ Base = (function() {
       set = _ref[_i];
       bindings = this.bindings[set.type];
       _results.push((function() {
-        var _j, _len1, _results1;
+        var _j, _len1, _ref1, _results1;
 
+        _ref1 = bindings.slice(0);
         _results1 = [];
-        for (_j = 0, _len1 = bindings.length; _j < _len1; _j++) {
-          binding = bindings[_j];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          binding = _ref1[_j];
           _results1.push(binding[set.method]());
         }
         return _results1;
@@ -1271,6 +1272,7 @@ ComposeBinding = (function(_super) {
     if (!((this.binding = this.context.$element.data('compose')) || this.context.$element.data('view'))) {
       return;
     }
+    this.context.skipChildren = true;
     this.bindings = {
       read: [],
       write: []
@@ -1348,7 +1350,6 @@ ComposeBinding = (function(_super) {
   ComposeBinding.prototype.parseChildren = function() {
     var _this = this;
 
-    this.context.skipChildren = true;
     return this.context.$element.contents().each(function(index, element) {
       var extras;
 
@@ -1705,8 +1706,7 @@ ForBinding = (function(_super) {
         return this.unwrap();
       }
     } else {
-      this.checkBindings();
-      return console.log("For", this.bindings);
+      return this.checkBindings();
     }
   };
 
@@ -2101,7 +2101,8 @@ Parser = (function() {
         $element: $(element)
       }));
     });
-    return new UpdateBinding(context);
+    new UpdateBinding(context);
+    return new InitBinding(context);
   };
 
   return Parser;

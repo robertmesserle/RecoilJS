@@ -77,7 +77,6 @@ class ForBinding extends Base
       @unwrap() if @logic
     else
       @checkBindings()
-      console.log "For", @bindings
 
   update: ->
     @updateItems()

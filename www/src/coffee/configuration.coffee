@@ -1,8 +1,8 @@
 define ( require ) ->
 
-  DocumentationController = require './reference'
+  ReferenceController = require './reference'
 
-  class ConfigurationController extends DocumentationController
+  class ConfigurationController extends ReferenceController
 
     title:  'Configuration'
     data:   require './data/configuration'
