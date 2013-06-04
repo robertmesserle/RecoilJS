@@ -4,7 +4,7 @@ column-break-inside(n)
   -moz-column-break-inside n
   column-break-inside n
 
-stripes( $stripe1, $stripe2 )
+stripes( $stripe1, $stripe2, $size = 50px )
   background-color $stripe1
   background-image linear-gradient( top right, $stripe1 25%, $stripe2 25%, $stripe2 50%, $stripe1 50%, $stripe1 75%, $stripe2 75% )
-  background-size 50px 50px
+  background-size $size $size
