@@ -4,10 +4,14 @@ class Base
   constructor: ->
     @logic = @context.$element.data( 'logic' )? 
     if @logic or @if then @insertPlaceholder()
-    if @update then @pushBinding()
+    @pushBinding()
 
   pushBinding: ->
-    Recoil.bindings.read.push( this ) unless @context.$element.data( 'static' )?
+    return if @context.$element.data( 'static' )?
+    bindings = @context.extras?.parentBinding?.bindings
+    bindings ?= Recoil.bindings
+    bindings.read.push( this ) if @update
+    bindings.write.push( this ) if @write
 
   parseBinding: ( binding, evalFunction = true ) ->
     # Return cached binding if available
@@ -80,3 +84,16 @@ class Base
     @context.unwrapped  = true
     @context.$contents = @context.$element.contents().insertAfter( @context.$element )
     @context.$element.detach()
+
+
+  checkBindings: ->
+    return unless @bindings
+    # Iterate over writes first
+    for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
+      bindings = @bindings[ set.type ]
+      continue unless length = bindings.length
+      for index in [ --length..0 ]
+        binding = bindings[ index ]
+        element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
+        if $.contains( document.body, element ) then binding[ set.method ]?()
+        else bindings.splice( index, 1 )

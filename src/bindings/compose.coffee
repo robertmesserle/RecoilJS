@@ -2,6 +2,7 @@ class ComposeBinding extends Base
 
   constructor: ( @context ) ->
     return unless ( @binding = @context.$element.data( 'compose' ) ) or @context.$element.data( 'view' )
+    @bindings     = read: [], write: []
     @controller   = @parseBinding @binding if @binding
     @view         = @getView()
     @loadView() if @view
@@ -35,9 +36,11 @@ class ComposeBinding extends Base
     intro? @context.$element
 
   parseChildren: ->
+    @bindings = read: [], write: []
     @context.skipChildren = true
     @context.$element.contents().each ( index, element ) =>
-      new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: @context.extras )
+      extras = $.extend {}, @context.extras, parentBinding: this
+      new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: extras )
 
   update: ->
     return if @loading
@@ -49,3 +52,5 @@ class ComposeBinding extends Base
       @view = view
       callback = => @loadView() if @view
       outro?( @context.$element, callback ) or callback()
+    else
+      @checkBindings()
