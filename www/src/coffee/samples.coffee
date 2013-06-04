@@ -20,8 +20,6 @@ define ( require ) ->
         "(#{ areaCode }) #{ introBlock }-#{ lastBlock}"
 
       @searchTerm = ''
-      @filteredEvents = =>
-        Recoil.events.filter ( event ) => event.indexOf( @searchTerm ) + 1
 
       @selectValue = ''
       @selectOptions = Recoil.events

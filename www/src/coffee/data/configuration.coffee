@@ -29,7 +29,7 @@ define ( require ) -> [
     title: 'Update Throttling'
     syntax: 'Recoil.setMaxUpdateFrequency( :frequency )'
     args: [
-      { name: 'frequency', html: 'The maximum frequency that the global update method will be allowed to run. <i>Default: 50ms</i>.'}
+      { name: 'frequency', html: 'The maximum frequency that the global update method will be allowed to run. <i>Default: 30ms</i>.'}
     ]
     p: [
       '<b>Purpose</b>: This is to prevent frequent data changes from slowing your app down, triggered by rapid user interactions.'

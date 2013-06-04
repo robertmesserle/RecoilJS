@@ -33,11 +33,6 @@
           return "(" + areaCode + ") " + introBlock + "-" + lastBlock;
         };
         this.searchTerm = '';
-        this.filteredEvents = function() {
-          return Recoil.events.filter(function(event) {
-            return event.indexOf(_this.searchTerm) + 1;
-          });
-        };
         this.selectValue = '';
         this.selectOptions = Recoil.events;
         this.checkboxValue = '';

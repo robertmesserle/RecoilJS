@@ -4,7 +4,7 @@ class Recoil
   
   @app:           null
   @viewPath:      './views'
-  @throttle:      50
+  @throttle:      30
   @bindings:
     read:         []
     write:        []

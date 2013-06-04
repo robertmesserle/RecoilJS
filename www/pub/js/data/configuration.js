@@ -41,7 +41,7 @@
         args: [
           {
             name: 'frequency',
-            html: 'The maximum frequency that the global update method will be allowed to run. <i>Default: 50ms</i>.'
+            html: 'The maximum frequency that the global update method will be allowed to run. <i>Default: 30ms</i>.'
           }
         ],
         p: ['<b>Purpose</b>: This is to prevent frequent data changes from slowing your app down, triggered by rapid user interactions.', '<b>Note</b>: Just to eliminate any confusion, Recoil does <b>not</b> rely on any sort of interval-based checks.']

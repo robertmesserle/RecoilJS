@@ -829,7 +829,7 @@ Recoil = (function() {
 
   Recoil.viewPath = './views';
 
-  Recoil.throttle = 50;
+  Recoil.throttle = 30;
 
   Recoil.bindings = {
     read: [],
