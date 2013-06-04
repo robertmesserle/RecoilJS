@@ -1,11 +1,16 @@
 class ComposeBinding extends Base
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'compose' )
+    return unless ( @binding = @context.$element.data( 'compose' ) ) or @context.$element.data( 'view' )
     @controller   = @parseBinding @binding if @binding
-    @view         = @context.$element.data( 'view' ) or @controller?.view
+    @view         = @getView()
     @loadView() if @view
     super
+
+  getView: ->
+    view = @context.$element.data( 'view' )
+    if view then return @parseBinding( view )
+    @controller?.view
 
   loadView: ->
     url = "#{ Recoil.viewPath }/#{ @view }.html"
@@ -33,10 +38,10 @@ class ComposeBinding extends Base
 
   update: ->
     controller = @parseBinding @binding if @binding
-    view = @context.$element.data( 'view' ) or controller?.view
+    view = @getView()
     if @controller isnt controller or @view isnt view
       outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       @controller = controller
       @view = view
-      callback = => @loadView()
+      callback = => @loadView() if @view
       outro?( @context.$element, callback ) or callback()
