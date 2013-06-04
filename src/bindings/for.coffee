@@ -5,7 +5,8 @@ class ForBinding extends Base
     @context.skipChildren = true
     @getParts()
     @getTemplate()
-    @parseItems()
+    @collection = @getCollection()
+    @parseItems( @collection )
     super
 
   getParts: ->

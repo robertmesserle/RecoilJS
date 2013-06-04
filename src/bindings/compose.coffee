@@ -35,6 +35,7 @@ class ComposeBinding extends Base
     intro? @context.$element
 
   parseChildren: ->
+    @context.skipChildren = true
     @context.$element.contents().each ( index, element ) =>
       new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: @context.extras )
 
