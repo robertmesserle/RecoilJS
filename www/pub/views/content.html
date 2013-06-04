@@ -10,7 +10,7 @@
         <h2>#{ item.title }</h2>
         <dl data-for="def in item.items">
           <dt>#{ def.term }</dt>
-          <dd>#{ def.definition }</dd>
+          <dd data-html="def.definition"></dd>
         </dl>
       </$>
     </div>

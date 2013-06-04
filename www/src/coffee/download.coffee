@@ -1,11 +1,10 @@
 define ( require ) ->
 
-  SectionController = require './section'
+  ContentController = require './content'
+  Data = require './data/download'
 
-  class DownloadController extends SectionController
+  class DownloadController extends ContentController
 
-    view: 'download'
     category: 'About'
     title: 'Download'
-
-    constructor: ->
+    data: Data
