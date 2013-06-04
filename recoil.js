@@ -1268,6 +1268,7 @@ ComposeBinding = (function(_super) {
   ComposeBinding.prototype.parseChildren = function() {
     var _this = this;
 
+    this.context.skipChildren = true;
     return this.context.$element.contents().each(function(index, element) {
       return new Parser({
         $element: $(element),
@@ -1465,7 +1466,8 @@ ForBinding = (function(_super) {
     this.context.skipChildren = true;
     this.getParts();
     this.getTemplate();
-    this.parseItems();
+    this.collection = this.getCollection();
+    this.parseItems(this.collection);
     ForBinding.__super__.constructor.apply(this, arguments);
   }
 
