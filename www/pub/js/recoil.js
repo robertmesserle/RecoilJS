@@ -879,11 +879,6 @@ Recoil = (function() {
     return Router.getInstance().handleChange();
   };
 
-  Recoil.goto = function(url) {
-    location.hash = url;
-    return Recoil.triggerRouteChange();
-  };
-
   Recoil.createTransition = function(type, id, callback) {
     return Recoil.transitions[type][id] = callback;
   };

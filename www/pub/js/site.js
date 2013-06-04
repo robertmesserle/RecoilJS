@@ -20,7 +20,7 @@
           _this = this;
 
         Recoil.mapDefaultRoute(function() {
-          return Recoil.goto(_this.navSections[0].sections[0].href);
+          return location.href = _this.navSections[0].sections[0].href;
         });
         _ref = this.navSections;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {

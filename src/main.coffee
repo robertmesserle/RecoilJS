@@ -34,9 +34,6 @@ class Recoil
   @mapRoute:            -> Router.getInstance().mapRoute arguments...
   @mapDefaultRoute:     -> Router.getInstance().mapDefaultRoute arguments...
   @triggerRouteChange:  -> Router.getInstance().handleChange()
-  @goto: ( url ) ->
-    location.hash = url
-    Recoil.triggerRouteChange()
 
   # Transition Methods
   @createTransition: ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback

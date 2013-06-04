@@ -16,7 +16,7 @@ define ( require ) ->
 
     setupRoutes: ->
       Recoil.mapDefaultRoute =>
-        Recoil.goto @navSections[ 0 ].sections[ 0 ].href
+        location.href = @navSections[ 0 ].sections[ 0 ].href
       for category in @navSections
         for section in category.sections
           continue unless section.controller
