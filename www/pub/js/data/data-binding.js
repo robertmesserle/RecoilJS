@@ -6,7 +6,7 @@
         syntax: '#{ :string }',
         args: [
           {
-            name: ':string',
+            name: 'string',
             html: 'An expression that will be evaluted and inserted as text.'
           }
         ]
@@ -15,10 +15,10 @@
         syntax: 'data-compose=":scope" data-view=":view"',
         args: [
           {
-            name: ':scope',
+            name: 'scope',
             html: 'An object that will act as the default scope for all contained elements.'
           }, {
-            name: ':view',
+            name: 'view',
             html: 'A string containing a valid view name or HTML filename.'
           }
         ]
@@ -27,19 +27,19 @@
         syntax: 'data-css=":css"',
         args: [
           {
-            name: ':css',
+            name: 'css',
             html: 'An object that will be passed into <a href="http://api.jquery.com/css/">jQuery.fn.css()</a>.'
           }
         ]
       }, {
         title: 'Event Binding',
-        syntax: 'data-[:eventType]=":expression"',
+        syntax: 'data-:eventType=":expression"',
         args: [
           {
-            name: ':eventType',
+            name: 'eventType',
             html: 'A string representing a valid JavaScript event type (ie. click).'
           }, {
-            name: ':expression',
+            name: 'expression',
             html: 'An expression that will be evaluated when the defined event occurs.'
           }
         ]
@@ -48,13 +48,13 @@
         syntax: 'data-for=":identifier in :set when :condition"',
         args: [
           {
-            name: ':identifier',
+            name: 'identifier',
             html: 'An identifier that will be used to reference the current item.'
           }, {
-            name: ':set',
+            name: 'set',
             html: 'An array of items that will be iterated over.'
           }, {
-            name: ':condition',
+            name: 'condition',
             html: 'An expression that will be run against each item, determining whether or not the item should be included.'
           }
         ]
@@ -63,7 +63,7 @@
         syntax: 'data-html=":html"',
         args: [
           {
-            name: ':html',
+            name: 'html',
             html: 'A string of HTML that will be inserted into the element.'
           }
         ]
@@ -72,7 +72,7 @@
         syntax: 'data-if=":condition"',
         args: [
           {
-            name: ':condition',
+            name: 'condition',
             html: 'An expression that will be run to determine whether or not to render the element.'
           }
         ]
@@ -84,7 +84,7 @@
         syntax: 'data-update=":updateExpression"',
         args: [
           {
-            name: ':updateExpression',
+            name: 'updateExpression',
             html: 'An expression that will run each time the element is updated.'
           }
         ]
@@ -93,7 +93,7 @@
         syntax: 'data-value=":value"',
         args: [
           {
-            name: ':value',
+            name: 'value',
             html: 'A variable or function that will be bound to the element through two-way data-binding.'
           }
         ]
@@ -102,7 +102,7 @@
         syntax: 'data-visible=":condition"',
         args: [
           {
-            name: ':condition',
+            name: 'condition',
             html: 'An expression that will be evaluated to determine whether or not the element will be visible.'
           }
         ]

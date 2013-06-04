@@ -22,7 +22,7 @@ define ( require ) ->
 
     highlightTerms: ( line, terms = [] ) =>
       for arg in terms
-        line = line.replace arg.name, """<span class="important">#{ arg.name }</span>"""
+        line = line.replace ":#{ arg.name }", """<span class="important">#{ arg.name }</span>"""
       line = line.replace( '#{', '#\\{' )
       return line
 

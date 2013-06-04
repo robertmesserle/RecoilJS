@@ -65,6 +65,7 @@ nav.primary section a.active{background:rgba(255,255,255,0.25);opacity:1;-ms-fil
 #main-content .section-wrapper article.has-icon > i:not([class^="icon-"]){font-family:'Century Gothic',sans-serif;font-style:normal;font-weight:bold}
 #main-content .section-wrapper article h1{font-size:30px;font-weight:100;margin:0 0 20px;color:#4095bf;border-bottom:1px solid #e6e6e6;}
 #main-content .section-wrapper article h1:last-child{margin-bottom:0}
+#main-content .section-wrapper article h2{font-size:24px;font-weight:100;margin:0;border-bottom:1px solid #f2f2f2;color:#a6a6a6}
 #main-content .section-wrapper article p{color:#999}
 #main-content .section-wrapper article p,#main-content .section-wrapper article li,#main-content .section-wrapper article dt,#main-content .section-wrapper article dd{font-family:sans-serif;font-weight:normal;font-size:14px;line-height:1.5em}
 #main-content .section-wrapper article dl dt,#main-content .section-wrapper article dl dd{border-left:10px #ddd solid;margin:0;padding:0 10px}

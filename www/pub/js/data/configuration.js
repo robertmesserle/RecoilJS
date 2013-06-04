@@ -6,7 +6,7 @@
         syntax: 'Recoil.init( :scope )',
         args: [
           {
-            name: ':scope',
+            name: 'scope',
             html: 'The initial scope of your application.'
           }
         ]
@@ -15,13 +15,13 @@
         syntax: 'Recoil.createTransition( :type, :viewName, :function )',
         args: [
           {
-            name: ':type',
+            name: 'type',
             html: 'A string that represents the type of transition. <i>Options: [ intro, outro ]</i>.'
           }, {
-            name: ':viewName',
+            name: 'viewName',
             html: 'The name(s) of the view(s) that this transition will be applied to.'
           }, {
-            name: ':function',
+            name: 'function',
             html: 'A function that performs the transitional tasks.'
           }
         ],
@@ -31,7 +31,7 @@
         syntax: 'Recoil.setViewPath( :path )',
         args: [
           {
-            name: ':path',
+            name: 'path',
             html: 'The base path where your views are located.'
           }
         ]
@@ -40,7 +40,7 @@
         syntax: 'Recoil.setMaxUpdateFrequency( :frequency )',
         args: [
           {
-            name: ':frequency',
+            name: 'frequency',
             html: 'The maximum frequency that the global update method will be allowed to run. <i>Default: 50ms</i>.'
           }
         ],

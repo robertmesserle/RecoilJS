@@ -1,0 +1,18 @@
+<section data-for="article in data">
+  <article class="has-icon">
+    <i class="icon-#{ article.icon }"></i>
+    <h1>#{ article.title }</h1>
+    <div class="article-content" data-for="item in article.content">
+      <$ data-if="typeof item is 'string'">
+        <p data-html="item"></p>
+      </$>
+      <$ data-if="item.type is 'definitions'">
+        <h2>#{ item.title }</h2>
+        <dl data-for="def in item.items">
+          <dt>#{ def.term }</dt>
+          <dd>#{ def.definition }</dd>
+        </dl>
+      </$>
+    </div>
+  </article>
+</section>

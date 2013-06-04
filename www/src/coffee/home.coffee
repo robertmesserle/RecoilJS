@@ -1,11 +1,10 @@
 define ( require ) ->
 
-  SectionController = require './section'
+  ContentController = require './content'
+  Data = require './data/home'
 
-  class HomeController extends SectionController
+  class HomeController extends ContentController
 
-    view: 'home'
     category: 'About'
     title: 'Home'
-
-    constructor: ->
+    data: Data

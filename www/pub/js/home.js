@@ -3,23 +3,27 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var HomeController, SectionController;
+    var ContentController, Data, HomeController, _ref;
 
-    SectionController = require('./section');
+    ContentController = require('./content');
+    Data = require('./data/home');
     return HomeController = (function(_super) {
       __extends(HomeController, _super);
 
-      HomeController.prototype.view = 'home';
+      function HomeController() {
+        _ref = HomeController.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
 
       HomeController.prototype.category = 'About';
 
       HomeController.prototype.title = 'Home';
 
-      function HomeController() {}
+      HomeController.prototype.data = Data;
 
       return HomeController;
 
-    })(SectionController);
+    })(ContentController);
   });
 
 }).call(this);

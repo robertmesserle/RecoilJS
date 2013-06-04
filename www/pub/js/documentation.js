@@ -44,7 +44,7 @@
         }
         for (_i = 0, _len = terms.length; _i < _len; _i++) {
           arg = terms[_i];
-          line = line.replace(arg.name, "<span class=\"important\">" + arg.name + "</span>");
+          line = line.replace(":" + arg.name, "<span class=\"important\">" + arg.name + "</span>");
         }
         line = line.replace('#{', '#\\{');
         return line;
