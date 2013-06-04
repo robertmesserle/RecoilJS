@@ -1,6 +1,6 @@
 define ( require ) ->
 
-  DocumentationController = require './documentation'
+  DocumentationController = require './reference'
   Data = require './data/model'
 
   class ModelController extends DocumentationController

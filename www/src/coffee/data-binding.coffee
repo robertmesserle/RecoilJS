@@ -1,6 +1,6 @@
 define ( require ) ->
 
-  DocumentationController = require './documentation'
+  DocumentationController = require './reference'
   Data = require './data/data-binding'
 
   class DataBindingController extends DocumentationController

@@ -5,7 +5,7 @@ define ( require ) ->
   class GettingStartedController extends SectionController
 
     view: 'getting-started'
-    category: 'Tutorials'
+    category: 'Documentation'
     title: 'Getting Started'
 
     constructor: ->

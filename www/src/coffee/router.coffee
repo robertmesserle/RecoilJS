@@ -1,9 +1,9 @@
 define ( require ) ->
 
-  DocumentationController = require './documentation'
+  DocumentationController = require './reference'
   Data = require './data/router'
 
   class RouterController extends DocumentationController
 
-    title: 'Data Binding'
+    title: 'Router'
     bindings: Data

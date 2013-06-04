@@ -4,8 +4,8 @@ define ( require ) ->
 
   class DataBindingController extends SectionController
 
-    view: 'documentation'
-    category: 'Documentation'
+    view: 'reference'
+    category: 'Reference'
 
     searchEnabled: true
     searchTerm: ''
