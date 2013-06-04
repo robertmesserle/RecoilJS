@@ -18,13 +18,8 @@ class DirtyCheck
       @timeout = null
       # Iterate over writes first
       for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
-        bindings = Recoil.bindings[ set.type ]
-        continue unless length = bindings.length
-        for index in [ --length..0 ]
-          binding = bindings[ index ]
-          element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
-          if $.contains( document.body, element ) then binding[ set.method ]?()
-          else bindings.splice( index, 1 )
+        for binding in Recoil.bindings[ set.type ]
+          binding[ set.method ]()
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
 

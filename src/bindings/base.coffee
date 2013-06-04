@@ -4,10 +4,18 @@ class Base
   constructor: ->
     @logic = @context.$element.data( 'logic' )? 
     if @logic or @if then @insertPlaceholder()
-    if @update then @pushBinding()
+    @pushBinding()
+
+  getBindings: ->
+    bindings = @context.extras?.parentBinding?.bindings
+    bindings ?= Recoil.bindings
+    return bindings
 
   pushBinding: ->
-    Recoil.bindings.read.push( this ) unless @context.$element.data( 'static' )?
+    return if @context.$element.data( 'static' )?
+    bindings = @getBindings()
+    bindings.read.push( this ) if @update
+    bindings.write.push( this ) if @write
 
   parseBinding: ( binding, evalFunction = true ) ->
     # Return cached binding if available
@@ -18,6 +26,19 @@ class Base
     @cachedBindings[ binding ] = @generateFunction( binding )
     if evalFunction then @cachedBindings[ binding ].call( this )
     else @cachedBindings[ binding ]
+
+  cleanParentBindings: ->
+    bindings = @getBindings()
+    for index in [ bindings.length - 1 .. 0 ]
+      element = binding.context.$placeholder?.get( 0 ) or binding.context.$element?.get( 0 )
+      bindings.splice( index, 1 ) unless $.contains( document.body, element )
+
+  removeBinding: ->
+    bindings = @context.extras?.parentBinding?.bindings
+    bindings ?= Recoil.bindings
+    index    = bindings.read.indexOf( this )
+    return unless index + 1
+    bindings.read.splice( index, 1 )
 
   parseString: ( str ) ->
     # Return cached binding if available
@@ -80,3 +101,11 @@ class Base
     @context.unwrapped  = true
     @context.$contents = @context.$element.contents().insertAfter( @context.$element )
     @context.$element.detach()
+
+
+  checkBindings: ->
+    return unless @bindings
+    for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
+      bindings = @bindings[ set.type ]
+      for binding in bindings.slice( 0 )
+        binding[ set.method ]()

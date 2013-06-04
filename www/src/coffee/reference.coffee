@@ -2,7 +2,7 @@ define ( require ) ->
 
   SectionController = require './section'
 
-  class DataBindingController extends SectionController
+  class DataentryController extends SectionController
 
     view: 'reference'
     category: 'Reference'
@@ -11,8 +11,6 @@ define ( require ) ->
     searchTerm: ''
 
     listStyle: 'list'
-
-    constructor: ->
 
     handleListButton: ( $element, style ) =>
       if style is @listStyle
@@ -27,25 +25,25 @@ define ( require ) ->
       line = line.replace( '#{', '#\\{' ) if escape
       return line
 
-    formatSyntax: ( binding, highlight = true ) =>
+    formatSyntax: ( entry, highlight = true ) =>
       html = ''
       indent = lastIndent = 0
-      for line in binding.syntax.split( /\n/g )
+      for line in entry.syntax.split( /\n/g )
         indent = line.match( /^\s+/ )?[ 0 ]?.length or 0
         if indent > lastIndent then html += '<div class="block">'
         else if indent < lastIndent then html += '</div>'
         lastIndent = indent
         html += '<div>'
-        html += @highlightTerms( line, binding.args, highlight )
+        html += @highlightTerms( line, entry.args, highlight )
         html += '</div>'
       html
 
-    test: ( binding ) =>
+    test: ( entry ) =>
       term = @searchTerm.toLowerCase()
       return true unless @searchTerm
-      return true if binding.title.toLowerCase().match( term )
-      return true if @highlightTerms( binding.syntax, binding.args, false ).toLowerCase().match( term )
-      for arg in binding.args or []
+      return true if entry.title.toLowerCase().match( term )
+      return true if @highlightTerms( entry.syntax, entry.args, false ).toLowerCase().match( term )
+      for arg in entry.args or []
         return true if arg.name.toLowerCase().match( term )
 
     highlight: ( text ) =>

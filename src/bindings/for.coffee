@@ -2,6 +2,7 @@ class ForBinding extends Base
 
   constructor: ( @context ) ->
     return unless @binding = @context.$element.data( 'for' )
+    @bindings = read: [], write: []
     @context.skipChildren = true
     @getParts()
     @getTemplate()
@@ -38,8 +39,8 @@ class ForBinding extends Base
       for index, item of collection then @parseItem item, index, collection
 
   parseItem: ( item, index, collection ) ->
-    $item   = @$template.clone().appendTo( @context.$element )
-    extras  = $.extend {}, @context.extras
+    $item       = @$template.clone().appendTo( @context.$element )
+    extras      = $.extend {}, @context.extras
     if typeof item is 'object'
       extras.itemName             = @itemName
       extras.$item                = item
@@ -50,6 +51,7 @@ class ForBinding extends Base
       extras[ @itemName ]         = item
     if @indexName
       extras[ @indexName ]        = index
+    extras.parentBinding          = this
     new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   generateFunction: ( str ) ->
@@ -64,14 +66,17 @@ class ForBinding extends Base
       return true unless item is @collection[ index ]
     return false
 
-  updateItems: ->
+  updateItems: =>
     collection = @getCollection()
-    return unless @checkForChanges( collection )
-    @collection = collection.slice( 0 )
-    @wrap() if @logic
-    @context.$element.empty()
-    @parseItems( collection )
-    @unwrap() if @logic
+    if @checkForChanges( collection )
+      @collection = collection.slice( 0 )
+      @wrap() if @logic
+      @bindings = read: [], write: []
+      @context.$element.empty()
+      @parseItems( collection )
+      @unwrap() if @logic
+    else
+      @checkBindings()
 
   update: ->
     @updateItems()

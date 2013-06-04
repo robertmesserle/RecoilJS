@@ -22,3 +22,4 @@ class Parser
       new Parser $.extend {}, context, context.childContext, $element: $( element )
 
     new UpdateBinding context
+    new InitBinding context

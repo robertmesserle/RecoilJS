@@ -21,8 +21,6 @@ class ContextBinding extends Base
     value = @parseBinding @binding
     return if @value is value
     @context.$element.html @$template.clone()
-    # Remove self from bindings
-    index = Recoil.bindings.read.indexOf( this )
-    Recoil.bindings.read.splice( index, 1 )
+    @removeBinding()
     # Re-parse element
     new Parser @context

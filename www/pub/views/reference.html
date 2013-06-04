@@ -1,14 +1,14 @@
-<section class="#{ if listStyle is 'tile' then 'column-layout' else '' }" data-for="binding in bindings">
-  <article data-visible="test binding">
-    <h1 data-html="highlight binding.title"></h1>
+<section class="#{ if listStyle is 'tile' then 'column-layout' else '' }" data-for="entry in data">
+  <article data-visible="test entry">
+    <h1 data-html="highlight entry.title"></h1>
     <code class="important block">
-      <div data-html="formatSyntax binding"></div>
+      <div data-html="formatSyntax entry"></div>
     </code>
-    <dl class="important" data-for="arg in binding.args" data-if="binding.args">
+    <dl class="important" data-for="arg in entry.args or []">
       <dt data-html="highlight arg.name"></dt>
       <dd data-html="arg.html"></dd>
     </dl>
-    <div class="notes" data-for="p in binding.p" data-if="binding.p">
+    <div class="notes" data-for="p in entry.p or []">
       <p data-html="p"></p>
     </div>
   </article>

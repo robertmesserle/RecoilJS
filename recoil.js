@@ -27,7 +27,7 @@ DirtyCheck = (function() {
       waitTime = 0;
     }
     callback = function() {
-      var binding, bindings, element, index, length, set, _i, _len, _ref, _results;
+      var binding, set, _i, _len, _ref, _results;
 
       _this.timeout = null;
       _ref = [
@@ -42,22 +42,14 @@ DirtyCheck = (function() {
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         set = _ref[_i];
-        bindings = Recoil.bindings[set.type];
-        if (!(length = bindings.length)) {
-          continue;
-        }
         _results.push((function() {
-          var _j, _name, _ref1, _ref2, _ref3, _results1;
+          var _j, _len1, _ref1, _results1;
 
+          _ref1 = Recoil.bindings[set.type];
           _results1 = [];
-          for (index = _j = _ref1 = --length; _ref1 <= 0 ? _j <= 0 : _j >= 0; index = _ref1 <= 0 ? ++_j : --_j) {
-            binding = bindings[index];
-            element = ((_ref2 = binding.context.$placeholder) != null ? _ref2.get(0) : void 0) || ((_ref3 = binding.context.$element) != null ? _ref3.get(0) : void 0);
-            if ($.contains(document.body, element)) {
-              _results1.push(typeof binding[_name = set.method] === "function" ? binding[_name]() : void 0);
-            } else {
-              _results1.push(bindings.splice(index, 1));
-            }
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            binding = _ref1[_j];
+            _results1.push(binding[set.method]());
           }
           return _results1;
         })());
@@ -945,14 +937,31 @@ Base = (function() {
     if (this.logic || this["if"]) {
       this.insertPlaceholder();
     }
-    if (this.update) {
-      this.pushBinding();
-    }
+    this.pushBinding();
   }
 
+  Base.prototype.getBindings = function() {
+    var bindings, _ref, _ref1;
+
+    bindings = (_ref = this.context.extras) != null ? (_ref1 = _ref.parentBinding) != null ? _ref1.bindings : void 0 : void 0;
+    if (bindings == null) {
+      bindings = Recoil.bindings;
+    }
+    return bindings;
+  };
+
   Base.prototype.pushBinding = function() {
-    if (this.context.$element.data('static') == null) {
-      return Recoil.bindings.read.push(this);
+    var bindings;
+
+    if (this.context.$element.data('static') != null) {
+      return;
+    }
+    bindings = this.getBindings();
+    if (this.update) {
+      bindings.read.push(this);
+    }
+    if (this.write) {
+      return bindings.write.push(this);
     }
   };
 
@@ -975,6 +984,36 @@ Base = (function() {
     } else {
       return this.cachedBindings[binding];
     }
+  };
+
+  Base.prototype.cleanParentBindings = function() {
+    var bindings, element, index, _i, _ref, _ref1, _ref2, _results;
+
+    bindings = this.getBindings();
+    _results = [];
+    for (index = _i = _ref = bindings.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
+      element = ((_ref1 = binding.context.$placeholder) != null ? _ref1.get(0) : void 0) || ((_ref2 = binding.context.$element) != null ? _ref2.get(0) : void 0);
+      if (!$.contains(document.body, element)) {
+        _results.push(bindings.splice(index, 1));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  Base.prototype.removeBinding = function() {
+    var bindings, index, _ref, _ref1;
+
+    bindings = (_ref = this.context.extras) != null ? (_ref1 = _ref.parentBinding) != null ? _ref1.bindings : void 0 : void 0;
+    if (bindings == null) {
+      bindings = Recoil.bindings;
+    }
+    index = bindings.read.indexOf(this);
+    if (!(index + 1)) {
+      return;
+    }
+    return bindings.read.splice(index, 1);
   };
 
   Base.prototype.parseString = function(str) {
@@ -1085,6 +1124,40 @@ Base = (function() {
     this.context.unwrapped = true;
     this.context.$contents = this.context.$element.contents().insertAfter(this.context.$element);
     return this.context.$element.detach();
+  };
+
+  Base.prototype.checkBindings = function() {
+    var binding, bindings, set, _i, _len, _ref, _results;
+
+    if (!this.bindings) {
+      return;
+    }
+    _ref = [
+      {
+        type: 'write',
+        method: 'write'
+      }, {
+        type: 'read',
+        method: 'update'
+      }
+    ];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      set = _ref[_i];
+      bindings = this.bindings[set.type];
+      _results.push((function() {
+        var _j, _len1, _ref1, _results1;
+
+        _ref1 = bindings.slice(0);
+        _results1 = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          binding = _ref1[_j];
+          _results1.push(binding[set.method]());
+        }
+        return _results1;
+      })());
+    }
+    return _results;
   };
 
   return Base;
@@ -1199,6 +1272,11 @@ ComposeBinding = (function(_super) {
     if (!((this.binding = this.context.$element.data('compose')) || this.context.$element.data('view'))) {
       return;
     }
+    this.context.skipChildren = true;
+    this.bindings = {
+      read: [],
+      write: []
+    };
     if (this.binding) {
       this.controller = this.parseBinding(this.binding);
     }
@@ -1254,6 +1332,10 @@ ComposeBinding = (function(_super) {
     }
     this.html = data;
     this.context.$element.scrollTop(0);
+    this.bindings = {
+      read: [],
+      write: []
+    };
     this.context.$element.html(this.html);
     this.parseChildren();
     if ((_ref1 = this.controller) != null) {
@@ -1268,14 +1350,18 @@ ComposeBinding = (function(_super) {
   ComposeBinding.prototype.parseChildren = function() {
     var _this = this;
 
-    this.context.skipChildren = true;
     return this.context.$element.contents().each(function(index, element) {
+      var extras;
+
+      extras = $.extend({}, _this.context.extras, {
+        parentBinding: _this
+      });
       return new Parser({
         $element: $(element),
         scope: _this.controller,
         parent: _this.context.scope,
         root: _this.context.root,
-        extras: _this.context.extras
+        extras: extras
       });
     });
   };
@@ -1301,6 +1387,8 @@ ComposeBinding = (function(_super) {
         }
       };
       return (typeof outro === "function" ? outro(this.context.$element, callback) : void 0) || callback();
+    } else {
+      return this.checkBindings();
     }
   };
 
@@ -1343,15 +1431,14 @@ ContextBinding = (function(_super) {
   };
 
   ContextBinding.prototype.update = function() {
-    var index, value;
+    var value;
 
     value = this.parseBinding(this.binding);
     if (this.value === value) {
       return;
     }
     this.context.$element.html(this.$template.clone());
-    index = Recoil.bindings.read.indexOf(this);
-    Recoil.bindings.read.splice(index, 1);
+    this.removeBinding();
     return new Parser(this.context);
   };
 
@@ -1459,10 +1546,15 @@ ForBinding = (function(_super) {
 
   function ForBinding(context) {
     this.context = context;
+    this.updateItems = __bind(this.updateItems, this);
     this.checkForChanges = __bind(this.checkForChanges, this);
     if (!(this.binding = this.context.$element.data('for'))) {
       return;
     }
+    this.bindings = {
+      read: [],
+      write: []
+    };
     this.context.skipChildren = true;
     this.getParts();
     this.getTemplate();
@@ -1556,6 +1648,7 @@ ForBinding = (function(_super) {
     if (this.indexName) {
       extras[this.indexName] = index;
     }
+    extras.parentBinding = this;
     return new Parser({
       $element: $item,
       scope: this.context.scope,
@@ -1598,17 +1691,22 @@ ForBinding = (function(_super) {
     var collection;
 
     collection = this.getCollection();
-    if (!this.checkForChanges(collection)) {
-      return;
-    }
-    this.collection = collection.slice(0);
-    if (this.logic) {
-      this.wrap();
-    }
-    this.context.$element.empty();
-    this.parseItems(collection);
-    if (this.logic) {
-      return this.unwrap();
+    if (this.checkForChanges(collection)) {
+      this.collection = collection.slice(0);
+      if (this.logic) {
+        this.wrap();
+      }
+      this.bindings = {
+        read: [],
+        write: []
+      };
+      this.context.$element.empty();
+      this.parseItems(collection);
+      if (this.logic) {
+        return this.unwrap();
+      }
+    } else {
+      return this.checkBindings();
     }
   };
 
@@ -1670,16 +1768,20 @@ IfBinding = (function(_super) {
     if ((this.binding = this.context.$element.data('if')) == null) {
       return;
     }
+    this.checkForErrors();
     IfBinding.__super__.constructor.apply(this, arguments);
     this.update(false);
   }
 
-  IfBinding.prototype.reparse = function() {
-    var index;
+  IfBinding.prototype.checkForErrors = function() {
+    if (this.context.$element.data('for')) {
+      throw 'Recoil Error:  "data-for" and "data-if" cannot be used on the same element.';
+    }
+  };
 
-    index = Recoil.bindings.read.indexOf(this);
-    Recoil.bindings.read.splice(index, 1);
+  IfBinding.prototype.reparse = function() {
     this.wrap();
+    this.removeBinding();
     new Parser(this.context);
     return delete this.reparse;
   };
@@ -1695,7 +1797,8 @@ IfBinding = (function(_super) {
         return this.reparse();
       }
     } else {
-      return this.context.$element.detach();
+      this.context.$element.detach();
+      return this.cleanParentBindings();
     }
   };
 
@@ -1715,6 +1818,28 @@ IfBinding = (function(_super) {
   };
 
   return IfBinding;
+
+})(Base);
+
+var InitBinding,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+InitBinding = (function(_super) {
+  __extends(InitBinding, _super);
+
+  function InitBinding(context) {
+    this.context = context;
+    if (!(this.binding = this.context.$element.data('init'))) {
+      return;
+    }
+    this.csString = "-> " + this.binding;
+    this.func = this.parseBinding(this.csString, false);
+    this.func.call(this)();
+    InitBinding.__super__.constructor.apply(this, arguments);
+  }
+
+  return InitBinding;
 
 })(Base);
 
@@ -1777,6 +1902,12 @@ UpdateBinding = (function(_super) {
     UpdateBinding.__super__.constructor.apply(this, arguments);
   }
 
+  UpdateBinding.prototype.update = function() {
+    try {
+      return this.func.call(this)();
+    } catch (_error) {}
+  };
+
   return UpdateBinding;
 
 })(Base);
@@ -1803,7 +1934,6 @@ ValueBinding = (function(_super) {
     }
     this.bindEvents();
     ValueBinding.__super__.constructor.apply(this, arguments);
-    Recoil.bindings.write.push(this);
   }
 
   ValueBinding.prototype.bindEvents = function() {
@@ -1971,7 +2101,8 @@ Parser = (function() {
         $element: $(element)
       }));
     });
-    return new UpdateBinding(context);
+    new UpdateBinding(context);
+    return new InitBinding(context);
   };
 
   return Parser;

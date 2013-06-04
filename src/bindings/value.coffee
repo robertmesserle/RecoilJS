@@ -8,7 +8,6 @@ class ValueBinding extends Base
     @updateHandler() if @context.$element.is( 'select' )
     @bindEvents()
     super
-    Recoil.bindings.write.push( this )
 
   bindEvents: ->
     return @context.$element.on 'change', @updateHandler if @context.$element.is( 'select' )

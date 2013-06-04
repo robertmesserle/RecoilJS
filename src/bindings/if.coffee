@@ -4,14 +4,17 @@ class IfBinding extends Base
 
   constructor: ( @context ) ->
     return unless ( @binding = @context.$element.data( 'if' ) )?
+    @checkForErrors()
     super
     @update( false )
 
+  checkForErrors: ->
+    if @context.$element.data( 'for' )
+      throw 'Recoil Error:  "data-for" and "data-if" cannot be used on the same element.' 
+
   reparse: =>
-    # Remove binding from global list
-    index = Recoil.bindings.read.indexOf( this )
-    Recoil.bindings.read.splice( index, 1 )
     @wrap()
+    @removeBinding()
     new Parser @context
     delete @reparse
 
@@ -20,7 +23,9 @@ class IfBinding extends Base
     if @value
       @context.$element.insertAfter( @context.$placeholder )
       if reparse then @reparse()
-    else @context.$element.detach()
+    else
+      @context.$element.detach()
+      @cleanParentBindings()
 
   update: ( reparse = true ) ->
     value = !! @parseBinding @binding
