@@ -6,6 +6,3 @@ class UpdateBinding extends Base
     @func = @parseBinding( @csString, false )
     @func.call( this )()
     super
-
-  update: ->
-    try @func.call( this )()
