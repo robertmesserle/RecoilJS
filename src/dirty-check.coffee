@@ -19,7 +19,7 @@ class DirtyCheck
       # Iterate over writes first
       for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
         for binding in Recoil.bindings[ set.type ]
-          binding[ set.method ]?()
+          binding[ set.method ]()
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
 

@@ -29,6 +29,7 @@ class ComposeBinding extends Base
     @controller?.beforeRender? @context.$element, @context.parent, @context.root
     @html = data
     @context.$element.scrollTop( 0 )
+    @bindings = read: [], write: []
     @context.$element.html( @html )
     @parseChildren()
     @controller?.afterRender? @context.$element, @context.parent, @context.root
@@ -36,7 +37,6 @@ class ComposeBinding extends Base
     intro? @context.$element
 
   parseChildren: ->
-    @bindings = read: [], write: []
     @context.skipChildren = true
     @context.$element.contents().each ( index, element ) =>
       extras = $.extend {}, @context.extras, parentBinding: this
