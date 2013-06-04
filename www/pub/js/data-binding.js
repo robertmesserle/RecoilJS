@@ -5,7 +5,7 @@
   define(function(require) {
     var Data, DataBindingController, DocumentationController, _ref;
 
-    DocumentationController = require('./documentation');
+    DocumentationController = require('./reference');
     Data = require('./data/data-binding');
     return DataBindingController = (function(_super) {
       __extends(DataBindingController, _super);

@@ -5,7 +5,7 @@
   define(function(require) {
     var Data, DocumentationController, RouterController, _ref;
 
-    DocumentationController = require('./documentation');
+    DocumentationController = require('./reference');
     Data = require('./data/router');
     return RouterController = (function(_super) {
       __extends(RouterController, _super);
@@ -15,7 +15,7 @@
         return _ref;
       }
 
-      RouterController.prototype.title = 'Data Binding';
+      RouterController.prototype.title = 'Router';
 
       RouterController.prototype.bindings = Data;
 

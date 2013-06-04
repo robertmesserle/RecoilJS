@@ -5,7 +5,7 @@
   define(function(require) {
     var Data, DocumentationController, ModelController, _ref;
 
-    DocumentationController = require('./documentation');
+    DocumentationController = require('./reference');
     Data = require('./data/model');
     return ModelController = (function(_super) {
       __extends(ModelController, _super);

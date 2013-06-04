@@ -11,7 +11,7 @@
 
       GettingStartedController.prototype.view = 'getting-started';
 
-      GettingStartedController.prototype.category = 'Tutorials';
+      GettingStartedController.prototype.category = 'Documentation';
 
       GettingStartedController.prototype.title = 'Getting Started';
 
