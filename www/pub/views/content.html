@@ -1,18 +1,27 @@
 <section data-for="article in data">
   <article class="has-icon">
-    <i class="icon-#{ article.icon }"></i>
+    <i data-if="article.icon" class="icon-#{ article.icon }"></i>
+    <i data-if="not article.icon">#{ article.$index + 1 }</i>
     <h1>#{ article.title }</h1>
     <div class="article-content" data-for="item in article.content">
-      <$ data-if="typeof item is 'string'">
-        <p data-html="item"></p>
-      </$>
+      <p data-if="typeof item is 'string'" data-html="item"></p>
       <$ data-if="item.type is 'definitions'">
-        <h2>#{ item.title }</h2>
+        <h2 data-if="item.title">#{ item.title }</h2>
         <dl data-for="def in item.items">
           <dt>#{ def.term }</dt>
           <dd data-html="def.definition"></dd>
         </dl>
       </$>
+      <$ data-if="item.type is 'numbered-list'">
+        <h2 data-if="item.title">#{ item.title }</h2>
+        <ol data-for="item in item.items">
+          <li data-for="line in item">
+            <p data-html="line" data-if="typeof line is 'string'"></p>
+            <pre data-if="line.type is 'code'" data-update="hljs.highlightBlock( $element.get( 0 ) )">#{ line.code }</pre>
+          </li>
+        </ol>
+      </$>
+      <pre data-if="item.type is 'code'" data-update="hljs.highlightBlock( $element.get( 0 ), null, true )" data-html="parse item.code"></pre>
     </div>
   </article>
 </section>

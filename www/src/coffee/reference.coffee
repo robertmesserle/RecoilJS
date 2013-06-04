@@ -20,10 +20,11 @@ define ( require ) ->
       else
         $element.attr( 'disabled', false ).removeClass( 'selected' )
 
-    highlightTerms: ( line, terms = [] ) =>
+    highlightTerms: ( line, terms = [], highlight, escape = true ) =>
       for arg in terms
-        line = line.replace ":#{ arg.name }", """<span class="important">#{ arg.name }</span>"""
-      line = line.replace( '#{', '#\\{' )
+        if highlight then line = line.replace ":#{ arg.name }", """<span class="important">#{ arg.name }</span>"""
+        else line = line.replace( ":#{ arg.name }", arg.name )
+      line = line.replace( '#{', '#\\{' ) if escape
       return line
 
     formatSyntax: ( binding, highlight = true ) =>
@@ -35,7 +36,7 @@ define ( require ) ->
         else if indent < lastIndent then html += '</div>'
         lastIndent = indent
         html += '<div>'
-        html += if highlight then @highlightTerms( line, binding.args ) else $.trim( line )
+        html += @highlightTerms( line, binding.args, highlight )
         html += '</div>'
       html
 
@@ -43,7 +44,7 @@ define ( require ) ->
       term = @searchTerm.toLowerCase()
       return true unless @searchTerm
       return true if binding.title.toLowerCase().match( term )
-      return true if binding.syntax.toLowerCase().match( term )
+      return true if @highlightTerms( binding.syntax, binding.args, false ).toLowerCase().match( term )
       for arg in binding.args or []
         return true if arg.name.toLowerCase().match( term )
 

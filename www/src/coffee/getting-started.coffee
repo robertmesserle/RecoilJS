@@ -1,11 +1,21 @@
 define ( require ) ->
 
-  SectionController = require './section'
+  ContentController = require './content'
 
-  class GettingStartedController extends SectionController
+  class GettingStartedController extends ContentController
 
-    view: 'getting-started'
     category: 'Documentation'
     title: 'Getting Started'
+    data: require './data/getting-started'
 
-    constructor: ->
+    parse: ( code ) ->
+      lines = code.split( /\n/ )
+      for line, index in lines
+        lines[ index ] = line
+          .replace( /^\s+/, ( match ) -> Array( match.length + 1 ).join( '&nbsp;' ) )
+          .replace( /</g, '&lt;' )
+          .replace( />/g, '&gt;' )
+      lines.join( '<br />' )
+
+    highlight: ( $element ) ->
+      setTimeout -> hljs.highlightBlock $element.get( 0 ), null, true

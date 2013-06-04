@@ -22,9 +22,9 @@ define ( require ) -> [
   }
   {
     icon: 'medkit'
-    title: 'What if I find a bug?'
+    title: 'How can I help make Recoil better?'
     content: [
-      """Recoil is still in Alpha, and as such, may contain some bugs.  If you find any, please submit it to the Github page and it will be addressed as soon as possible."""
+      """Recoil is still in Alpha, and as such, there may be some undesired behavior.  If you find any bugs, or think of any features that would make Recoil better, please submit it to the Github page and it will be addressed as soon as possible."""
       {
         type: 'definitions'
         title: 'Links'

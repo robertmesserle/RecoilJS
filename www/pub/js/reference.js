@@ -36,17 +36,26 @@
         }
       };
 
-      DataBindingController.prototype.highlightTerms = function(line, terms) {
+      DataBindingController.prototype.highlightTerms = function(line, terms, highlight, escape) {
         var arg, _i, _len;
 
         if (terms == null) {
           terms = [];
         }
+        if (escape == null) {
+          escape = true;
+        }
         for (_i = 0, _len = terms.length; _i < _len; _i++) {
           arg = terms[_i];
-          line = line.replace(":" + arg.name, "<span class=\"important\">" + arg.name + "</span>");
+          if (highlight) {
+            line = line.replace(":" + arg.name, "<span class=\"important\">" + arg.name + "</span>");
+          } else {
+            line = line.replace(":" + arg.name, arg.name);
+          }
         }
-        line = line.replace('#{', '#\\{');
+        if (escape) {
+          line = line.replace('#{', '#\\{');
+        }
         return line;
       };
 
@@ -69,7 +78,7 @@
           }
           lastIndent = indent;
           html += '<div>';
-          html += highlight ? this.highlightTerms(line, binding.args) : $.trim(line);
+          html += this.highlightTerms(line, binding.args, highlight);
           html += '</div>';
         }
         return html;
@@ -85,7 +94,7 @@
         if (binding.title.toLowerCase().match(term)) {
           return true;
         }
-        if (binding.syntax.toLowerCase().match(term)) {
+        if (this.highlightTerms(binding.syntax, binding.args, false).toLowerCase().match(term)) {
           return true;
         }
         _ref = binding.args || [];

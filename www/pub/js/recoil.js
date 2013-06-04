@@ -879,6 +879,11 @@ Recoil = (function() {
     return Router.getInstance().handleChange();
   };
 
+  Recoil.goto = function(url) {
+    location.hash = url;
+    return Recoil.triggerRouteChange();
+  };
+
   Recoil.createTransition = function(type, id, callback) {
     return Recoil.transitions[type][id] = callback;
   };
@@ -1194,22 +1199,30 @@ ComposeBinding = (function(_super) {
   __extends(ComposeBinding, _super);
 
   function ComposeBinding(context) {
-    var _ref;
-
     this.context = context;
     this.renderView = __bind(this.renderView, this);
-    if (!(this.binding = this.context.$element.data('compose'))) {
+    if (!((this.binding = this.context.$element.data('compose')) || this.context.$element.data('view'))) {
       return;
     }
     if (this.binding) {
       this.controller = this.parseBinding(this.binding);
     }
-    this.view = this.context.$element.data('view') || ((_ref = this.controller) != null ? _ref.view : void 0);
+    this.view = this.getView();
     if (this.view) {
       this.loadView();
     }
     ComposeBinding.__super__.constructor.apply(this, arguments);
   }
+
+  ComposeBinding.prototype.getView = function() {
+    var view, _ref;
+
+    view = this.context.$element.data('view');
+    if (view) {
+      return this.parseBinding(view);
+    }
+    return (_ref = this.controller) != null ? _ref.view : void 0;
+  };
 
   ComposeBinding.prototype.loadView = function() {
     var url,
@@ -1273,13 +1286,15 @@ ComposeBinding = (function(_super) {
     if (this.binding) {
       controller = this.parseBinding(this.binding);
     }
-    view = this.context.$element.data('view') || (controller != null ? controller.view : void 0);
+    view = this.getView();
     if (this.controller !== controller || this.view !== view) {
       outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       this.controller = controller;
       this.view = view;
       callback = function() {
-        return _this.loadView();
+        if (_this.view) {
+          return _this.loadView();
+        }
       };
       return (typeof outro === "function" ? outro(this.context.$element, callback) : void 0) || callback();
     }
@@ -1757,12 +1772,6 @@ UpdateBinding = (function(_super) {
     UpdateBinding.__super__.constructor.apply(this, arguments);
   }
 
-  UpdateBinding.prototype.update = function() {
-    try {
-      return this.func.call(this)();
-    } catch (_error) {}
-  };
-
   return UpdateBinding;
 
 })(Base);
@@ -1910,7 +1919,7 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
-  Parser.prototype.bindings = [TextNode, IfBinding, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding, UpdateBinding];
+  Parser.prototype.bindings = [TextNode, IfBinding, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding];
 
   function Parser(context) {
     var _this = this;
@@ -1948,11 +1957,12 @@ Parser = (function() {
       return;
     }
     $contents = context.$contents || $element.contents();
-    return $contents.each(function(index, element) {
+    $contents.each(function(index, element) {
       return new Parser($.extend({}, context, context.childContext, {
         $element: $(element)
       }));
     });
+    return new UpdateBinding(context);
   };
 
   return Parser;
