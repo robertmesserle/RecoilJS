@@ -1214,14 +1214,17 @@ ComposeBinding = (function(_super) {
     ComposeBinding.__super__.constructor.apply(this, arguments);
   }
 
-  ComposeBinding.prototype.getView = function() {
-    var view, _ref;
+  ComposeBinding.prototype.getView = function(controller) {
+    var view;
 
+    if (controller == null) {
+      controller = this.controller;
+    }
     view = this.context.$element.data('view');
     if (view) {
       return this.parseBinding(view);
     }
-    return (_ref = this.controller) != null ? _ref.view : void 0;
+    return controller != null ? controller.view : void 0;
   };
 
   ComposeBinding.prototype.loadView = function() {
@@ -1232,9 +1235,11 @@ ComposeBinding = (function(_super) {
     if (Recoil.views[url]) {
       return this.renderView(Recoil.views[url]);
     }
+    this.loading = true;
     return $.ajax({
       url: url,
       success: function(data) {
+        _this.loading = false;
         data = Recoil.views[url] = data.replace(/<\$/g, '<div data-logic="true"').replace(/<\/\$>/g, '</div>');
         return _this.renderView(data);
       }
@@ -1283,10 +1288,13 @@ ComposeBinding = (function(_super) {
     var callback, controller, outro, view, _ref,
       _this = this;
 
+    if (this.loading) {
+      return;
+    }
     if (this.binding) {
       controller = this.parseBinding(this.binding);
     }
-    view = this.getView();
+    view = this.getView(controller);
     if (this.controller !== controller || this.view !== view) {
       outro = Recoil.transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       this.controller = controller;
@@ -1802,17 +1810,21 @@ ValueBinding = (function(_super) {
   }
 
   ValueBinding.prototype.bindEvents = function() {
-    var change;
+    var events;
 
-    change = this.context.$element.is('select');
-    switch (this.context.$element.attr('type')) {
-      case 'radio':
-      case 'checkbox':
-        change = true;
-    }
-    if (change) {
+    if (this.context.$element.is('select')) {
       return this.context.$element.on('change', this.updateHandler);
     }
+    events = (function() {
+      switch (this.context.$element.attr('type')) {
+        case 'radio':
+        case 'checkbox':
+          return 'change';
+        default:
+          return 'click keydown';
+      }
+    }).call(this);
+    return this.context.$element.on(events, $.noop);
   };
 
   ValueBinding.prototype.getValue = function() {

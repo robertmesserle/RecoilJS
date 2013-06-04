@@ -7,16 +7,18 @@ class ComposeBinding extends Base
     @loadView() if @view
     super
 
-  getView: ->
+  getView: ( controller = @controller ) ->
     view = @context.$element.data( 'view' )
     if view then return @parseBinding( view )
-    @controller?.view
+    controller?.view
 
   loadView: ->
     url = "#{ Recoil.viewPath }/#{ @view }.html"
     if Recoil.views[ url ]
       return @renderView( Recoil.views[ url ] )
+    @loading = true
     $.ajax url: url, success: ( data ) =>
+      @loading = false
       data = Recoil.views[ url ] = data
         .replace( /<\$/g, '<div data-logic="true"' )
         .replace( /<\/\$>/g, '</div>' )
@@ -37,8 +39,9 @@ class ComposeBinding extends Base
       new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: @context.extras )
 
   update: ->
+    return if @loading
     controller = @parseBinding @binding if @binding
-    view = @getView()
+    view = @getView( controller )
     if @controller isnt controller or @view isnt view
       outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       @controller = controller
