@@ -10,10 +10,7 @@ class ValueBinding extends Base
     super
 
   bindEvents: ->
-    return @context.$element.on 'change', @updateHandler if @context.$element.is( 'select' )
-    events = switch @context.$element.attr( 'type' )
-      when 'radio', 'checkbox' then 'change'
-      else 'click keydown'
+    events = 'click keydown change'
     @context.$element.on events, $.noop
 
   getValue: ->

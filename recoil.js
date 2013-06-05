@@ -82,14 +82,20 @@ DirtyCheck = (function() {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       type = _ref[_i];
       _ref1 = ['addEventListener', 'attachEvent'];
-      _fn = function(originalMethod) {
+      _fn = function(type, originalMethod) {
         return type.prototype[func] = function(type, listener) {
           var args;
 
           args = Array.apply(null, arguments);
           args[1] = function() {
             listener.apply(null, arguments);
-            return DirtyCheck.update();
+            if (type.indexOf('down') >= 0) {
+              return setTimeout(function() {
+                return DirtyCheck.update();
+              });
+            } else {
+              return DirtyCheck.update();
+            }
           };
           return originalMethod.apply(this, args);
         };
@@ -99,7 +105,7 @@ DirtyCheck = (function() {
         if (!(originalMethod = type.prototype[func])) {
           return;
         }
-        _fn(originalMethod);
+        _fn(type, originalMethod);
       }
     }
   };
@@ -136,10 +142,6 @@ DirtyCheck = (function() {
     return $(function() {
       return $(document).ajaxComplete(function() {
         return DirtyCheck.update();
-      }).on('keydown click', function() {
-        return DirtyCheck.originalMethods.setTimeout(function() {
-          return DirtyCheck.update();
-        });
       }).on('load', 'script', function() {
         return DirtyCheck.originalMethods.setTimeout(function() {
           return DirtyCheck.update();
@@ -1939,18 +1941,7 @@ ValueBinding = (function(_super) {
   ValueBinding.prototype.bindEvents = function() {
     var events;
 
-    if (this.context.$element.is('select')) {
-      return this.context.$element.on('change', this.updateHandler);
-    }
-    events = (function() {
-      switch (this.context.$element.attr('type')) {
-        case 'radio':
-        case 'checkbox':
-          return 'change';
-        default:
-          return 'click keydown';
-      }
-    }).call(this);
+    events = 'click keydown change';
     return this.context.$element.on(events, $.noop);
   };
 

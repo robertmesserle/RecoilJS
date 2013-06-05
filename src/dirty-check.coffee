@@ -42,12 +42,13 @@ class DirtyCheck
     for type in @elementList
       for func in [ 'addEventListener', 'attachEvent' ]
         return unless originalMethod = type.prototype[ func ]
-        do ( originalMethod ) ->
+        do ( type, originalMethod ) ->
           type.prototype[ func ] = ( type, listener ) ->
             args = Array arguments...
             args[ 1 ] = ->
               listener( arguments... )
-              DirtyCheck.update()
+              if type.indexOf( 'down' ) >= 0 then setTimeout -> DirtyCheck.update()
+              else DirtyCheck.update()
             originalMethod.apply( this, args )
 
   overwriteTimeouts: ->
@@ -67,5 +68,4 @@ class DirtyCheck
     $ ->
       $( document )
         .ajaxComplete( -> DirtyCheck.update() )
-        .on( 'keydown click', -> DirtyCheck.originalMethods.setTimeout -> DirtyCheck.update() )
         .on( 'load', 'script', -> DirtyCheck.originalMethods.setTimeout -> DirtyCheck.update() )
