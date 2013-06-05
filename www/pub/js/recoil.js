@@ -75,39 +75,44 @@ DirtyCheck = (function() {
     this.bindEvents();
   }
 
+  DirtyCheck.prototype.getListener = function(originalMethod) {
+    return function(type, listener) {
+      var args;
+
+      args = Array.apply(null, arguments);
+      args[1] = function() {
+        listener.apply(null, arguments);
+        if (type.indexOf('down') >= 0) {
+          return setTimeout(function() {
+            return DirtyCheck.update();
+          });
+        } else {
+          return DirtyCheck.update();
+        }
+      };
+      return originalMethod.apply(this, args);
+    };
+  };
+
   DirtyCheck.prototype.overwriteEventListeners = function() {
-    var func, originalMethod, type, _fn, _i, _j, _len, _len1, _ref, _ref1;
+    var originalMethod, type, _i, _len, _ref, _results;
 
     _ref = this.elementList;
+    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       type = _ref[_i];
-      _ref1 = ['addEventListener', 'attachEvent'];
-      _fn = function(type, originalMethod) {
-        return type.prototype[func] = function(type, listener) {
-          var args;
-
-          args = Array.apply(null, arguments);
-          args[1] = function() {
-            listener.apply(null, arguments);
-            if (type.indexOf('down') >= 0) {
-              return setTimeout(function() {
-                return DirtyCheck.update();
-              });
-            } else {
-              return DirtyCheck.update();
-            }
-          };
-          return originalMethod.apply(this, args);
-        };
-      };
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        func = _ref1[_j];
-        if (!(originalMethod = type.prototype[func])) {
-          return;
-        }
-        _fn(type, originalMethod);
+      originalMethod = type.prototype.addEventListener;
+      if (originalMethod) {
+        type.prototype.addEventListener = this.getListener(originalMethod);
+      }
+      originalMethod = type.prototype.attachEvent;
+      if (originalMethod) {
+        _results.push(type.prototype.attachEvent = this.getListener(originalMethod));
+      } else {
+        _results.push(void 0);
       }
     }
+    return _results;
   };
 
   DirtyCheck.prototype.overwriteTimeouts = function() {
@@ -142,11 +147,7 @@ DirtyCheck = (function() {
     return $(function() {
       return $(document).ajaxComplete(function() {
         return DirtyCheck.update();
-      }).on('load', 'script', function() {
-        return DirtyCheck.originalMethods.setTimeout(function() {
-          return DirtyCheck.update();
-        });
-      });
+      }).on('load', 'script', $.noop);
     });
   };
 
