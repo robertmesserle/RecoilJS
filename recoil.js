@@ -1936,7 +1936,6 @@ ValueBinding = (function(_super) {
       return;
     }
     this.context.skipChildren = true;
-    this.live = this.context.$element.data('live') != null;
     this.setValue();
     if (this.context.$element.is('select')) {
       this.updateHandler();
@@ -2005,9 +2004,6 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.write = function() {
-    if (this.context.$element.is(':focus') && !this.live) {
-      return;
-    }
     return this.updateHandler();
   };
 

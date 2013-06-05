@@ -70,9 +70,9 @@ DirtyCheck = (function() {
       return this.constructor.instance;
     }
     this.constructor.instance = this;
+    this.bindEvents();
     this.overwriteEventListeners();
     this.overwriteTimeouts();
-    this.bindEvents();
   }
 
   DirtyCheck.prototype.getListener = function(originalMethod) {
@@ -147,7 +147,13 @@ DirtyCheck = (function() {
     return $(function() {
       return $(document).ajaxComplete(function() {
         return DirtyCheck.update();
-      }).on('load', 'script', $.noop);
+      }).on('load', 'script', function() {
+        return DirtyCheck.update();
+      }).on('click keydown', 'label', function() {
+        return setTimeout(function() {
+          return DirtyCheck.update();
+        });
+      });
     });
   };
 
@@ -1930,7 +1936,6 @@ ValueBinding = (function(_super) {
       return;
     }
     this.context.skipChildren = true;
-    this.live = this.context.$element.data('live') != null;
     this.setValue();
     if (this.context.$element.is('select')) {
       this.updateHandler();
@@ -1999,9 +2004,6 @@ ValueBinding = (function(_super) {
   };
 
   ValueBinding.prototype.write = function() {
-    if (this.context.$element.is(':focus') && !this.live) {
-      return;
-    }
     return this.updateHandler();
   };
 
