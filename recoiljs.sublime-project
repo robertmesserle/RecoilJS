@@ -4,7 +4,7 @@
 		{
 			"path": ".",
       "folder_exclude_patterns": [ "node_modules", "www/pub", "www/psd" ],
-      "file_exclude_patterns": [ ".gitignore", ".npmignore", "Procfile", "readme.md", "*.sublime*", "package.json" ]
+      "file_exclude_patterns": [ ".gitignore", ".npmignore", "Procfile", "readme.md", "*.sublime*", "package.json", ".slugignore" ]
 		}
 	],
   "settings":

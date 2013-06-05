@@ -34,9 +34,9 @@ class DirtyCheck
     return @constructor.instance if @constructor.instance
     @constructor.instance = this
     # On with the show!
+    @bindEvents()
     @overwriteEventListeners()
     @overwriteTimeouts()
-    @bindEvents()
 
   getListener: ( originalMethod ) ->
     ( type, listener ) ->
@@ -74,4 +74,5 @@ class DirtyCheck
     $ ->
       $( document )
         .ajaxComplete( -> DirtyCheck.update() )
-        .on( 'load', 'script', $.noop )
+        .on( 'load', 'script', -> DirtyCheck.update() )
+        .on( 'click keydown', 'label', -> setTimeout -> DirtyCheck.update() )
