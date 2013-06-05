@@ -3,7 +3,6 @@ class ValueBinding extends Base
   constructor: ( @context  ) ->
     return unless @binding = @context.$element.data( 'value' )
     @context.skipChildren = true
-    @live = @context.$element.data( 'live' )?
     @setValue()
     @updateHandler() if @context.$element.is( 'select' )
     @bindEvents()
@@ -40,6 +39,4 @@ class ValueBinding extends Base
     @setValue()
 
   write: ->
-    return if @context.$element.is( ':focus' ) and not @live
-
     @updateHandler()
