@@ -224,6 +224,8 @@ BaseModel = (function() {
 
   BaseModel.prototype.isNew = true;
 
+  BaseModel.prototype.hasChanged = false;
+
   function BaseModel(data) {
     if (data == null) {
       data = {};
@@ -318,7 +320,10 @@ BaseModel = (function() {
       if (update) {
         return this.update();
       }
-    } else {
+    } else if (this[key] !== value) {
+      if (subscribe) {
+        this.hasChanged = true;
+      }
       if (this.props[key]) {
         this[key] = this.props[key].set(value, subscribe);
         if (update) {
@@ -378,15 +383,20 @@ BaseModel = (function() {
       prop = _ref[key];
       prop.save();
     }
+    this.send();
     return true;
   };
 
   BaseModel.prototype.send = function() {
-    var ajax,
+    var ajax, url,
       _this = this;
 
+    url = this.isNew ? this.constructor.paths.post.call(this) : this.constructor.paths.put.call(this);
+    if (!url) {
+      return;
+    }
     ajax = {
-      url: this.isNew ? this.constructor.paths.post.call(this) : this.constructor.paths.put.call(this),
+      url: url,
       data: this.toJSON(),
       type: this.isNew ? 'POST' : 'PUT',
       success: function(data) {
@@ -398,7 +408,9 @@ BaseModel = (function() {
         }
         for (key in data) {
           value = data[key];
-          _this[key] = _this.props[key].set(value);
+          if (_this.props[key] != null) {
+            _this[key] = _this.props[key].set(value);
+          }
         }
         return _this.updateVirtuals();
       }
@@ -436,9 +448,11 @@ BaseModel = (function() {
     _ref = this.props;
     for (key in _ref) {
       prop = _ref[key];
-      if (this[key] !== prop.value) {
-        this[key] = prop.set(this[key]);
+      if (!(this[key] !== prop.value)) {
+        continue;
       }
+      this[key] = prop.set(this[key]);
+      this.hasChanged = true;
     }
     return this.updateVirtuals();
   };
@@ -470,6 +484,10 @@ BaseModel = (function() {
   BaseModel.prototype.update = function() {
     this.checkVirtuals();
     return this.checkProps();
+  };
+
+  BaseModel.prototype.clone = function() {
+    return new this.constructor(this.toJSON());
   };
 
   return BaseModel;

@@ -435,16 +435,79 @@ describe 'Recoil.Model', ->
         expect( item.id ).toBe 1
         expect( item.name ).toBe 'foo'
 
-  describe '#fetch', ->
-
-  describe '#destroy', ->
-
-  describe '#isValid', ->
-
-  describe '#path', ->
-
-  describe '#parse', ->
-
   describe '#clone', ->
 
-  describe '#isNew', ->
+    Person = new Recoil.Model {
+      $props:
+        fname: type: String
+        lname: type: String
+        age:   type: Number
+    }
+
+    person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+
+    it 'should create a clone of the item', ->
+      clone = person.clone()
+
+      expect( clone.fname ).toBe 'Robert'
+      expect( clone.lname ).toBe 'Messerle'
+      expect( clone.age ).toBe 28
+
+  describe '#hasChanged', ->
+
+    Person = new Recoil.Model {
+      $props:
+        fname: type: String
+        lname: type: String
+        age:   type: Number
+      $virtual:
+        name:
+          read: -> "#{ @fname } #{ @lname }"
+          write: ( name ) -> [ @fname, @lname ] = name.split( ' ' )
+    }
+
+    it 'should start out as false', ->
+      person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+      expect( person.hasChanged ).toBe false
+
+    it 'should be triggered by a prop change', ->
+      person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+      expect( person.hasChanged ).toBe false
+      person.fname = 'Richard'
+      person.update()
+      expect( person.fname ).toBe 'Richard'
+      expect( person.lname ).toBe 'Messerle'
+      expect( person.name ).toBe 'Richard Messerle'
+      expect( person.age ).toBe 28
+      expect( person.hasChanged ).toBe true
+
+    it 'should be triggered by a prop setter', ->
+      person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+      expect( person.hasChanged ).toBe false
+      person.set 'fname', 'Richard'
+      expect( person.fname ).toBe 'Richard'
+      expect( person.lname ).toBe 'Messerle'
+      expect( person.name ).toBe 'Richard Messerle'
+      expect( person.age ).toBe 28
+      expect( person.hasChanged ).toBe true
+
+    it 'should be triggered by a multi-prop setter', ->
+      person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+      expect( person.hasChanged ).toBe false
+      person.set fname: 'Richard'
+      expect( person.fname ).toBe 'Richard'
+      expect( person.lname ).toBe 'Messerle'
+      expect( person.name ).toBe 'Richard Messerle'
+      expect( person.age ).toBe 28
+      expect( person.hasChanged ).toBe true
+
+    it 'should be triggered by a virtual', ->
+      person = new Person fname: 'Robert', lname: 'Messerle', age: 28
+      expect( person.hasChanged ).toBe false
+      person.set name: 'Richard Messerle'
+      expect( person.fname ).toBe 'Richard'
+      expect( person.lname ).toBe 'Messerle'
+      expect( person.name ).toBe 'Richard Messerle'
+      expect( person.age ).toBe 28
+      expect( person.hasChanged ).toBe true
+

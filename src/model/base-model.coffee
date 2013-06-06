@@ -28,6 +28,7 @@ class BaseModel
         callback?( item )
 
   isNew: true
+  hasChanged: false
 
   constructor: ( data = {} ) ->
     @_createBuckets()
@@ -75,7 +76,8 @@ class BaseModel
       for key, value of obj
         @set key, value, false, subscribe
       @update() if update
-    else
+    else if @[ key ] isnt value
+      @hasChanged = true if subscribe
       if @props[ key ]
         @[ key ] = @props[ key ].set value, subscribe
         @updateVirtuals() if update
@@ -116,7 +118,7 @@ class BaseModel
       success: ( data ) =>
         @isNew = false
         return false unless data
-        for key, value of data
+        for key, value of data when @props[ key ]?
           @[ key ] = @props[ key ].set value
         @updateVirtuals()
     $.ajax ajax
@@ -135,6 +137,7 @@ class BaseModel
   checkProps: ->
     for key, prop of @props when @[ key ] isnt prop.value
       @[ key ] = prop.set @[ key ]
+      @hasChanged = true
     @updateVirtuals()
 
   updateVirtuals: ->
@@ -150,3 +153,6 @@ class BaseModel
   update: ->
     @checkVirtuals()
     @checkProps()
+
+  clone: ->
+    new @constructor @toJSON()
