@@ -103,11 +103,14 @@ class BaseModel
     return false unless @validate()
     for key, prop of @props
       prop.save()
+    @send()
     return true
 
   send: ->
+    url = if @isNew then @constructor.paths.post.call( this ) else @constructor.paths.put.call( this )
+    return unless url
     ajax =
-      url: if @isNew then @constructor.paths.post.call( this ) else @constructor.paths.put.call( this )
+      url: url
       data: @toJSON()
       type: if @isNew then 'POST' else 'PUT'
       success: ( data ) =>
