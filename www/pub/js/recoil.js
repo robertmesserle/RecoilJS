@@ -810,14 +810,30 @@ Router = (function() {
   };
 
   Router.prototype.mapRoute = function(path, handler) {
-    var route;
+    var key, p, route, value, _i, _len, _results, _results1;
 
-    route = {
-      regex: this.getRegex(path),
-      path: path,
-      handler: handler
-    };
-    return this.routes.push(route);
+    if (path instanceof Array) {
+      _results = [];
+      for (_i = 0, _len = path.length; _i < _len; _i++) {
+        p = path[_i];
+        _results.push(this.mapRoute(p, handler));
+      }
+      return _results;
+    } else if (typeof path === 'object') {
+      _results1 = [];
+      for (key in path) {
+        value = path[key];
+        _results1.push(this.mapRoute(key, value));
+      }
+      return _results1;
+    } else {
+      route = {
+        regex: this.getRegex(path),
+        path: path,
+        handler: handler
+      };
+      return this.routes.push(route);
+    }
   };
 
   Router.prototype.getParams = function(hash, route) {

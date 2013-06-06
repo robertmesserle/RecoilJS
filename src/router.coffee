@@ -42,11 +42,16 @@ class Router
       handler: handler
 
   mapRoute: ( path, handler ) ->
-    route =
-      regex:    @getRegex( path )
-      path:     path
-      handler:  handler
-    @routes.push route
+    if path instanceof Array
+      for p in path then @mapRoute p, handler
+    else if typeof path is 'object'
+      for key, value of path then @mapRoute key, value
+    else
+      route =
+        regex:    @getRegex( path )
+        path:     path
+        handler:  handler
+      @routes.push route
 
   getParams: ( hash, route ) ->
     params = {}
