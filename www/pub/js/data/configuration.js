@@ -2,7 +2,7 @@
   define(function(require) {
     return [
       {
-        title: 'Initialialization',
+        title: 'Initialization',
         syntax: 'Recoil.init( :scope )',
         args: [
           {

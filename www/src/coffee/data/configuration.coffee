@@ -1,6 +1,6 @@
 define ( require ) -> [
   {
-    title: 'Initialialization'
+    title: 'Initialization'
     syntax: 'Recoil.init( :scope )'
     args: [
       { name: 'scope', html: 'The initial scope of your application.' }
