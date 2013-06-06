@@ -4,9 +4,6 @@ describe 'Recoil.Collection', ->
     expect( Recoil.Collection ).not.toBeNull()
     expect( Recoil.Collection ).toBeDefined()
 
-  it 'should allow you to create a collection type', ->
-    Numbers = new Recoil.Collection
-
   it 'should should allow saving', ->
     numbers = new Recoil.Collection
     numbers.value = [ 1, 2, 3 ]
