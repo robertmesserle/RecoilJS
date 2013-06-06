@@ -615,6 +615,25 @@ Collection = (function(_super) {
     return (_ref = this.value).splice.apply(_ref, [0, this.value.length].concat(__slice.call(this.savedValue.slice())));
   };
 
+  Collection.prototype.find = function(criteria) {
+    var index, item, _i, _len, _ref;
+
+    index = this.value.indexOf(criteria);
+    if (!(index < 0)) {
+      return this.value[index];
+    }
+    if (typeof criteria !== 'function') {
+      return;
+    }
+    _ref = this.value;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      item = _ref[_i];
+      if (criteria(item)) {
+        return item;
+      }
+    }
+  };
+
   return Collection;
 
 })(DataType);
