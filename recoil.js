@@ -213,10 +213,6 @@ DataType = (function() {
 
   DataType.prototype.parseData = function(data) {
     this.type = this.parseType(data.type);
-    if (data["default"] != null) {
-      this["default"] = this.type(data["default"]);
-    }
-    this.value = this.savedValue = this["default"];
     this._validate = data.validate || function() {
       return true;
     };
@@ -566,17 +562,58 @@ BaseModel = (function() {
 
 })();
 
-var Collection, _ref,
+var Collection,
   __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice;
 
 Collection = (function(_super) {
   __extends(Collection, _super);
 
   function Collection() {
-    _ref = Collection.__super__.constructor.apply(this, arguments);
-    return _ref;
+    Collection.__super__.constructor.apply(this, arguments);
+    this.value = [];
+    this.savedValue = [];
+    this.addArrayMethods();
   }
+
+  Collection.prototype.addArrayMethods = function() {
+    var method, _i, _len, _ref, _results,
+      _this = this;
+
+    _ref = 'push pop unshift shift indexOf slice splice'.split(/\s/);
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      method = _ref[_i];
+      _results.push((function(method) {
+        return _this[method] = function() {
+          var _ref1;
+
+          return (_ref1 = _this.value)[method].apply(_ref1, arguments);
+        };
+      })(method));
+    }
+    return _results;
+  };
+
+  Collection.prototype.save = function() {
+    var _ref;
+
+    console.log('saving');
+    if (!this.validate()) {
+      return;
+    }
+    console.log('validated');
+    console.log(this.savedValue, this.value);
+    (_ref = this.savedValue).splice.apply(_ref, [0, this.savedValue.length].concat(__slice.call(this.value)));
+    return console.log(this.savedValue);
+  };
+
+  Collection.prototype.revert = function() {
+    var _ref;
+
+    return (_ref = this.value).splice.apply(_ref, [0, this.value.length].concat(__slice.call(this.savedValue.slice())));
+  };
 
   return Collection;
 

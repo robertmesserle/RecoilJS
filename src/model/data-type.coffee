@@ -18,12 +18,9 @@ class DataType
     return ( -> new type arguments... )
 
   parseData: ( data ) ->
-    @type       = @parseType( data.type )
-    if data.default?
-      @default = @type data.default
-    @value = @savedValue = @default
-    @_validate = data.validate or -> true
-    @_subscribe = data.subscribe or -> true
+    @type         = @parseType( data.type )
+    @_validate    = data.validate or -> true
+    @_subscribe   = data.subscribe or -> true
 
   validate: ->
     @_validate.call @context, @value
