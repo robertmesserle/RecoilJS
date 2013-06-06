@@ -41,7 +41,7 @@ module.exports = ( grunt ) ->
           stripBanners: true
           banner: "#{ header.banner }\n\n#{ header.js }\n"
           footer: "#{ footer.js }"
-        src: [ 'tmp/dirty-check.js', 'tmp/model/*.js', 'tmp/model/model.js', 'tmp/router.js', 'tmp/main.js', 'tmp/bindings/base.js', 'tmp/bindings/*.js', 'tmp/parser.js', 'tmp/core.js' ]
+        src: [ 'tmp/dirty-check.js', 'tmp/model/data-type.js', 'tmp/model/*.js', 'tmp/model/model.js', 'tmp/router.js', 'tmp/main.js', 'tmp/bindings/base.js', 'tmp/bindings/*.js', 'tmp/parser.js', 'tmp/core.js' ]
         dest: 'recoil.js'
       wwwVendorJS:
         src: [ 'www/src/vendor/js/*.js' ]

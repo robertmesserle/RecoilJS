@@ -161,6 +161,78 @@ DirtyCheck = (function() {
 
 })();
 
+var DataType;
+
+DataType = (function() {
+  DataType.prototype.type = null;
+
+  DataType.prototype["default"] = null;
+
+  DataType.prototype.value = null;
+
+  DataType.prototype.valid = true;
+
+  function DataType(data, context) {
+    if (data == null) {
+      data = {};
+    }
+    this.context = context;
+    this.parseData(data);
+  }
+
+  DataType.prototype.parseType = function(type) {
+    var typeString, _ref;
+
+    if (!type) {
+      return (function(value) {
+        return value;
+      });
+    }
+    typeString = type.toString();
+    if (typeString.indexOf('[native code]') + 1) {
+      return type;
+    }
+    if ((type != null ? (_ref = type.__super__) != null ? _ref.constructor : void 0 : void 0) === BaseModel) {
+      return (function() {
+        return (function(func, args, ctor) {
+          ctor.prototype = func.prototype;
+          var child = new ctor, result = func.apply(child, args);
+          return Object(result) === result ? result : child;
+        })(type, arguments, function(){});
+      });
+    }
+    type = type();
+    return (function() {
+      return (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return Object(result) === result ? result : child;
+      })(type, arguments, function(){});
+    });
+  };
+
+  DataType.prototype.parseData = function(data) {
+    this.type = this.parseType(data.type);
+    if (data["default"] != null) {
+      this["default"] = this.type(data["default"]);
+    }
+    this.value = this.savedValue = this["default"];
+    this._validate = data.validate || function() {
+      return true;
+    };
+    return this._subscribe = data.subscribe || function() {
+      return true;
+    };
+  };
+
+  DataType.prototype.validate = function() {
+    return this._validate.call(this.context, this.value);
+  };
+
+  return DataType;
+
+})();
+
 var BaseModel;
 
 BaseModel = (function() {
@@ -494,14 +566,21 @@ BaseModel = (function() {
 
 })();
 
-var Collection;
+var Collection, _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Collection = (function() {
-  function Collection() {}
+Collection = (function(_super) {
+  __extends(Collection, _super);
+
+  function Collection() {
+    _ref = Collection.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
 
   return Collection;
 
-})();
+})(DataType);
 
 var Model,
   __hasProp = {}.hasOwnProperty,
@@ -613,29 +692,22 @@ Model = (function() {
 
 })();
 
-var Property;
+var Property, _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Property = (function() {
-  Property.prototype.type = null;
+Property = (function(_super) {
+  __extends(Property, _super);
 
-  Property.prototype.model = null;
+  function Property() {
+    _ref = Property.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
 
   Property.prototype["default"] = null;
 
-  Property.prototype.value = null;
-
-  Property.prototype.valid = true;
-
-  function Property(data, context) {
-    if (data == null) {
-      data = {};
-    }
-    this.context = context;
-    this.parseData(data);
-  }
-
   Property.prototype.parseType = function(type) {
-    var typeString, _ref;
+    var typeString, _ref1;
 
     if (!type) {
       return (function(value) {
@@ -646,7 +718,7 @@ Property = (function() {
     if (typeString.indexOf('[native code]') + 1) {
       return type;
     }
-    if ((type != null ? (_ref = type.__super__) != null ? _ref.constructor : void 0 : void 0) === BaseModel) {
+    if ((type != null ? (_ref1 = type.__super__) != null ? _ref1.constructor : void 0 : void 0) === BaseModel) {
       return (function() {
         return (function(func, args, ctor) {
           ctor.prototype = func.prototype;
@@ -666,18 +738,11 @@ Property = (function() {
   };
 
   Property.prototype.parseData = function(data) {
-    this.type = this.parseType(data.type);
-    this.model = data.model;
+    Property.__super__.parseData.apply(this, arguments);
     if (data["default"] != null) {
       this["default"] = this.type(data["default"]);
     }
-    this.value = this.savedValue = this["default"];
-    this._validate = data.validate || function() {
-      return true;
-    };
-    return this._subscribe = data.subscribe || function() {
-      return true;
-    };
+    return this.value = this.savedValue = this["default"];
   };
 
   Property.prototype.set = function(value, subscribe) {
@@ -694,10 +759,6 @@ Property = (function() {
     return this.value = this["default"];
   };
 
-  Property.prototype.validate = function() {
-    return this._validate.call(this.context, this.value);
-  };
-
   Property.prototype.save = function() {
     if (this.validate()) {
       return this.savedValue = this.value;
@@ -710,7 +771,7 @@ Property = (function() {
 
   return Property;
 
-})();
+})(DataType);
 
 var Virtual;
 

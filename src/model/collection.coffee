@@ -1,1 +1,2 @@
-class Collection
+
+class Collection extends DataType
