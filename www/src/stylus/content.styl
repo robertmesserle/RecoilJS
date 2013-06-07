@@ -9,28 +9,25 @@
     padding 0
     stripes hsl( 0, 0, 12 ), hsl( 0, 0, 10 )
     position absolute
-    top 20px
+    top 30px
     left 0
     right 0
-    height 95px
-    border-width 1px 0
-    border-color hsl( 0, 0, 20 )
-    border-style solid
-    padding 0 40px
-    color white
+    height 75px
+    padding 0
+    color hsl( 0, 0, 50 )
     position relative
+    box-shadow 0 5px 15px rgba( black, 0.025 )
     h1
       font-size 30px
       margin 0
-      line-height 95px
-      font-weight 100
-      font-family $alt-font
-      text-transform uppercase
+      line-height 75px
+      font-family $font
+      padding 0 40px
     .toolbar
       position absolute
       right 40px
-      top 20px
-      bottom 20px
+      top 10px
+      bottom 10px
       button
         display inline-block
         float left
@@ -76,7 +73,7 @@
 
   .section-wrapper
     position absolute
-    top 115px
+    top 105px
     left 0
     right 0
     bottom 0
@@ -144,7 +141,7 @@
       p
         color #999
       p, li, dt, dd
-        font-family sans-serif
+        font-family $alt-font
         font-weight normal
         font-size 14px
         line-height 1.5em
