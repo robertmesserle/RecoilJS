@@ -1271,7 +1271,8 @@ Base = (function() {
       return;
     }
     this.context.unwrapped = false;
-    return this.context.$element.insertBefore(this.context.$contents).append(this.context.$contents);
+    this.context.$element.insertBefore(this.context.$contents);
+    return this.context.$contents.appendTo(this.context.$element);
   };
 
   Base.prototype.unwrap = function() {

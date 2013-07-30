@@ -93,7 +93,8 @@ class Base
     return unless @context.unwrapped
     return unless @logic
     @context.unwrapped = false
-    @context.$element.insertBefore( @context.$contents ).append( @context.$contents )
+    @context.$element.insertBefore( @context.$contents )
+    @context.$contents.appendTo( @context.$element )
 
   unwrap: ->
     return if @context.unwrapped
