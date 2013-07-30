@@ -7,7 +7,9 @@ class ForBinding extends Base
     @getParts()
     @getTemplate()
     @collection = @getCollection()
+    @wrap()
     @parseItems( @collection )
+    @unwrap()
     super
 
   getParts: ->
@@ -69,12 +71,12 @@ class ForBinding extends Base
   updateItems: =>
     collection = @getCollection()
     if @checkForChanges( collection )
+      @wrap()
       @collection = collection.slice( 0 )
-      @wrap() if @logic
       @bindings = read: [], write: []
       @context.$element.empty()
       @parseItems( collection )
-      @unwrap() if @logic
+      @unwrap()
     else
       @checkBindings()
 

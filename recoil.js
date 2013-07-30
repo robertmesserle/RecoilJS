@@ -1719,7 +1719,9 @@ ForBinding = (function(_super) {
     this.getParts();
     this.getTemplate();
     this.collection = this.getCollection();
+    this.wrap();
     this.parseItems(this.collection);
+    this.unwrap();
     ForBinding.__super__.constructor.apply(this, arguments);
   }
 
@@ -1852,19 +1854,15 @@ ForBinding = (function(_super) {
 
     collection = this.getCollection();
     if (this.checkForChanges(collection)) {
+      this.wrap();
       this.collection = collection.slice(0);
-      if (this.logic) {
-        this.wrap();
-      }
       this.bindings = {
         read: [],
         write: []
       };
       this.context.$element.empty();
       this.parseItems(collection);
-      if (this.logic) {
-        return this.unwrap();
-      }
+      return this.unwrap();
     } else {
       return this.checkBindings();
     }
