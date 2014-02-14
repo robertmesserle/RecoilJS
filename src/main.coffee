@@ -1,7 +1,5 @@
 class Recoil
 
-  # Global Data
-  
   @app:           null
   @viewPath:      './views'
   @throttle:      30
@@ -9,7 +7,7 @@ class Recoil
     read:         []
     write:        []
   @views:         {}
-  @transitions:   
+  @transitions:
     intro:        {}
     outro:        {}
   @events:
@@ -19,32 +17,25 @@ class Recoil
     mouseleave change select submit keydown keypress keyup error
     '''.split( /\s+/g )
 
-  # Used for Unit tests
   @eval: ( func ) -> eval func.toString()
 
-  # Global Methods
   @init: -> new Recoil( arguments... )
 
-  # Model Methods
   @Property:   Property
   @Collection: Collection
   @Model:      Model
 
-  # Router Methods
   @mapRoute:            -> Router.getInstance().mapRoute arguments...
   @mapDefaultRoute:     -> Router.getInstance().mapDefaultRoute arguments...
   @triggerRouteChange:  -> Router.getInstance().handleChange()
 
-  # Transition Methods
   @createTransition: ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback
 
-  # Configuration Methods
   @setViewPath: ( @viewPath ) ->
   @setMaxUpdateFrequency: ( @throttle ) ->
 
   @compile: ( str ) ->
-    if CoffeeScript?.compile
-      CoffeeScript.compile "do -> #{ str }", bare: true
+    if CoffeeScript?.compile then CoffeeScript.compile "do -> #{ str }", bare: true
     else
       exp = /.#\{([^\}]*[^\\])\}/g
       str = str.replace( /\n/g, '\\n' )

@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ContentController, Data, DownloadController, _ref;
-
     ContentController = require('./content');
     Data = require('./data/download');
     return DownloadController = (function(_super) {

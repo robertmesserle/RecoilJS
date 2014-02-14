@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ContentController, GettingStartedController, _ref;
-
     ContentController = require('./content');
     return GettingStartedController = (function(_super) {
       __extends(GettingStartedController, _super);
@@ -22,7 +21,6 @@
 
       GettingStartedController.prototype.parse = function(code) {
         var index, line, lines, _i, _len;
-
         lines = code.split(/\n/);
         for (index = _i = 0, _len = lines.length; _i < _len; index = ++_i) {
           line = lines[index];

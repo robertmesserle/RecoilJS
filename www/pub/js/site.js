@@ -1,7 +1,6 @@
 (function() {
   define(function(require) {
     var NavData, Recoil, SiteController;
-
     Recoil = require('./recoil');
     NavData = require('./data/nav');
     return SiteController = (function() {
@@ -18,7 +17,6 @@
       SiteController.prototype.setupRoutes = function() {
         var category, section, _fn, _i, _j, _len, _len1, _ref, _ref1,
           _this = this;
-
         Recoil.mapDefaultRoute(function() {
           return location.href = _this.navSections[0].sections[0].href;
         });

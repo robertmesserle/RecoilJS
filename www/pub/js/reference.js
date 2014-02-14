@@ -5,7 +5,6 @@
 
   define(function(require) {
     var DataentryController, SectionController, _ref;
-
     SectionController = require('./section');
     return DataentryController = (function(_super) {
       __extends(DataentryController, _super);
@@ -15,7 +14,8 @@
         this.test = __bind(this.test, this);
         this.formatSyntax = __bind(this.formatSyntax, this);
         this.highlightTerms = __bind(this.highlightTerms, this);
-        this.handleListButton = __bind(this.handleListButton, this);        _ref = DataentryController.__super__.constructor.apply(this, arguments);
+        this.handleListButton = __bind(this.handleListButton, this);
+        _ref = DataentryController.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
@@ -39,7 +39,6 @@
 
       DataentryController.prototype.highlightTerms = function(line, terms, highlight, escape) {
         var arg, _i, _len;
-
         if (terms == null) {
           terms = [];
         }
@@ -62,7 +61,6 @@
 
       DataentryController.prototype.formatSyntax = function(entry, highlight) {
         var html, indent, lastIndent, line, _i, _len, _ref1, _ref2, _ref3;
-
         if (highlight == null) {
           highlight = true;
         }
@@ -87,7 +85,6 @@
 
       DataentryController.prototype.test = function(entry) {
         var arg, term, _i, _len, _ref1;
-
         term = this.searchTerm.toLowerCase();
         if (!this.searchTerm) {
           return true;
@@ -109,7 +106,6 @@
 
       DataentryController.prototype.highlight = function(text) {
         var newText, regex, regexString;
-
         if (!this.searchTerm) {
           return text.replace('#{', '#\\{');
         }

@@ -1,8 +1,6 @@
 
 class DirtyCheck
 
-  # Static
-
   @originalMethods: {}
   @instance: null
   @lastCheck: 0
@@ -16,24 +14,19 @@ class DirtyCheck
     if waitTime > Recoil.throttle then waitTime = 0
     callback = =>
       @timeout = null
-      # Iterate over writes first
       for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
         for binding in Recoil.bindings[ set.type ]
           binding[ set.method ]()
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
 
-  # Instance
-
   elementList:
     if typeof InstallTrigger isnt 'undefined' then [ HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLAudioElement, HTMLBaseElement, HTMLBodyElement, HTMLBRElement, HTMLButtonElement, HTMLCanvasElement, HTMLDataListElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLElement, HTMLEmbedElement, HTMLFieldSetElement, HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, HTMLHtmlElement, HTMLHRElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMediaElement, HTMLMenuElement, HTMLMetaElement, HTMLMeterElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, HTMLOutputElement, HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLProgressElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, HTMLSourceElement, HTMLSpanElement, HTMLStyleElement, HTMLTableElement, HTMLTableCaptionElement, HTMLTableColElement, HTMLTableRowElement, HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement, HTMLUnknownElement, HTMLVideoElement ]
     else [ Element ]
 
   constructor: ->
-    # Treat as a Singleton
     return @constructor.instance if @constructor.instance
     @constructor.instance = this
-    # On with the show!
     @bindEvents()
     @overwriteEventListeners()
     @overwriteTimeouts()

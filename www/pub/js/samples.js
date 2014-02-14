@@ -5,7 +5,6 @@
 
   define(function(require) {
     var Recoil, SampleController, SectionController;
-
     SectionController = require('./section');
     Recoil = require('./recoil');
     return SampleController = (function(_super) {
@@ -20,11 +19,9 @@
       function SampleController() {
         this.getHighlightedTerm = __bind(this.getHighlightedTerm, this);
         var _this = this;
-
         this.phoneNumber = '1231231231';
         this.formattedPhoneNumber = function() {
           var areaCode, introBlock, lastBlock, strippedPhoneNumber;
-
           strippedPhoneNumber = _this.phoneNumber.replace(/[^\d]/g, '').substring(0, 10);
           strippedPhoneNumber += Array(11 - strippedPhoneNumber.length).join('_');
           areaCode = strippedPhoneNumber.substring(0, 3);

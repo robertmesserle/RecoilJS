@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ConfigurationController, ReferenceController, _ref;
-
     ReferenceController = require('./reference');
     return ConfigurationController = (function(_super) {
       __extends(ConfigurationController, _super);

@@ -4,7 +4,6 @@
 
   define(function(require) {
     var PhonebookController, SectionController;
-
     SectionController = require('./section');
     return PhonebookController = (function(_super) {
       __extends(PhonebookController, _super);

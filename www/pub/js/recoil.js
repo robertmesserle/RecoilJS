@@ -16,7 +16,6 @@ DirtyCheck = (function() {
   DirtyCheck.update = function() {
     var callback, now, waitTime,
       _this = this;
-
     if (this.timeout) {
       return;
     }
@@ -28,7 +27,6 @@ DirtyCheck = (function() {
     }
     callback = function() {
       var binding, set, _i, _len, _ref, _results;
-
       _this.timeout = null;
       _ref = [
         {
@@ -44,7 +42,6 @@ DirtyCheck = (function() {
         set = _ref[_i];
         _results.push((function() {
           var _j, _len1, _ref1, _results1;
-
           _ref1 = Recoil.bindings[set.type];
           _results1 = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -78,7 +75,6 @@ DirtyCheck = (function() {
   DirtyCheck.prototype.getListener = function(originalMethod) {
     return function(type, listener) {
       var args;
-
       args = Array.apply(null, arguments);
       args[1] = function() {
         listener.apply(null, arguments);
@@ -96,7 +92,6 @@ DirtyCheck = (function() {
 
   DirtyCheck.prototype.overwriteEventListeners = function() {
     var originalMethod, type, _i, _len, _ref, _results;
-
     _ref = this.elementList;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -118,7 +113,6 @@ DirtyCheck = (function() {
   DirtyCheck.prototype.overwriteTimeouts = function() {
     var func, originalMethod, _i, _len, _ref, _results,
       _this = this;
-
     _ref = ['setTimeout', 'setInterval'];
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -130,7 +124,6 @@ DirtyCheck = (function() {
         };
         return root[func] = function(func, timeout) {
           var args;
-
           args = Array.apply(null, arguments);
           args[0] = function() {
             func.apply(null, arguments);
@@ -182,7 +175,6 @@ DataType = (function() {
 
   DataType.prototype.parseType = function(type) {
     var typeString, _ref;
-
     if (!type) {
       return (function(value) {
         return value;
@@ -234,7 +226,6 @@ var BaseModel;
 BaseModel = (function() {
   BaseModel.getByField = function(field, value) {
     var item, _i, _len, _ref;
-
     _ref = this.items;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       item = _ref[_i];
@@ -246,7 +237,6 @@ BaseModel = (function() {
 
   BaseModel.load = function(id, callback) {
     var _this = this;
-
     if (id != null) {
       return this.loadOne(id, callback);
     }
@@ -254,7 +244,6 @@ BaseModel = (function() {
       url: this.paths.root(),
       success: function(data) {
         var field, item, match, model, value, _i, _len;
-
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           item = data[_i];
           match = _this.getByField('id', item.id);
@@ -276,14 +265,12 @@ BaseModel = (function() {
 
   BaseModel.loadOne = function(id, callback) {
     var _this = this;
-
     return $.ajax({
       url: this.paths.get.call({
         id: id
       }),
       success: function(data) {
         var item;
-
         item = new _this(data);
         return typeof callback === "function" ? callback(item) : void 0;
       }
@@ -322,7 +309,6 @@ BaseModel = (function() {
 
   BaseModel.prototype._wrapProps = function() {
     var key, prop, _ref, _results;
-
     _ref = this.$props || {};
     _results = [];
     for (key in _ref) {
@@ -335,7 +321,6 @@ BaseModel = (function() {
 
   BaseModel.prototype._createVirtuals = function() {
     var key, prop, virtual, _ref, _results;
-
     _ref = this.$virtual || {};
     _results = [];
     for (key in _ref) {
@@ -348,7 +333,6 @@ BaseModel = (function() {
 
   BaseModel.prototype._parseValidates = function() {
     var key, value, _ref, _results;
-
     _ref = this.$validate;
     _results = [];
     for (key in _ref) {
@@ -360,7 +344,6 @@ BaseModel = (function() {
 
   BaseModel.prototype._parseSubscribes = function() {
     var key, value, _ref, _results;
-
     _ref = this.$subscribe;
     _results = [];
     for (key in _ref) {
@@ -372,7 +355,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.set = function(key, value, update, subscribe) {
     var obj;
-
     if (update == null) {
       update = true;
     }
@@ -412,7 +394,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.revert = function() {
     var key, prop, _ref, _results;
-
     _ref = this.props;
     _results = [];
     for (key in _ref) {
@@ -425,7 +406,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.validate = function() {
     var key, prop, _ref;
-
     _ref = this.props;
     for (key in _ref) {
       prop = _ref[key];
@@ -442,7 +422,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.save = function() {
     var key, prop, _ref;
-
     if (!this.validate()) {
       return false;
     }
@@ -458,7 +437,6 @@ BaseModel = (function() {
   BaseModel.prototype.send = function() {
     var ajax, url,
       _this = this;
-
     url = this.isNew ? this.constructor.paths.post.call(this) : this.constructor.paths.put.call(this);
     if (!url) {
       return;
@@ -469,7 +447,6 @@ BaseModel = (function() {
       type: this.isNew ? 'POST' : 'PUT',
       success: function(data) {
         var key, value;
-
         _this.isNew = false;
         if (!data) {
           return false;
@@ -498,7 +475,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.checkVirtuals = function() {
     var key, virtual, _ref, _results;
-
     _ref = this.virtuals;
     _results = [];
     for (key in _ref) {
@@ -512,7 +488,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.checkProps = function() {
     var key, prop, _ref;
-
     _ref = this.props;
     for (key in _ref) {
       prop = _ref[key];
@@ -527,7 +502,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.updateVirtuals = function() {
     var key, virtual, _ref, _results;
-
     _ref = this.virtuals;
     _results = [];
     for (key in _ref) {
@@ -539,7 +513,6 @@ BaseModel = (function() {
 
   BaseModel.prototype.toJSON = function() {
     var json, key, prop, _ref, _ref1;
-
     json = {};
     _ref = this.props;
     for (key in _ref) {
@@ -580,7 +553,6 @@ Collection = (function(_super) {
   Collection.prototype.addArrayMethods = function() {
     var method, _i, _len, _ref, _results,
       _this = this;
-
     _ref = 'push pop unshift shift indexOf slice splice'.split(/\s/);
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -588,7 +560,6 @@ Collection = (function(_super) {
       _results.push((function(method) {
         return _this[method] = function() {
           var _ref1;
-
           return (_ref1 = _this.value)[method].apply(_ref1, arguments);
         };
       })(method));
@@ -598,7 +569,6 @@ Collection = (function(_super) {
 
   Collection.prototype.save = function() {
     var _ref;
-
     console.log('saving');
     if (!this.validate()) {
       return;
@@ -611,13 +581,11 @@ Collection = (function(_super) {
 
   Collection.prototype.revert = function() {
     var _ref;
-
     return (_ref = this.value).splice.apply(_ref, [0, this.value.length].concat(__slice.call(this.savedValue.slice())));
   };
 
   Collection.prototype.find = function(criteria) {
     var index, item, _i, _len, _ref;
-
     index = this.value.indexOf(criteria);
     if (!(index < 0)) {
       return this.value[index];
@@ -647,7 +615,6 @@ Model = (function() {
 
   function Model(meta) {
     var _ref;
-
     this.meta = meta != null ? meta : {};
     this.extendMeta();
     this.model = (function(_super) {
@@ -679,7 +646,6 @@ Model = (function() {
   Model.prototype.attachStatic = function() {
     var key, prop, _ref, _results,
       _this = this;
-
     _ref = this.meta.$static || {};
     _results = [];
     for (key in _ref) {
@@ -699,7 +665,6 @@ Model = (function() {
 
   Model.prototype.attachMeta = function() {
     var key, value, _ref, _results;
-
     this.model._meta = this.meta;
     _ref = this.meta;
     _results = [];
@@ -716,7 +681,6 @@ Model = (function() {
 
   Model.prototype.initPaths = function() {
     var $path, $paths, pathString, paths, rootPath;
-
     $path = this.meta.$path;
     $paths = this.meta.$paths;
     rootPath = $path || ($paths != null ? $paths.root : void 0);
@@ -764,7 +728,6 @@ Property = (function(_super) {
 
   Property.prototype.parseType = function(type) {
     var typeString, _ref1;
-
     if (!type) {
       return (function(value) {
         return value;
@@ -840,7 +803,6 @@ Virtual = (function() {
 
   Virtual.prototype.set = function(value) {
     var _ref;
-
     if ((_ref = this.meta.write) != null) {
       _ref.call(this.context, value);
     }
@@ -849,7 +811,6 @@ Virtual = (function() {
 
   Virtual.prototype.get = function() {
     var _ref;
-
     return this.value = (_ref = this.meta.read) != null ? _ref.call(this.context) : void 0;
   };
 
@@ -866,9 +827,7 @@ var Router,
 
 Router = (function() {
   Router.getInstance = function() {
-    var _ref;
-
-    return (_ref = this.instance) != null ? _ref : this.instance = new Router;
+    return this.instance != null ? this.instance : this.instance = new Router;
   };
 
   Router.prototype.event = 'hashchange';
@@ -878,7 +837,8 @@ Router = (function() {
   Router.prototype.defaultRoute = null;
 
   function Router() {
-    this.handleChange = __bind(this.handleChange, this);    this.bindEvent();
+    this.handleChange = __bind(this.handleChange, this);
+    this.bindEvent();
   }
 
   Router.prototype.bindEvent = function() {
@@ -887,7 +847,6 @@ Router = (function() {
 
   Router.prototype.handleChange = function() {
     var hash, ret, route, _i, _len, _ref, _ref1;
-
     hash = location.hash.replace(/^#/, '');
     _ref = this.routes.sort(function(a, b) {
       return b.path.length - a.path.length;
@@ -907,7 +866,6 @@ Router = (function() {
 
   Router.prototype.getRegex = function(path) {
     var index, part, parts, _i, _len;
-
     parts = path.split('/');
     for (index = _i = 0, _len = parts.length; _i < _len; index = ++_i) {
       part = parts[index];
@@ -928,7 +886,6 @@ Router = (function() {
 
   Router.prototype.mapRoute = function(path, handler) {
     var key, p, route, value, _i, _len, _results, _results1;
-
     if (path instanceof Array) {
       _results = [];
       for (_i = 0, _len = path.length; _i < _len; _i++) {
@@ -955,7 +912,6 @@ Router = (function() {
 
   Router.prototype.getParams = function(hash, route) {
     var hashParts, index, params, part, routeParts, _i, _len;
-
     params = {};
     hashParts = hash.split('/');
     routeParts = route.path.split('/');
@@ -1017,13 +973,11 @@ Recoil = (function() {
 
   Recoil.mapRoute = function() {
     var _ref;
-
     return (_ref = Router.getInstance()).mapRoute.apply(_ref, arguments);
   };
 
   Recoil.mapDefaultRoute = function() {
     var _ref;
-
     return (_ref = Router.getInstance()).mapDefaultRoute.apply(_ref, arguments);
   };
 
@@ -1045,7 +999,6 @@ Recoil = (function() {
 
   Recoil.compile = function(str) {
     var exp;
-
     if (typeof CoffeeScript !== "undefined" && CoffeeScript !== null ? CoffeeScript.compile : void 0) {
       return CoffeeScript.compile("do -> " + str, {
         bare: true
@@ -1055,7 +1008,6 @@ Recoil = (function() {
       str = str.replace(/\n/g, '\\n');
       str = str.replace(exp, function(match, expression) {
         var firstChar;
-
         firstChar = match.charAt(0);
         if (firstChar === '\\') {
           return match;
@@ -1070,7 +1022,6 @@ Recoil = (function() {
   function Recoil() {
     var args, controller, _i,
       _this = this;
-
     args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), controller = arguments[_i++];
     this.controller = controller;
     if (Recoil.app) {
@@ -1078,7 +1029,6 @@ Recoil = (function() {
     }
     $(function() {
       var $element;
-
       new DirtyCheck();
       $element = $("[data-app='" + args[0] + "'], [data-app], body").eq(0);
       return Recoil.app = new Core($element, _this.controller);
@@ -1102,7 +1052,6 @@ Base = (function() {
 
   Base.prototype.getBindings = function() {
     var bindings, _ref, _ref1;
-
     bindings = (_ref = this.context.extras) != null ? (_ref1 = _ref.parentBinding) != null ? _ref1.bindings : void 0 : void 0;
     if (bindings == null) {
       bindings = Recoil.bindings;
@@ -1112,7 +1061,6 @@ Base = (function() {
 
   Base.prototype.pushBinding = function() {
     var bindings;
-
     if (this.context.$element.data('static') != null) {
       return;
     }
@@ -1126,12 +1074,11 @@ Base = (function() {
   };
 
   Base.prototype.parseBinding = function(binding, evalFunction) {
-    var jsBinding, _ref;
-
+    var jsBinding;
     if (evalFunction == null) {
       evalFunction = true;
     }
-    if ((_ref = this.cachedBindings) == null) {
+    if (this.cachedBindings == null) {
       this.cachedBindings = {};
     }
     jsBinding = this.cachedBindings[binding];
@@ -1148,7 +1095,6 @@ Base = (function() {
 
   Base.prototype.cleanParentBindings = function() {
     var bindings, element, index, _i, _ref, _ref1, _ref2, _results;
-
     bindings = this.getBindings();
     _results = [];
     for (index = _i = _ref = bindings.length - 1; _ref <= 0 ? _i <= 0 : _i >= 0; index = _ref <= 0 ? ++_i : --_i) {
@@ -1164,7 +1110,6 @@ Base = (function() {
 
   Base.prototype.removeBinding = function() {
     var bindings, index, _ref, _ref1;
-
     bindings = (_ref = this.context.extras) != null ? (_ref1 = _ref.parentBinding) != null ? _ref1.bindings : void 0 : void 0;
     if (bindings == null) {
       bindings = Recoil.bindings;
@@ -1177,9 +1122,8 @@ Base = (function() {
   };
 
   Base.prototype.parseString = function(str) {
-    var jsString, _ref;
-
-    if ((_ref = this.cachedStrings) == null) {
+    var jsString;
+    if (this.cachedStrings == null) {
       this.cachedStrings = {};
     }
     jsString = this.cachedStrings[str];
@@ -1194,7 +1138,6 @@ Base = (function() {
 
   Base.prototype.generateFunction = function(str, customArgs) {
     var argHash, args, js, key, scopeArgs, value;
-
     if (customArgs == null) {
       customArgs = [];
     }
@@ -1229,7 +1172,6 @@ Base = (function() {
 
   Base.prototype.updateBinding = function(value, binding) {
     var part, parts, scope;
-
     if (binding == null) {
       binding = this.binding;
     }
@@ -1245,13 +1187,11 @@ Base = (function() {
 
   Base.prototype.insertPlaceholder = function() {
     var attr, str;
-
     if (this.context.$placeholder) {
       return;
     }
     str = ((function() {
       var _i, _len, _ref, _results;
-
       _ref = this.context.$element.get(0).attributes;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1289,7 +1229,6 @@ Base = (function() {
 
   Base.prototype.checkBindings = function() {
     var binding, bindings, set, _i, _len, _ref, _results;
-
     if (!this.bindings) {
       return;
     }
@@ -1308,7 +1247,6 @@ Base = (function() {
       bindings = this.bindings[set.type];
       _results.push((function() {
         var _j, _len1, _ref1, _results1;
-
         _ref1 = bindings.slice(0);
         _results1 = [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -1351,7 +1289,6 @@ AttributeText = (function(_super) {
 
   AttributeText.prototype.parseAttributes = function() {
     var attribute, _i, _len, _ref, _results;
-
     _ref = this.context.$element.get(0).attributes || [];
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1363,7 +1300,6 @@ AttributeText = (function(_super) {
 
   AttributeText.prototype.updateValue = function() {
     var value;
-
     value = this.parseString(this.template);
     if (this.value !== value) {
       this.value = value;
@@ -1397,7 +1333,6 @@ AttrBinding = (function(_super) {
 
   AttrBinding.prototype.setValue = function() {
     var key, value;
-
     value = $.extend(true, {}, this.parseBinding(this.binding));
     if (this.value === value) {
       return;
@@ -1450,7 +1385,6 @@ ComposeBinding = (function(_super) {
 
   ComposeBinding.prototype.getView = function(controller) {
     var view;
-
     if (controller == null) {
       controller = this.controller;
     }
@@ -1464,7 +1398,6 @@ ComposeBinding = (function(_super) {
   ComposeBinding.prototype.loadView = function() {
     var url,
       _this = this;
-
     url = "" + Recoil.viewPath + "/" + this.view + ".html";
     if (Recoil.views[url]) {
       return this.renderView(Recoil.views[url]);
@@ -1481,8 +1414,7 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.renderView = function(data) {
-    var intro, _ref, _ref1, _ref2;
-
+    var $comment, intro, _ref, _ref1, _ref2;
     if (data == null) {
       data = this.html;
     }
@@ -1497,8 +1429,10 @@ ComposeBinding = (function(_super) {
       read: [],
       write: []
     };
-    this.context.$element.html(this.html);
+    $comment = $('<!-- placeholder for compose binding -->').insertAfter(this.context.$element);
+    this.context.$element.detach().html(this.html);
     this.parseChildren();
+    this.context.$element.insertBefore($comment);
     if ((_ref1 = this.controller) != null) {
       if (typeof _ref1.afterRender === "function") {
         _ref1.afterRender(this.context.$element, this.context.parent, this.context.root);
@@ -1510,10 +1444,8 @@ ComposeBinding = (function(_super) {
 
   ComposeBinding.prototype.parseChildren = function() {
     var _this = this;
-
     return this.context.$element.contents().each(function(index, element) {
       var extras;
-
       extras = $.extend({}, _this.context.extras, {
         parentBinding: _this
       });
@@ -1530,7 +1462,6 @@ ComposeBinding = (function(_super) {
   ComposeBinding.prototype.update = function() {
     var callback, controller, outro, view, _ref,
       _this = this;
-
     if (this.loading) {
       return;
     }
@@ -1576,7 +1507,6 @@ ContextBinding = (function(_super) {
 
   ContextBinding.prototype.setValue = function() {
     var value;
-
     value = this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
@@ -1593,7 +1523,6 @@ ContextBinding = (function(_super) {
 
   ContextBinding.prototype.update = function() {
     var value;
-
     value = this.parseBinding(this.binding);
     if (this.value === value) {
       return;
@@ -1625,7 +1554,6 @@ CSSBinding = (function(_super) {
 
   CSSBinding.prototype.updateCSS = function() {
     var cssString;
-
     this.css = this.parseBinding(this.binding);
     cssString = JSON.stringify(this.css);
     if (this.cssString === cssString) {
@@ -1652,7 +1580,6 @@ EventBinding = (function(_super) {
   function EventBinding(context, eventName) {
     var csString, func, str,
       _this = this;
-
     this.context = context;
     if (!eventName) {
       return this.parseEvents();
@@ -1663,7 +1590,6 @@ EventBinding = (function(_super) {
     eventName = "" + eventName + ".recoil";
     this.context.$element.off(eventName).on(eventName, function(event) {
       var ret, _ref;
-
       ret = func.call(_this, event);
       if (typeof ret === 'function') {
         return ret(event, ((_ref = _this.context.extras) != null ? _ref.item : void 0) || _this.context.scope);
@@ -1675,7 +1601,6 @@ EventBinding = (function(_super) {
 
   EventBinding.prototype.parseEvents = function() {
     var event, str, _i, _len, _ref, _results;
-
     _ref = Recoil.events;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1728,7 +1653,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.getParts = function() {
     var condition, itemParts, parts;
-
     parts = this.binding.split(/\s+in\s+|\s+when\s+/g);
     itemParts = parts[0].split(',');
     this.itemName = $.trim(itemParts[0]);
@@ -1744,13 +1668,11 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.getCollection = function() {
     var index, item, items, key;
-
     items = this.parseBinding(this.collectionName);
     items = typeof items === 'function' ? items() : items;
     if (items instanceof Array) {
       items = (function() {
         var _i, _len, _results;
-
         _results = [];
         for (index = _i = 0, _len = items.length; _i < _len; index = ++_i) {
           item = items[index];
@@ -1773,7 +1695,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.parseItems = function(collection) {
     var index, item, _i, _len, _results, _results1;
-
     if (collection == null) {
       collection = this.getCollection();
     }
@@ -1796,7 +1717,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.parseItem = function(item, index, collection) {
     var $item, extras;
-
     $item = this.$template.clone().appendTo(this.context.$element);
     extras = $.extend({}, this.context.extras);
     if (typeof item === 'object') {
@@ -1823,7 +1743,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.generateFunction = function(str) {
     var args;
-
     args = [this.itemName];
     if (this.indexName) {
       args.push(this.indexName);
@@ -1833,7 +1752,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.checkForChanges = function(collection) {
     var index, item, _i, _len, _ref;
-
     if (!this.collection) {
       return true;
     }
@@ -1852,7 +1770,6 @@ ForBinding = (function(_super) {
 
   ForBinding.prototype.updateItems = function() {
     var collection;
-
     collection = this.getCollection();
     if (this.checkForChanges(collection)) {
       this.wrap();
@@ -1895,7 +1812,6 @@ HTMLBinding = (function(_super) {
 
   HTMLBinding.prototype.setValue = function() {
     var value;
-
     value = this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
@@ -1963,7 +1879,6 @@ IfBinding = (function(_super) {
 
   IfBinding.prototype.update = function(reparse) {
     var value;
-
     if (reparse == null) {
       reparse = true;
     }
@@ -2028,7 +1943,6 @@ TextNode = (function(_super) {
 
   TextNode.prototype.updateValue = function() {
     var value;
-
     value = this.parseString(this.template);
     if (this.value !== value) {
       return this.element.nodeValue = this.value = value;
@@ -2096,14 +2010,12 @@ ValueBinding = (function(_super) {
 
   ValueBinding.prototype.bindEvents = function() {
     var events;
-
     events = 'click keydown change';
     return this.context.$element.on(events, $.noop);
   };
 
   ValueBinding.prototype.getValue = function() {
     var value;
-
     if (this.context.$element.attr('type') === 'radio') {
       if (!this.context.$element.is(':checked')) {
         return;
@@ -2115,7 +2027,6 @@ ValueBinding = (function(_super) {
 
   ValueBinding.prototype.setValue = function() {
     var value;
-
     value = this.getValue();
     if (this.value !== value) {
       this.value = value;
@@ -2132,7 +2043,6 @@ ValueBinding = (function(_super) {
 
   ValueBinding.prototype.updateHandler = function() {
     var value;
-
     if (this.context.$element.is(':radio') && !this.context.$element.is(':checked')) {
       return;
     }
@@ -2179,7 +2089,6 @@ VisibleBinding = (function(_super) {
 
   VisibleBinding.prototype.setValue = function() {
     var value;
-
     value = !!this.parseBinding(this.binding);
     if (this.value !== value) {
       this.value = value;
@@ -2206,11 +2115,9 @@ Parser = (function() {
 
   function Parser(context) {
     var _this = this;
-
     this.context = context;
     this.context.$element.each(function(index, element) {
       var $element;
-
       $element = $(element);
       return _this.parseNode($element);
     });
@@ -2219,7 +2126,6 @@ Parser = (function() {
   Parser.prototype.parseNode = function($element) {
     var $contents, binding, context, _i, _len, _ref,
       _this = this;
-
     context = {
       $element: $element,
       scope: this.context.scope,
@@ -2267,7 +2173,6 @@ Core = (function() {
 
   Core.prototype.checkForLogicTags = function() {
     var html;
-
     html = this.$element.html();
     if (!(html.indexOf('&lt;$') + 1)) {
       return;

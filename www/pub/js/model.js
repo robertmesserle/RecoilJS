@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ModelController, ReferenceController, _ref;
-
     ReferenceController = require('./reference');
     return ModelController = (function(_super) {
       __extends(ModelController, _super);

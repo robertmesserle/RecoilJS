@@ -1,13 +1,11 @@
 (function() {
   define(function() {
     var SectionController;
-
     return SectionController = (function() {
       function SectionController() {}
 
       SectionController.prototype.intro = function($dom) {
         var $articles;
-
         $articles = $dom.find('article');
         if (!$articles.length) {
           return;

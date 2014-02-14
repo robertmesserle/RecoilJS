@@ -4,7 +4,6 @@
 
   define(function(require) {
     var DataBindingController, ReferenceController, _ref;
-
     ReferenceController = require('./reference');
     return DataBindingController = (function(_super) {
       __extends(DataBindingController, _super);

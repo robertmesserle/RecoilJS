@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ContentController, SectionController, _ref;
-
     SectionController = require('./section');
     return ContentController = (function(_super) {
       __extends(ContentController, _super);

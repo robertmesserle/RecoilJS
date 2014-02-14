@@ -31,8 +31,10 @@ class ComposeBinding extends Base
     @html = data
     @context.$element.scrollTop( 0 )
     @bindings = read: [], write: []
-    @context.$element.html( @html )
+    $comment = $( '<!-- placeholder for compose binding -->' ).insertAfter( @context.$element )
+    @context.$element.detach().html( @html )
     @parseChildren()
+    @context.$element.insertBefore( $comment )
     @controller?.afterRender? @context.$element, @context.parent, @context.root
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
     intro? @context.$element

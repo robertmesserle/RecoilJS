@@ -4,7 +4,6 @@
 
   define(function(require) {
     var ContentController, Data, HomeController, _ref;
-
     ContentController = require('./content');
     Data = require('./data/home');
     return HomeController = (function(_super) {
