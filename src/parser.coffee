@@ -1,6 +1,6 @@
 class Parser
 
-  bindings: [ TextNode, IfBinding, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding ]
+  bindings: [ TextNode, IfBinding, AttributeText, EventBinding, AttrBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding ]
 
   constructor: ( @context ) ->
     @context.$element.each ( index, element ) =>

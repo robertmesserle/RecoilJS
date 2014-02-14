@@ -2109,7 +2109,7 @@ VisibleBinding = (function(_super) {
 var Parser;
 
 Parser = (function() {
-  Parser.prototype.bindings = [TextNode, IfBinding, AttributeText, EventBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding];
+  Parser.prototype.bindings = [TextNode, IfBinding, AttributeText, EventBinding, AttrBinding, ContextBinding, CSSBinding, VisibleBinding, ComposeBinding, ForBinding, HTMLBinding, ValueBinding];
 
   function Parser(context) {
     var _this = this;
