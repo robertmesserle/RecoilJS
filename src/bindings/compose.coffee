@@ -28,13 +28,11 @@ class ComposeBinding extends Base
 
   renderView: ( data = @html ) =>
     @controller?.beforeRender? @context.$element, @context.parent, @context.root
-    @html = data
     @context.$element.scrollTop( 0 )
-    @bindings = read: [], write: []
-    $comment = $( '<!-- placeholder for compose binding -->' ).insertAfter( @context.$element )
-    @context.$element.detach().html( @html )
+    @html        = data
+    @bindings    = read: [], write: []
+    @context.$element.html( @html )
     @parseChildren()
-    @context.$element.insertBefore( $comment )
     @controller?.afterRender? @context.$element, @context.parent, @context.root
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
     intro? @context.$element
@@ -47,12 +45,12 @@ class ComposeBinding extends Base
   update: ->
     return if @loading
     controller = @parseBinding @binding if @binding
-    view = @getView( controller )
+    view       = @getView( controller )
     if @controller isnt controller or @view isnt view
-      outro = Recoil.transitions.outro[ @view ] or @controller?.outro or null
+      outro       = Recoil.transitions.outro[ @view ] or @controller?.outro or null
       @controller = controller
-      @view = view
-      callback = => @loadView() if @view
+      @view       = view
+      callback    = => @loadView() if @view
       outro?( @context.$element, callback ) or callback()
     else
       @checkBindings()

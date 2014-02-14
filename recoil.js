@@ -1414,7 +1414,7 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.renderView = function(data) {
-    var $comment, intro, _ref, _ref1, _ref2;
+    var intro, _ref, _ref1, _ref2;
     if (data == null) {
       data = this.html;
     }
@@ -1423,16 +1423,14 @@ ComposeBinding = (function(_super) {
         _ref.beforeRender(this.context.$element, this.context.parent, this.context.root);
       }
     }
-    this.html = data;
     this.context.$element.scrollTop(0);
+    this.html = data;
     this.bindings = {
       read: [],
       write: []
     };
-    $comment = $('<!-- placeholder for compose binding -->').insertAfter(this.context.$element);
-    this.context.$element.detach().html(this.html);
+    this.context.$element.html(this.html);
     this.parseChildren();
-    this.context.$element.insertBefore($comment);
     if ((_ref1 = this.controller) != null) {
       if (typeof _ref1.afterRender === "function") {
         _ref1.afterRender(this.context.$element, this.context.parent, this.context.root);
