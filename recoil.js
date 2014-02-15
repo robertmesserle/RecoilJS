@@ -1429,8 +1429,7 @@ ComposeBinding = (function(_super) {
       read: [],
       write: []
     };
-    this.context.$element.html(this.html);
-    this.parseChildren();
+    this.insertHtml();
     if ((_ref1 = this.controller) != null) {
       if (typeof _ref1.afterRender === "function") {
         _ref1.afterRender(this.context.$element, this.context.parent, this.context.root);
@@ -1438,6 +1437,14 @@ ComposeBinding = (function(_super) {
     }
     intro = Recoil.transitions.intro[this.view] || ((_ref2 = this.controller) != null ? _ref2.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.context.$element) : void 0;
+  };
+
+  ComposeBinding.prototype.insertHtml = function() {
+    var comment;
+    comment = $('<!-- placeholder comment for compose binding -->').insertBefore(this.context.$element);
+    this.context.$element.detach().html(this.html);
+    this.parseChildren();
+    return comment.after(this.context.$element).remove();
   };
 
   ComposeBinding.prototype.parseChildren = function() {
@@ -2131,7 +2138,6 @@ Parser = (function() {
       root: this.context.root,
       extras: this.context.extras
     };
-    context.$element = $element;
     _ref = this.bindings;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       binding = _ref[_i];

@@ -29,13 +29,18 @@ class ComposeBinding extends Base
   renderView: ( data = @html ) =>
     @controller?.beforeRender? @context.$element, @context.parent, @context.root
     @context.$element.scrollTop( 0 )
-    @html        = data
-    @bindings    = read: [], write: []
-    @context.$element.html( @html )
-    @parseChildren()
+    @html     = data
+    @bindings = read: [], write: []
+    @insertHtml()
     @controller?.afterRender? @context.$element, @context.parent, @context.root
     intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
     intro? @context.$element
+
+  insertHtml: ->
+    comment = $( '<!-- placeholder comment for compose binding -->' ).insertBefore( @context.$element )
+    @context.$element.detach().html( @html )
+    @parseChildren()
+    comment.after( @context.$element ).remove()
 
   parseChildren: ->
     @context.$element.contents().each ( index, element ) =>

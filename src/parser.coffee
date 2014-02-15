@@ -9,7 +9,6 @@ class Parser
 
   parseNode: ( $element ) ->
     context = $element: $element, scope: @context.scope, parent: @context.parent, root: @context.root, extras: @context.extras
-    context.$element = $element
 
     for binding in @bindings
       return if context.stopParsing
@@ -22,4 +21,4 @@ class Parser
       new Parser $.extend {}, context, context.childContext, $element: $( element )
 
     new UpdateBinding context
-    new InitBinding context
+    new InitBinding   context
