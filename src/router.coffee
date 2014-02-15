@@ -1,11 +1,7 @@
 class Router
 
-  # Static
-
   @getInstance: ->
     @instance ?= new Router
-
-  # Instance
 
   event:    'hashchange'
   routes:   []
