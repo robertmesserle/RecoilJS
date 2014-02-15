@@ -88,6 +88,7 @@ class Base
     return if @context.$placeholder
     str = ( for attr in @context.$element.get( 0 ).attributes then "#{ attr.nodeName }='#{ attr.value }'" ).join( ' ' )
     @context.$placeholder = $( """<!-- RecoilJS: #{ str } -->""" ).insertBefore( @context.$element )
+    @unwrap()
 
   wrap: ->
     return unless @context.unwrapped
@@ -99,7 +100,7 @@ class Base
   unwrap: ->
     return if @context.unwrapped
     return unless @logic
-    @context.unwrapped  = true
+    @context.unwrapped = true
     @context.$contents = @context.$element.contents().insertAfter( @context.$element )
     @context.$element.detach()
 

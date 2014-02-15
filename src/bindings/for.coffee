@@ -13,13 +13,13 @@ class ForBinding extends Base
     super
 
   getParts: ->
-    parts               = @binding.split /\s+in\s+|\s+when\s+/g
-    itemParts           = parts[ 0 ].split( ',' )
-    @itemName           = $.trim itemParts[ 0 ]
-    @indexName          = $.trim itemParts[ 1 ]
-    @collectionName     = $.trim parts[ 1 ]
-    condition           = $.trim parts[ 2 ] or 'true'
-    @conditionFunction  = @parseBinding( condition, false )
+    parts              = @binding.split /\s+in\s+|\s+when\s+/g
+    itemParts          = parts[ 0 ].split( ',' )
+    @itemName          = $.trim itemParts[ 0 ]
+    @indexName         = $.trim itemParts[ 1 ]
+    @collectionName    = $.trim parts[ 1 ]
+    condition          = $.trim parts[ 2 ] or 'true'
+    @conditionFunction = @parseBinding( condition, false )
 
   getTemplate: ->
     @$template = @context.$element.contents().remove()
@@ -44,16 +44,16 @@ class ForBinding extends Base
     $item       = @$template.clone().appendTo( @context.$element )
     extras      = $.extend {}, @context.extras
     if typeof item is 'object'
-      extras.itemName             = @itemName
-      extras.$item                = item
-      extras[ @itemName ]         = item
-      extras[ @itemName ].$index  = index
-      extras[ @itemName ].$total  = collection.length
+      extras.itemName            = @itemName
+      extras.$item               = item
+      extras[ @itemName ]        = item
+      extras[ @itemName ].$index = index
+      extras[ @itemName ].$total = collection.length
     else
-      extras[ @itemName ]         = item
+      extras[ @itemName ]        = item
     if @indexName
-      extras[ @indexName ]        = index
-    extras.parentBinding          = this
+      extras[ @indexName ]       = index
+    extras.parentBinding         = this
     new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   generateFunction: ( str ) ->

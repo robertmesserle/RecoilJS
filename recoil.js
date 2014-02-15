@@ -1200,7 +1200,8 @@ Base = (function() {
       }
       return _results;
     }).call(this)).join(' ');
-    return this.context.$placeholder = $("<!-- RecoilJS: " + str + " -->").insertBefore(this.context.$element);
+    this.context.$placeholder = $("<!-- RecoilJS: " + str + " -->").insertBefore(this.context.$element);
+    return this.unwrap();
   };
 
   Base.prototype.wrap = function() {
