@@ -1,53 +1,34 @@
+shared     = require( './shared.coffee' )
+DirtyCheck = require( './dirty-check.coffee' )
+Core       = require( './core.coffee' )
+Router     = require( './router.coffee' )
+Property   = require( './model/property.coffee' )
+Collection = require( './model/collection.coffee' )
+Model      = require( './model/model.coffee' )
+
 class Recoil
 
-  @app:           null
-  @viewPath:      './views'
-  @throttle:      30
-  @bindings:
-    read:         []
-    write:        []
-  @views:         {}
-  @transitions:
-    intro:        {}
-    outro:        {}
-  @events:
-    '''
-    blur focus focusin focusout load resize scroll unload click
-    dblclick mousedown mouseup mousemove mouseover mouseout mouseenter
-    mouseleave change select submit keydown keypress keyup error
-    '''.split( /\s+/g )
+  @init:                  -> new Recoil( arguments... )
 
-  @eval: ( func ) -> eval func.toString()
+  @Property:              Property
+  @Collection:            Collection
+  @Model:                 Model
 
-  @init: -> new Recoil( arguments... )
+  @mapRoute:              -> Router.getInstance().mapRoute arguments...
+  @mapDefaultRoute:       -> Router.getInstance().mapDefaultRoute arguments...
+  @triggerRouteChange:    -> Router.getInstance().handleChange()
 
-  @Property:   Property
-  @Collection: Collection
-  @Model:      Model
+  @createTransition:      ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback
 
-  @mapRoute:            -> Router.getInstance().mapRoute arguments...
-  @mapDefaultRoute:     -> Router.getInstance().mapDefaultRoute arguments...
-  @triggerRouteChange:  -> Router.getInstance().handleChange()
-
-  @createTransition: ( type, id, callback ) -> Recoil.transitions[ type ][ id ] = callback
-
-  @setViewPath: ( @viewPath ) ->
-  @setMaxUpdateFrequency: ( @throttle ) ->
-
-  @compile: ( str ) ->
-    if CoffeeScript?.compile then CoffeeScript.compile "do -> #{ str }", bare: true
-    else
-      exp = /.#\{([^\}]*[^\\])\}/g
-      str = str.replace( /\n/g, '\\n' )
-      str = str.replace exp, ( match, expression ) ->
-        firstChar = match.charAt( 0 )
-        if firstChar is '\\' then match
-        else "#{ firstChar }\" + ( #{ expression } ) + \""
-      "( function () { return #{ str }; } )()"
+  @setViewPath:           ( viewPath ) -> shared.viewPath = viewPath
+  @setMaxUpdateFrequency: ( throttle ) -> shared.throttle = throttle
 
   constructor: ( args..., @controller ) ->
-    if Recoil.app then throw "You may only have one app running at a time."
+    if shared.app then throw "You may only have one app running at a time."
     $ =>
       new DirtyCheck()
-      $element    = $( "[data-app='#{ args[ 0 ] }'], [data-app], body" ).eq( 0 )
-      Recoil.app  = new Core( $element, @controller )
+      $element   = $( "[data-app='#{ args[ 0 ] }'], [data-app], body" ).eq( 0 )
+      shared.app = new Core( $element, @controller )
+
+window?.Recoil  = Recoil
+module?.exports = Recoil

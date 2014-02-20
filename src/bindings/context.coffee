@@ -1,3 +1,6 @@
+shared = require( '../shared.coffee' )
+Base   = require( './base.coffee' )
+
 class ContextBinding extends Base
 
   constructor: ( @context ) ->
@@ -22,5 +25,6 @@ class ContextBinding extends Base
     return if @value is value
     @context.$element.html @$template.clone()
     @removeBinding()
-    # Re-parse element
-    new Parser @context
+    new shared.Parser @context
+
+module.exports = ContextBinding

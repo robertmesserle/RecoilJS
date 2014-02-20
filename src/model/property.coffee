@@ -1,3 +1,7 @@
+shared    = require( '../shared.coffee' )
+DataType  = require( './data-type.coffee' )
+BaseModel = require( './base-model.coffee' )
+Model     = require( './model.coffee' )
 
 class Property extends DataType
 
@@ -20,7 +24,7 @@ class Property extends DataType
   set: ( value, subscribe = true ) ->
     @_subscribe.call @context, value, @value if subscribe
     @value =
-      if @type instanceof Recoil.Model then new @type value
+      if @type instanceof Model then new @type value
       else @type value
 
   unset: ->
@@ -31,3 +35,6 @@ class Property extends DataType
 
   revert: ->
     @value = @savedValue
+
+shared.Property = Property
+module.exports  = Property

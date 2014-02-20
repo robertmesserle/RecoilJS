@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class InitBinding extends Base
 
   constructor: ( @context  ) ->
@@ -6,3 +8,5 @@ class InitBinding extends Base
     @func = @parseBinding( @csString, false )
     @func.call( this )()
     super
+
+module.exports = InitBinding

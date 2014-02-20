@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class HTMLBinding extends Base
 
   constructor: ( @context  ) ->
@@ -13,3 +15,5 @@ class HTMLBinding extends Base
 
   update: ->
     @setValue()
+
+module.exports = HTMLBinding

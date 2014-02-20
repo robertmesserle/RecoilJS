@@ -1,3 +1,4 @@
+Base = require( './base.coffee' )
 
 class AttrBinding extends Base
 
@@ -17,3 +18,5 @@ class AttrBinding extends Base
     
   update: ->
     @setValue()
+
+module.exports = AttrBinding

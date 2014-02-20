@@ -1,3 +1,6 @@
+{ Property } = require( '../shared.coffee' )
+Virtual      = require( './virtual.coffee' )
+
 class BaseModel
 
   @getByField: ( field, value ) ->
@@ -156,3 +159,5 @@ class BaseModel
 
   clone: ->
     new @constructor @toJSON()
+
+module.exports = BaseModel

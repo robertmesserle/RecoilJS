@@ -12,3 +12,5 @@ class Virtual
 
   update: ->
     @get()
+
+module.exports = Virtual

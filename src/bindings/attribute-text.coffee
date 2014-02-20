@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class AttributeText extends Base
 
   constructor: ( @context, @attribute  ) ->
@@ -20,3 +22,5 @@ class AttributeText extends Base
 
   update: ->
     @updateValue()
+
+module.exports = AttributeText

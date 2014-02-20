@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class UpdateBinding extends Base
 
   constructor: ( @context  ) ->
@@ -9,3 +11,5 @@ class UpdateBinding extends Base
 
   update: ->
     try @func.call( this )()
+
+module.exports = UpdateBinding

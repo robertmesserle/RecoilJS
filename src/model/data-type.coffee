@@ -1,3 +1,4 @@
+BaseModel = require( './base-model.coffee' )
 
 class DataType
 
@@ -24,3 +25,5 @@ class DataType
 
   validate: ->
     @_validate.call @context, @value
+
+module.exports = DataType

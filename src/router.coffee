@@ -1,3 +1,5 @@
+DirtyCheck = require( './dirty-check.coffee' )
+
 class Router
 
   @getInstance: ->
@@ -57,3 +59,5 @@ class Router
       params[ part.substring( 1 ) ] = hashParts[ index ]
     params.$rest = hashParts.slice( routeParts.length ).join( '/' )
     return params
+
+module.exports = Router

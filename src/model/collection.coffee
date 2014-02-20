@@ -1,3 +1,4 @@
+DataType = require( './data-type.coffee' )
 
 class Collection extends DataType
 
@@ -14,12 +15,8 @@ class Collection extends DataType
           @value[ method ] arguments...
 
   save: ->
-    console.log 'saving'
     return unless @validate()
-    console.log 'validated'
-    console.log @savedValue, @value
     @savedValue.splice( 0, @savedValue.length, @value... )
-    console.log @savedValue
 
   revert: ->
     @value.splice( 0, @value.length, @savedValue.slice()... )
@@ -33,3 +30,5 @@ class Collection extends DataType
     # if criteria is a function, try using it to parse each value for matches
     for item in @value when criteria( item )
       return item
+
+module.exports = Collection

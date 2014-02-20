@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class CSSBinding extends Base
 
   constructor: ( @context ) ->
@@ -13,3 +15,5 @@ class CSSBinding extends Base
 
   update: ->
     @updateCSS()
+
+module.exports = CSSBinding

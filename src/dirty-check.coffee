@@ -1,21 +1,23 @@
+shared = require( './shared.coffee' )
+root   = window
 
 class DirtyCheck
 
   @originalMethods: {}
-  @instance: null
-  @lastCheck: 0
-  @timeout: null
+  @instance:        null
+  @lastCheck:       0
+  @timeout:         null
 
   @update: ->
     return if @timeout
     now = +new Date()
     waitTime = now - @lastCheck
     @lastCheck = now
-    if waitTime > Recoil.throttle then waitTime = 0
+    if waitTime > shared.throttle then waitTime = 0
     callback = =>
       @timeout = null
       for set in [ { type: 'write', method: 'write' }, { type: 'read', method: 'update' } ]
-        for binding in Recoil.bindings[ set.type ]
+        for binding in shared.bindings[ set.type ]
           binding[ set.method ]()
     if waitTime then @timeout = @originalMethods.setTimeout callback, waitTime
     else callback()
@@ -69,3 +71,5 @@ class DirtyCheck
         .ajaxComplete( -> DirtyCheck.update() )
         .on( 'load', 'script', -> DirtyCheck.update() )
         .on( 'click keydown', 'label', -> setTimeout -> DirtyCheck.update() )
+
+module.exports = DirtyCheck

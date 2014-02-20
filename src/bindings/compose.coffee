@@ -1,3 +1,6 @@
+{ views, viewPath, transitions } = require( '../shared.coffee' )
+Base = require( './base.coffee' )
+
 class ComposeBinding extends Base
 
   constructor: ( @context ) ->
@@ -15,13 +18,13 @@ class ComposeBinding extends Base
     controller?.view
 
   loadView: ->
-    url = "#{ Recoil.viewPath }/#{ @view }.html"
-    if Recoil.views[ url ]
-      return @renderView( Recoil.views[ url ] )
+    url = "#{ viewPath }/#{ @view }.html"
+    if views[ url ]
+      return @renderView( views[ url ] )
     @loading = true
     $.ajax url: url, success: ( data ) =>
       @loading = false
-      data = Recoil.views[ url ] = data
+      data = views[ url ] = data
         .replace( /<\$/g, '<div data-logic="true"' )
         .replace( /<\/\$>/g, '</div>' )
       @renderView( data )
@@ -33,7 +36,7 @@ class ComposeBinding extends Base
     @bindings = read: [], write: []
     @insertHtml()
     @controller?.afterRender? @context.$element, @context.parent, @context.root
-    intro = Recoil.transitions.intro[ @view ] or @controller?.intro or null
+    intro = transitions.intro[ @view ] or @controller?.intro or null
     intro? @context.$element
 
   insertHtml: ->
@@ -45,17 +48,19 @@ class ComposeBinding extends Base
   parseChildren: ->
     @context.$element.contents().each ( index, element ) =>
       extras = $.extend {}, @context.extras, parentBinding: this
-      new Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: extras )
+      new shared.Parser( $element: $( element ), scope: @controller, parent: @context.scope, root: @context.root, extras: extras )
 
   update: ->
     return if @loading
     controller = @parseBinding @binding if @binding
     view       = @getView( controller )
     if @controller isnt controller or @view isnt view
-      outro       = Recoil.transitions.outro[ @view ] or @controller?.outro or null
+      outro       = transitions.outro[ @view ] or @controller?.outro or null
       @controller = controller
       @view       = view
       callback    = => @loadView() if @view
       outro?( @context.$element, callback ) or callback()
     else
       @checkBindings()
+
+module.exports = ComposeBinding

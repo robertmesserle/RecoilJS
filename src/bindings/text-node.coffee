@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class TextNode extends Base
 
   constructor: ( @context  ) ->
@@ -16,3 +18,5 @@ class TextNode extends Base
 
   update: ->
     @updateValue()
+
+module.exports = TextNode

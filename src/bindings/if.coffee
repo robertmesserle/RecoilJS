@@ -1,3 +1,6 @@
+shared = require( '../shared.coffee' )
+Base   = require( './base.coffee' )
+
 class IfBinding extends Base
 
   if: true
@@ -15,7 +18,7 @@ class IfBinding extends Base
   reparse: =>
     @wrap()
     @removeBinding()
-    new Parser @context
+    new shared.Parser @context
     delete @reparse
 
   setValue: ( reparse = false ) ->
@@ -34,3 +37,5 @@ class IfBinding extends Base
       @wrap()
       @setValue( reparse )
       @unwrap()
+
+module.exports = IfBinding

@@ -1,3 +1,5 @@
+BaseModel = require( './base-model.coffee' )
+
 class Model
 
   @models: []
@@ -46,3 +48,5 @@ class Model
       post:   -> paths.root.call( @model )
       delete: -> paths.get.call( this )
     @model.paths = paths
+
+module.exports = Model

@@ -1,3 +1,6 @@
+{ events } = require( '../shared.coffee' )
+Base       = require( './base.coffee' )
+
 class EventBinding extends Base
 
   constructor: ( @context, eventName ) ->
@@ -14,10 +17,12 @@ class EventBinding extends Base
         else ret
 
   parseEvents: ->
-    for event in Recoil.events
+    for event in events
       str = @context.$element.data( event )
       continue unless str
       new EventBinding( @context, event )
     
   generateFunction: ( str ) ->
     super str, [ '$event' ]
+
+module.exports = EventBinding

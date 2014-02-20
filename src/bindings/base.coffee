@@ -1,3 +1,5 @@
+shared   = require( '../shared.coffee' )
+Compiler = require( '../compiler.coffee' )
 
 class Base
 
@@ -8,7 +10,7 @@ class Base
 
   getBindings: ->
     bindings = @context.extras?.parentBinding?.bindings
-    bindings ?= Recoil.bindings
+    bindings ?= shared.bindings
     return bindings
 
   pushBinding: ->
@@ -18,11 +20,9 @@ class Base
     bindings.write.push( this ) if @write
 
   parseBinding: ( binding, evalFunction = true ) ->
-    # Return cached binding if available
     @cachedBindings   ?= {}
     jsBinding         = @cachedBindings[ binding ]
     return jsBinding.call( this ) if jsBinding
-    # Otherwise, continue parsing the CoffeeScript into a usable functionkey
     @cachedBindings[ binding ] = @generateFunction( binding )
     if evalFunction then @cachedBindings[ binding ].call( this )
     else @cachedBindings[ binding ]
@@ -35,25 +35,22 @@ class Base
 
   removeBinding: ->
     bindings = @context.extras?.parentBinding?.bindings
-    bindings ?= Recoil.bindings
+    bindings ?= shared.bindings
     index    = bindings.read.indexOf( this )
     return unless index + 1
     bindings.read.splice( index, 1 )
 
   parseString: ( str ) ->
-    # Return cached binding if available
     @cachedStrings ?= {}
     jsString = @cachedStrings[ str ]
     return jsString.call( this ) if jsString
-    # Otherwise, continue parsing the code into a usable function
     str = str.replace( /\"/g, '\\"' )
     str = '"' + str + '"'
-    # Generate argument hash
     @cachedStrings[ str ] = @generateFunction( str )
     @cachedStrings[ str ].call( this )
 
   generateFunction: ( str, customArgs = [] ) ->
-    js = Recoil.compile "#{ str }"
+    js = Compiler.compile( "#{ str }" )
     argHash = {
       '$element': 'this.context.$element'
       '$root':    'this.context.root'
@@ -111,3 +108,5 @@ class Base
       bindings = @bindings[ set.type ]
       for binding in bindings.slice( 0 )
         binding[ set.method ]()
+
+module.exports = Base

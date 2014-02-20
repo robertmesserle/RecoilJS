@@ -1,3 +1,6 @@
+shared = require( '../shared.coffee' )
+Base   = require( './base.coffee' )
+
 class ForBinding extends Base
 
   constructor: ( @context ) ->
@@ -54,7 +57,7 @@ class ForBinding extends Base
     if @indexName
       extras[ @indexName ]       = index
     extras.parentBinding         = this
-    new Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
+    new shared.Parser $element: $item, scope: @context.scope, parent: @context.parent, root: @context.root, extras: extras
 
   generateFunction: ( str ) ->
     args = [ @itemName ]
@@ -82,3 +85,5 @@ class ForBinding extends Base
 
   update: ->
     @updateItems()
+
+module.exports = ForBinding

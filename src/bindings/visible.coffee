@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class VisibleBinding extends Base
 
   constructor: ( @context ) ->
@@ -14,3 +16,5 @@ class VisibleBinding extends Base
 
   update: ->
     @setValue()
+
+module.exports = VisibleBinding

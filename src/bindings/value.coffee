@@ -1,3 +1,5 @@
+Base = require( './base.coffee' )
+
 class ValueBinding extends Base
 
   constructor: ( @context  ) ->
@@ -40,3 +42,5 @@ class ValueBinding extends Base
 
   write: ->
     @updateHandler()
+
+module.exports = ValueBinding
