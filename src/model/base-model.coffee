@@ -1,5 +1,5 @@
-{ Property } = require( '../shared.coffee' )
-Virtual      = require( './virtual.coffee' )
+shared  = require( '../shared.coffee' )
+Virtual = require( './virtual.coffee' )
 
 class BaseModel
 
@@ -55,7 +55,7 @@ class BaseModel
 
   _wrapProps: ->
     for key, prop of @$props or {}
-      @props[ key ] = new Property prop, @context
+      @props[ key ] = new shared.Property prop, @context
       @[ key ] = @props[ key ].value
 
   _createVirtuals: ->

@@ -1511,9 +1511,9 @@ if (typeof module !== "undefined" && module !== null) {
 
 
 },{"./core.coffee":17,"./dirty-check.coffee":18,"./model/collection.coffee":21,"./model/model.coffee":23,"./model/property.coffee":24,"./router.coffee":27,"./shared.coffee":28}],20:[function(require,module,exports){
-var BaseModel, Property, Virtual;
+var BaseModel, Virtual, shared;
 
-Property = require('../shared.coffee').Property;
+shared = require('../shared.coffee');
 
 Virtual = require('./virtual.coffee');
 
@@ -1609,7 +1609,7 @@ BaseModel = (function() {
     _results = [];
     for (key in _ref) {
       prop = _ref[key];
-      this.props[key] = new Property(prop, this.context);
+      this.props[key] = new shared.Property(prop, this.context);
       _results.push(this[key] = this.props[key].value);
     }
     return _results;
