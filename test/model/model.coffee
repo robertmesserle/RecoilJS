@@ -133,72 +133,90 @@ describe( 'Model', ->
       expect( person.age ).to.be( 28 )
       expect( person.gender ).to.be( true )
     )
+    it( 'should support saving (no path)', ->
+      person = new Person()
+      expect( person.name ).to.be( 'John Doe' )
+      expect( person.age ).to.be( null )
+      expect( person.gender ).to.be( true )
+
+      person.fname = 'Jane'
+      person.age = 18
+      person.gender = false
+      person.update()
+
+      expect( person.name ).to.be( 'Jane Doe' )
+      expect( person.age ).to.be( 18 )
+      expect( person.gender ).to.be( false )
+
+      person.save()
+      person.revert()
+
+      expect( person.name ).to.be( 'Jane Doe' )
+      expect( person.age ).to.be( 18 )
+      expect( person.gender ).to.be( false )
+    )
+  )
+  describe( '$static', ->
+    Person = new Model( {
+      $props:   {
+        fname:  { type: String, default: 'John' }
+        lname:  { type: String, default: 'Doe' }
+        gender: { type: Boolean, default: true }
+      }
+      $static:  {
+        men:    -> for person in @items when person.gender then person
+        women:  -> for person in @items when not person.gender then person
+      }
+    } )
+
+    new Person
+    new Person( { gender: false } )
+
+    it( 'should support statistics', ->
+      expect( Person.men ).to.be.ok()
+      expect( Person.men() ).to.be.an( Array )
+      expect( Person.women() ).to.be.an( Array )
+      expect( Person.men()[ 0 ].gender ).to.be( true )
+      expect( Person.women()[ 0 ].gender ).to.be( false )
+    )
+  )
+  describe( '#validate', ->
+    runTests = ( ( Person ) ->
+      it( 'should reject an empty name', ->
+        person = new Person( { name: 'John Doe' } )
+        expect( person.name ).to.be( 'John Doe' )
+        person.set( 'name', '' )
+        person.save()
+        person.revert()
+        expect( person.name ).to.be( 'John Doe' )
+      )
+    )
+
+    describe( 'as $validate property', ->
+      runTests( new Model( {
+        $props: {
+          name: { type: String }
+        }
+        $validate: {
+          name: ( value ) -> value?.length
+        }
+      } ) )
+    )
+
+    describe( 'as property option', ->
+      runTests( new Model( {
+        $props: {
+          name: {
+            type: String
+            validate: ( value ) -> value?.length
+          }
+        }
+      } ) )
+    )
   )
 )
 
-#   describe '#save, #revert', ->
-#     it 'should support saving (no path)', ->
-#       person = new Person
-#       expect( person.name ).toBe( 'John Doe' )
-#       expect( person.age ).toBe( null )
-#       expect( person.gender ).toBe( true )
-#       
-#       person.fname    = 'Jane'
-#       person.age      = 18
-#       person.gender   = false
-#       person.update()
-#
-#       expect( person.name ).toBe( 'Jane Doe' )
-#       expect( person.age ).toBe( 18 )
-#       expect( person.gender ).toBe( false )
-#       
-#       person.save()
-#       person.revert()
-#
-#       expect( person.name ).toBe( 'Jane Doe' )
-#       expect( person.age ).toBe( 18 )
-#       expect( person.gender ).toBe( false )
-#
-#     describe '#save to server', ->
-#
-#       it 'should post a new record', ->
-#
-#       it 'should put an existing record', ->
-#
-#   describe '$static', ->
-#
-#     Person = new Recoil.Model( {
-#       $props:
-#         fname:  type: String, default: 'John'
-#         lname:  type: String, default: 'Doe'
-#         gender: type: Boolean, default: true
-#       $static:
-#         men:   -> for person in @items when person.gender then person
-#         women: -> for person in @items when not person.gender then person
-#     } )
-#
-#     new Person
-#     new Person gender: false
-#
-#     it 'should support statics', ->
-#       expect( Person.men ).not.toEqual null
-#       expect( Person.men() instanceof Array ).toBe( true )
-#       expect( Person.women() instanceof Array ).toBe( true )
-#       expect( Person.men()[ 0 ].gender ).toBe( true )
-#       expect( Person.women()[ 0 ].gender ).toBe( false )
-#
 #   describe '#validate', ->
-#
-#     runTests = ( Person ) ->
-#
-#       it 'should reject an empty name', ->
-#         person = new Person name: 'John Doe'
-#         expect( person.name ).toBe 'John Doe'
-#         person.set name: ''
-#         person.save()
-#         person.revert()
-#         expect( person.name ).toBe 'John Doe'
-#
 #     describe 'As $validate property', ->
 #       runTests new Recoil.Model {
 #         $props:
