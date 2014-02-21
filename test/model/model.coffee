@@ -214,61 +214,48 @@ describe( 'Model', ->
       } ) )
     )
   )
+  describe( '#subscribe', ->
+    catches = null
+    runTests = ( ( Person ) ->
+      it( 'should not catch the initial load', ->
+        catches = []
+        person = new Person( { name: 'John Doe' } )
+        expect( catches ).to.eql( [] )
+      )
+      it( 'should catch an update post-init', ->
+        catches = []
+        person = new Person( { name: 'John Doe' } )
+        person.set( 'name', 'Jane Doe' )
+        expect( catches ).not.to.be.empty()
+        expect( catches.length ).to.be( 1 )
+        expect( catches[ 0 ] ).to.be.ok()
+        expect( catches[ 0 ].value ).to.be( 'Jane Doe' )
+        expect( catches[ 0 ].oldValue ).to.be( 'John Doe' )
+      )
+    )
+    describe( 'as property option', ->
+      runTests( new Model( {
+        $props: {
+          name: {
+            type: String
+            subscribe: ( value, oldValue ) ->
+              catches.push( { value: value, oldValue: oldValue } )
+          }
+        }
+      } ) )
+    )
+    describe( 'as $subscribe property', ->
+      runTests( new Model( {
+        $props: { name: { type: String } }
+        $subscribe: {
+          name: ( value, oldValue ) ->
+            catches.push( { value: value, oldValue: oldValue } )
+        }
+      } ) )
+    )
+  )
 )
 
-#   describe '#validate', ->
-#     describe 'As $validate property', ->
-#       runTests new Recoil.Model {
-#         $props:
-#           name: type: String
-#         $validate:
-#           name: ( value ) -> value?.length
-#       }
-#
-#     describe 'As property option', ->
-#       runTests new Recoil.Model {
-#         $props:
-#           name:
-#             type: String
-#             validate: ( value ) -> value?.length
-#       }
-#
-#   describe '#subscribe', ->
-#
-#     catches = null
-#
-#     runTests = ( Person ) ->
-#
-#       it 'should not catch the initial load', ->
-#         catches = []
-#         person = new Person name: 'John Doe'
-#         expect( catches ).toEqual []
-#
-#       it 'should catch an update post-init', ->
-#         catches = []
-#         person = new Person name: 'John Doe'
-#         person.set name: 'Jane Doe'
-#         expect( catches.length ).toBe 1
-#         expect( catches[ 0 ] ).toBeDefined()
-#         expect( catches[ 0 ].value ).toBe 'Jane Doe'
-#         expect( catches[ 0 ].oldValue ).toBe 'John Doe'
-#
-#     describe 'As property option', ->
-#       runTests new Recoil.Model {
-#         $props:
-#           name: type: String, subscribe: ( value, oldValue ) ->
-#             catches.push value: value, oldValue: oldValue
-#       }
-#
-#     describe 'As $subscribe property', ->
-#       runTests new Recoil.Model {
-#         $props:
-#           name: type: String
-#         $subscribe:
-#           name: ( value, oldValue ) ->
-#             catches.push value: value, oldValue: oldValue
-#       }
-#
 #   describe '#extend', ->
 #
 #     Animal = new Recoil.Model {
