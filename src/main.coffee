@@ -14,7 +14,7 @@ class Recoil
   @Collection:            Collection
   @Model:                 Model
 
-  @mapRoute:              -> Router.getInstance().mapRoute arguments...
+  @mapRoute:              -> Router.getInstance().mapRoute        arguments...
   @mapDefaultRoute:       -> Router.getInstance().mapDefaultRoute arguments...
   @triggerRouteChange:    -> Router.getInstance().handleChange()
 
@@ -28,7 +28,7 @@ class Recoil
     $ =>
       new DirtyCheck()
       $element   = $( "[data-app='#{ args[ 0 ] }'], [data-app], body" ).eq 0
-      shared.app = new Core( $element, @controller )
+      shared.app = new Core $element, @controller
 
 window?.Recoil  = Recoil
 module?.exports = Recoil

@@ -28,14 +28,13 @@ class Parser
       return if context.stopParsing
       new binding context
 
-    return if context.skipChildren
+    unless context.skipChildren
+      $contents = context.$contents or $element.contents()
+      $contents.each ( index, element ) =>
+        new Parser $.extend {}, context, context.childContext, $element: $ element
 
-    $contents = context.$contents or $element.contents()
-    $contents.each ( index, element ) =>
-      new Parser $.extend {}, context, context.childContext, $element: $ element
-
-    new UpdateBinding context
     new InitBinding   context
+    new UpdateBinding context
 
 shared.Parser  = Parser
 module.exports = Parser

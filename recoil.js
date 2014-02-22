@@ -938,11 +938,13 @@ module.exports = IfBinding;
 
 
 },{"../shared.coffee":28,"./base.coffee":3}],11:[function(require,module,exports){
-var Base, InitBinding,
+var Base, Compiler, InitBinding,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Base = require('./base.coffee');
+
+Compiler = require('../compiler.coffee');
 
 InitBinding = (function(_super) {
   __extends(InitBinding, _super);
@@ -952,8 +954,7 @@ InitBinding = (function(_super) {
     if (!(this.binding = this.context.$element.data('init'))) {
       return;
     }
-    this.csString = "-> " + this.binding;
-    this.func = this.parseBinding(this.csString, false);
+    this.func = this.parseBinding(Compiler.getFunction(this.binding), false);
     this.func.call(this)();
     InitBinding.__super__.constructor.apply(this, arguments);
   }
@@ -965,7 +966,7 @@ InitBinding = (function(_super) {
 module.exports = InitBinding;
 
 
-},{"./base.coffee":3}],12:[function(require,module,exports){
+},{"../compiler.coffee":16,"./base.coffee":3}],12:[function(require,module,exports){
 var Base, TextNode,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1205,6 +1206,14 @@ Compiler = (function() {
         }
       });
       return "( function () { return " + str + "; } )()";
+    }
+  };
+
+  Compiler.getFunction = function(str) {
+    if (typeof CoffeeScript !== "undefined" && CoffeeScript !== null ? CoffeeScript.compile : void 0) {
+      return "-> " + str;
+    } else {
+      return "function () { " + str + " }";
     }
   };
 
@@ -2285,19 +2294,18 @@ Parser = (function() {
       }
       new binding(context);
     }
-    if (context.skipChildren) {
-      return;
+    if (!context.skipChildren) {
+      $contents = context.$contents || $element.contents();
+      $contents.each((function(_this) {
+        return function(index, element) {
+          return new Parser($.extend({}, context, context.childContext, {
+            $element: $(element)
+          }));
+        };
+      })(this));
     }
-    $contents = context.$contents || $element.contents();
-    $contents.each((function(_this) {
-      return function(index, element) {
-        return new Parser($.extend({}, context, context.childContext, {
-          $element: $(element)
-        }));
-      };
-    })(this));
-    new UpdateBinding(context);
-    return new InitBinding(context);
+    new InitBinding(context);
+    return new UpdateBinding(context);
   };
 
   return Parser;

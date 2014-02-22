@@ -11,4 +11,8 @@ class Compiler
         else "#{ firstChar }\" + ( #{ expression } ) + \""
       "( function () { return #{ str }; } )()"
 
+  @getFunction: ( str ) ->
+    if CoffeeScript?.compile then "-> #{ str }"
+    else "function () { #{ str } }"
+
 module.exports = Compiler

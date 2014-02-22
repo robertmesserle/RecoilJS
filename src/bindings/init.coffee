@@ -1,11 +1,11 @@
-Base = require './base.coffee'
+Base     = require './base.coffee'
+Compiler = require '../compiler.coffee'
 
 class InitBinding extends Base
 
   constructor: ( @context  ) ->
     return unless @binding = @context.$element.data 'init'
-    @csString = "-> #{ @binding }"
-    @func = @parseBinding @csString, false
+    @func = @parseBinding Compiler.getFunction( @binding ), false
     @func.call( this )()
     super
 
