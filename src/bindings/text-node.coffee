@@ -1,4 +1,4 @@
-Base = require( './base.coffee' )
+Base = require './base.coffee'
 
 class TextNode extends Base
 
@@ -7,12 +7,12 @@ class TextNode extends Base
     return unless @template = @context.$element.text()
     return unless @template.indexOf( '{' ) + 1
     @context.stopParsing   = true
-    @element               = @context.$element.get( 0 )
+    @element               = @context.$element.get 0
     @updateValue()
     super
 
   updateValue: ->
-    value = @parseString( @template )
+    value = @parseString @template
     if @value isnt value
       @element.nodeValue = @value = value
 

@@ -1,11 +1,11 @@
-Base = require( './base.coffee' )
+Base = require './base.coffee'
 
 class UpdateBinding extends Base
 
   constructor: ( @context  ) ->
-    return unless @binding = @context.$element.data( 'update' )
+    return unless @binding = @context.$element.data 'update'
     @csString = "-> #{ @binding }"
-    @func = @parseBinding( @csString, false )
+    @func = @parseBinding @csString, false
     @func.call( this )()
     super
 

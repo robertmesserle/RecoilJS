@@ -1,5 +1,5 @@
-shared  = require( '../shared.coffee' )
-Virtual = require( './virtual.coffee' )
+shared  = require '../shared.coffee'
+Virtual = require './virtual.coffee'
 
 class BaseModel
 
@@ -13,7 +13,7 @@ class BaseModel
       url: @paths.root()
       success: ( data ) =>
         for item in data
-          match = @getByField( 'id', item.id )
+          match = @getByField 'id', item.id
           if match?
             for field, value of data
               match[ field ] = value
@@ -21,14 +21,14 @@ class BaseModel
           else
             model = new this item
             model.isNew = false
-        callback?( @items )
+        callback? @items
 
   @loadOne: ( id, callback ) ->
     $.ajax
-      url: @paths.get.call( id: id )
+      url: @paths.get.call id: id
       success: ( data ) =>
         item = new this data
-        callback?( item )
+        callback? item
 
   isNew: true
   hasChanged: false
@@ -38,7 +38,7 @@ class BaseModel
     @_storeItem()
     @_wrapProps()
     @_createVirtuals()
-    @set( data, null, true, false )
+    @set data, null, true, false
     @save()
     @_parseValidates()
     @_parseSubscribes()
@@ -51,7 +51,7 @@ class BaseModel
     @virtuals = {}
 
   _storeItem: ->
-    @constructor.items.push( this )
+    @constructor.items.push this
 
   _wrapProps: ->
     for key, prop of @$props or {}
@@ -102,7 +102,7 @@ class BaseModel
     return true
 
   escape: ( key ) ->
-    return @[ key ].replace( /</g, '&lt;' ).replace( />/g, '&gt;' )
+    return @[ key ].replace( /</g, '&lt;' ).replace />/g, '&gt;'
   
   save: ->
     return false unless @validate()
@@ -112,7 +112,7 @@ class BaseModel
     return true
 
   send: ->
-    url = if @isNew then @constructor.paths.post.call( this ) else @constructor.paths.put.call( this )
+    url = if @isNew then @constructor.paths.post.call( this ) else @constructor.paths.put.call this
     return unless url
     ajax =
       url: url
@@ -130,8 +130,8 @@ class BaseModel
 
   fetch: ->
     $.ajax
-      url: @constructor.paths.get.call( this )
-      complete: ( data ) -> @set( data )
+      url: @constructor.paths.get.call this
+      complete: ( data ) -> @set data
 
   checkVirtuals: ->
     for key, virtual of @virtuals when @[ key ] isnt virtual.value

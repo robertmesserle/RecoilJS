@@ -1,9 +1,9 @@
-Base = require( './base.coffee' )
+Base = require './base.coffee'
 
 class HTMLBinding extends Base
 
   constructor: ( @context  ) ->
-    return unless @binding = @context.$element.data( 'html' )
+    return unless @binding = @context.$element.data 'html'
     @setValue()
     @pushBinding()
 

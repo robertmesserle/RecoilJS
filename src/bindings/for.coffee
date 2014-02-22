@@ -1,28 +1,28 @@
-shared = require( '../shared.coffee' )
-Base   = require( './base.coffee' )
+shared = require '../shared.coffee'
+Base   = require './base.coffee'
 
 class ForBinding extends Base
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'for' )
+    return unless @binding = @context.$element.data 'for'
     @bindings = read: [], write: []
     @context.skipChildren = true
     @getParts()
     @getTemplate()
     @collection = @getCollection()
     @wrap()
-    @parseItems( @collection )
+    @parseItems @collection
     @unwrap()
     super
 
   getParts: ->
     parts              = @binding.split /\s+in\s+|\s+when\s+/g
-    itemParts          = parts[ 0 ].split( ',' )
+    itemParts          = parts[ 0 ].split ','
     @itemName          = $.trim itemParts[ 0 ]
     @indexName         = $.trim itemParts[ 1 ]
     @collectionName    = $.trim parts[ 1 ]
     condition          = $.trim parts[ 2 ] or 'true'
-    @conditionFunction = @parseBinding( condition, false )
+    @conditionFunction = @parseBinding condition, false
 
   getTemplate: ->
     @$template = @context.$element.contents().remove()
@@ -33,7 +33,7 @@ class ForBinding extends Base
     if items instanceof Array
       items = for item, index in items when @conditionFunction.call( this, item, index ) then item
     else
-      for item, key of items when not @conditionFunction.call( this, item, key )
+      for item, key of items when not @conditionFunction.call this, item, key
         delete items[ key ]
     items
 
@@ -44,7 +44,7 @@ class ForBinding extends Base
       for index, item of collection then @parseItem item, index, collection
 
   parseItem: ( item, index, collection ) ->
-    $item       = @$template.clone().appendTo( @context.$element )
+    $item       = @$template.clone().appendTo @context.$element
     extras      = $.extend {}, @context.extras
     if typeof item is 'object'
       extras.itemName            = @itemName
@@ -73,12 +73,12 @@ class ForBinding extends Base
 
   updateItems: =>
     collection = @getCollection()
-    if @checkForChanges( collection )
+    if @checkForChanges collection
       @wrap()
-      @collection = collection.slice( 0 )
+      @collection = collection.slice 0
       @bindings = read: [], write: []
       @context.$element.empty()
-      @parseItems( collection )
+      @parseItems collection
       @unwrap()
     else
       @checkBindings()

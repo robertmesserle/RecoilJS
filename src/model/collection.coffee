@@ -1,4 +1,4 @@
-DataType = require( './data-type.coffee' )
+DataType = require './data-type.coffee'
 
 class Collection extends DataType
 
@@ -16,10 +16,10 @@ class Collection extends DataType
 
   save: ->
     return unless @validate()
-    @savedValue.splice( 0, @savedValue.length, @value... )
+    @savedValue.splice 0, @savedValue.length, @value...
 
   revert: ->
-    @value.splice( 0, @value.length, @savedValue.slice()... )
+    @value.splice 0, @value.length, @savedValue.slice()...
 
   find: ( criteria ) ->
     # Search for a direct match first, even if the criteria is a function
@@ -28,7 +28,7 @@ class Collection extends DataType
     # If no direct matches were found, check if criteria is a function
     return unless typeof criteria is 'function'
     # if criteria is a function, try using it to parse each value for matches
-    for item in @value when criteria( item )
+    for item in @value when criteria item
       return item
 
 module.exports = Collection

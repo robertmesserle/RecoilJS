@@ -210,12 +210,12 @@ Base = (function() {
     }
     js = Compiler.compile("" + str);
     argHash = {
-      '$element': 'this.context.$element',
-      '$root': 'this.context.root',
-      '$parent': 'this.context.parent',
-      '$data': 'this.context.scope',
-      '$scope': 'this.context.scope',
-      '$extras': 'this.context.extras'
+      $element: 'this.context.$element',
+      $root: 'this.context.root',
+      $parent: 'this.context.parent',
+      $data: 'this.context.scope',
+      $scope: 'this.context.scope',
+      $extras: 'this.context.extras'
     };
     args = [];
     scopeArgs = [];
@@ -1952,13 +1952,13 @@ DataType = (function() {
       });
     }
     type = type();
-    return (function() {
+    return function() {
       return (function(func, args, ctor) {
         ctor.prototype = func.prototype;
         var child = new ctor, result = func.apply(child, args);
         return Object(result) === result ? result : child;
       })(type, arguments, function(){});
-    });
+    };
   };
 
   DataType.prototype.parseData = function(data) {
@@ -2136,13 +2136,13 @@ Property = (function(_super) {
       });
     }
     type = type();
-    return (function() {
+    return function() {
       return (function(func, args, ctor) {
         ctor.prototype = func.prototype;
         var child = new ctor, result = func.apply(child, args);
         return Object(result) === result ? result : child;
       })(type, arguments, function(){});
-    });
+    };
   };
 
   Property.prototype.parseData = function(data) {
@@ -2261,8 +2261,7 @@ Parser = (function() {
     this.context.$element.each((function(_this) {
       return function(index, element) {
         var $element;
-        $element = $(element);
-        return _this.parseNode($element);
+        return _this.parseNode($element = $(element));
       };
     })(this));
   }

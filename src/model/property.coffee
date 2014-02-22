@@ -1,7 +1,7 @@
-shared    = require( '../shared.coffee' )
-DataType  = require( './data-type.coffee' )
-BaseModel = require( './base-model.coffee' )
-Model     = require( './model.coffee' )
+shared    = require '../shared.coffee'
+DataType  = require './data-type.coffee'
+BaseModel = require './base-model.coffee'
+Model     = require './model.coffee'
 
 class Property extends DataType
 
@@ -13,7 +13,7 @@ class Property extends DataType
     return type if typeString.indexOf( '[native code]' ) + 1
     return ( -> new type arguments... ) if type?.__super__?.constructor is BaseModel
     type = type()
-    return ( -> new type arguments... )
+    return -> new type arguments...
 
   parseData: ( data ) ->
     super

@@ -1,4 +1,4 @@
-shared = require( './shared.coffee' )
+shared = require './shared.coffee'
 root   = window
 
 class DirtyCheck
@@ -37,10 +37,10 @@ class DirtyCheck
     ( type, listener ) ->
       args = Array arguments...
       args[ 1 ] = ->
-        listener( arguments... )
+        listener arguments...
         if type.indexOf( 'down' ) >= 0 then setTimeout -> DirtyCheck.update()
         else DirtyCheck.update()
-      originalMethod.apply( this, args )
+      originalMethod.apply this, args
 
   overwriteEventListeners: ->
 
@@ -57,19 +57,19 @@ class DirtyCheck
       originalMethod = root[ func ]
       do ( originalMethod ) =>
         @constructor.originalMethods[ func ] = ->
-          originalMethod.apply( root, arguments )
+          originalMethod.apply root, arguments
         root[ func ] = ( func, timeout ) ->
           args = Array arguments...
           args[ 0 ] = ->
-            func( arguments... )
+            func arguments...
             DirtyCheck.update()
-          originalMethod.apply( root, args )
+          originalMethod.apply root, args
 
   bindEvents: ->
     $ ->
-      $( document )
-        .ajaxComplete( -> DirtyCheck.update() )
-        .on( 'load', 'script', -> DirtyCheck.update() )
-        .on( 'click keydown', 'label', -> setTimeout -> DirtyCheck.update() )
+      $ document
+        .ajaxComplete -> DirtyCheck.update()
+        .on 'load', 'script', -> DirtyCheck.update()
+        .on 'click keydown', 'label', -> setTimeout -> DirtyCheck.update()
 
 module.exports = DirtyCheck

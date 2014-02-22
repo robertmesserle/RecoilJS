@@ -1,10 +1,10 @@
-shared = require( '../shared.coffee' )
-Base   = require( './base.coffee' )
+shared = require '../shared.coffee'
+Base   = require './base.coffee'
 
 class ContextBinding extends Base
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'context' )
+    return unless @binding = @context.$element.data 'context'
     @$template = @context.$element.contents().clone()
     @setValue()
     super

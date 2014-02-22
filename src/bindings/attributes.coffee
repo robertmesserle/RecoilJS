@@ -1,9 +1,9 @@
-Base = require( './base.coffee' )
+Base = require './base.coffee'
 
 class AttrBinding extends Base
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'attr' )
+    return unless @binding = @context.$element.data 'attr'
     @setValue()
     super
 

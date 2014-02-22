@@ -16,6 +16,6 @@ gulp.task 'default', [ 'test' ], ->
     .pipe gulp.dest '.'
 
 gulp.task 'test', ->
-  exec './node_modules/mocha/bin/mocha --colors --recursive --compilers coffee:coffee-script/register --reporter spec', ( e, out, err ) -> gutil.log out, err
+  exec './node_modules/mocha/bin/mocha --colors --recursive --compilers coffee:coffee-script/register', ( e, out, err ) -> gutil.log out, err
     
 gulp.task 'watch', -> gulp.watch 'src/**/*.coffee', [ 'default' ]

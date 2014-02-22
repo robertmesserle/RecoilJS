@@ -1,4 +1,4 @@
-BaseModel = require( './base-model.coffee' )
+BaseModel = require './base-model.coffee'
 
 class DataType
 
@@ -8,7 +8,7 @@ class DataType
   valid:    true
 
   constructor: ( data = {}, @context ) ->
-    @parseData( data )
+    @parseData data
 
   parseType: ( type ) ->
     return ( ( value ) -> value ) unless type
@@ -16,10 +16,10 @@ class DataType
     return type if typeString.indexOf( '[native code]' ) + 1
     return ( -> new type arguments... ) if type?.__super__?.constructor is BaseModel
     type = type()
-    return ( -> new type arguments... )
+    return -> new type arguments...
 
   parseData: ( data ) ->
-    @type         = @parseType( data.type )
+    @type         = @parseType data.type
     @_validate    = data.validate or -> true
     @_subscribe   = data.subscribe or -> true
 

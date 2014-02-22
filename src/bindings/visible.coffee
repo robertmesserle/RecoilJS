@@ -1,9 +1,9 @@
-Base = require( './base.coffee' )
+Base = require './base.coffee'
 
 class VisibleBinding extends Base
 
   constructor: ( @context ) ->
-    return unless @binding = @context.$element.data( 'visible' )
+    return unless @binding = @context.$element.data 'visible'
     @setValue()
     super
 

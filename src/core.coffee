@@ -1,4 +1,4 @@
-Parser = require( './parser.coffee' )
+Parser = require './parser.coffee'
 
 class Core
 
@@ -15,7 +15,7 @@ class Core
 
   addComposition: =>
     if @controller.view
-      @$element.data( 'compose', '$scope' )
+      @$element.data 'compose', '$scope'
     new Parser $element: @$element, scope: @controller, root: @controller
 
 module.exports = Core

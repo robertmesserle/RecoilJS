@@ -1,4 +1,4 @@
-BaseModel = require( './base-model.coffee' )
+BaseModel = require './base-model.coffee'
 
 class Model
 
@@ -11,7 +11,7 @@ class Model
     @attachStatic()
     @attachBuckets()
     @initPaths()
-    @constructor.models.push( @model )
+    @constructor.models.push @model
     return @model
 
   extendMeta: ->
@@ -22,7 +22,7 @@ class Model
     for key, prop of @meta.$static or {}
       do ( key, prop ) =>
         if typeof prop is 'function'
-          @model[ key ] = => prop.apply( @model, arguments )
+          @model[ key ] = => prop.apply @model, arguments
         else
           @model[ key ] = prop
 
@@ -43,10 +43,10 @@ class Model
       rootPath = -> pathString
     paths =
       root:   rootPath
-      get:    -> "#{ paths.root.call( @model ) }/#{ @id }"
-      put:    -> paths.get.call( this )
-      post:   -> paths.root.call( @model )
-      delete: -> paths.get.call( this )
+      get:    -> "#{ paths.root.call @model }/#{ @id }"
+      put:    -> paths.get.call this
+      post:   -> paths.root.call @model
+      delete: -> paths.get.call this
     @model.paths = paths
 
 module.exports = Model
