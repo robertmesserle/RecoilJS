@@ -1,24 +1,21 @@
-gulp       = require( 'gulp' )
-browserify = require( 'gulp-browserify' )
-rename     = require( 'gulp-rename' )
-connect    = require( 'gulp-connect' )
+{ exec }   = require 'child_process'
+gulp       = require 'gulp'
+gutil      = require 'gulp-util'
+uglify     = require 'gulp-uglify'
+browserify = require 'gulp-browserify'
+rename     = require 'gulp-rename'
 
-gulp.task( 'coffee', ->
-  gulp.src( 'src/main.coffee', { read: false } )
-    .pipe( browserify( { transform: [ 'coffeeify' ], extensions: [ '.coffee' ] } ) )
-    .pipe( rename( 'recoil.js' ) )
-    .pipe( gulp.dest( '.' ) )
-    .pipe( connect.reload() )
-)
-gulp.task( 'connect', connect.server( {
-  root: [ __dirname ]
-  port: 1337
-  livereload: true
-  open: { browser: 'Google Chrome' }
-} ) )
+gulp.task 'default', [ 'test' ], ->
+  gulp.src 'src/main.coffee', read: false
+    .pipe browserify transform: [ 'coffeeify' ], extensions: [ '.coffee' ]
+    .pipe rename 'recoil.js'
+    .pipe gulp.dest '.'
+    .pipe gulp.dest 'www/pub/js'
+    .pipe uglify preserveComments: 'some'
+    .pipe rename 'recoil.min.js'
+    .pipe gulp.dest '.'
 
-gulp.task( 'default', [ 'coffee' ] )
-
-gulp.task( 'watch', [ 'connect' ], ->
-  gulp.watch( 'src/**/*.coffee', [ 'coffee' ] )
-)
+gulp.task 'test', ->
+  exec './node_modules/mocha/bin/mocha --colors --recursive --compilers coffee:coffee-script/register --reporter spec', ( e, out, err ) -> gutil.log out, err
+    
+gulp.task 'watch', -> gulp.watch 'src/**/*.coffee', [ 'default' ]
