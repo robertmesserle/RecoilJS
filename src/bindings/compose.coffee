@@ -1,5 +1,6 @@
-{ views, viewPath, transitions } = require '../shared.coffee'
-Base = require './base.coffee'
+shared                           = require '../shared.coffee'
+{ views, viewPath, transitions } = shared
+Base                             = require './base.coffee'
 
 class ComposeBinding extends Base
 

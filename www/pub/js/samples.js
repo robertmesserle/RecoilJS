@@ -4,9 +4,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Recoil, SampleController, SectionController;
+    var SampleController, SectionController;
     SectionController = require('./section');
-    Recoil = require('./recoil');
     return SampleController = (function(_super) {
       __extends(SampleController, _super);
 
@@ -31,7 +30,7 @@
         };
         this.searchTerm = '';
         this.selectValue = '';
-        this.selectOptions = Recoil.events;
+        this.selectOptions = "blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error".split( /\s+/g );
         this.checkboxValue = '';
         this.radioOption = '';
       }

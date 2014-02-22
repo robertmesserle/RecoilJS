@@ -335,12 +335,14 @@ module.exports = Base;
 
 
 },{"../compiler.coffee":16,"../shared.coffee":28}],4:[function(require,module,exports){
-var Base, ComposeBinding, transitions, viewPath, views, _ref,
+var Base, ComposeBinding, shared, transitions, viewPath, views,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-_ref = require('../shared.coffee'), views = _ref.views, viewPath = _ref.viewPath, transitions = _ref.transitions;
+shared = require('../shared.coffee');
+
+views = shared.views, viewPath = shared.viewPath, transitions = shared.transitions;
 
 Base = require('./base.coffee');
 
@@ -400,13 +402,13 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.renderView = function(data) {
-    var intro, _ref1, _ref2, _ref3;
+    var intro, _ref, _ref1, _ref2;
     if (data == null) {
       data = this.html;
     }
-    if ((_ref1 = this.controller) != null) {
-      if (typeof _ref1.beforeRender === "function") {
-        _ref1.beforeRender(this.context.$element, this.context.parent, this.context.root);
+    if ((_ref = this.controller) != null) {
+      if (typeof _ref.beforeRender === "function") {
+        _ref.beforeRender(this.context.$element, this.context.parent, this.context.root);
       }
     }
     this.context.$element.scrollTop(0);
@@ -416,12 +418,12 @@ ComposeBinding = (function(_super) {
       write: []
     };
     this.insertHtml();
-    if ((_ref2 = this.controller) != null) {
-      if (typeof _ref2.afterRender === "function") {
-        _ref2.afterRender(this.context.$element, this.context.parent, this.context.root);
+    if ((_ref1 = this.controller) != null) {
+      if (typeof _ref1.afterRender === "function") {
+        _ref1.afterRender(this.context.$element, this.context.parent, this.context.root);
       }
     }
-    intro = transitions.intro[this.view] || ((_ref3 = this.controller) != null ? _ref3.intro : void 0) || null;
+    intro = transitions.intro[this.view] || ((_ref2 = this.controller) != null ? _ref2.intro : void 0) || null;
     return typeof intro === "function" ? intro(this.context.$element) : void 0;
   };
 
@@ -452,7 +454,7 @@ ComposeBinding = (function(_super) {
   };
 
   ComposeBinding.prototype.update = function() {
-    var callback, controller, outro, view, _ref1;
+    var callback, controller, outro, view, _ref;
     if (this.loading) {
       return;
     }
@@ -461,7 +463,7 @@ ComposeBinding = (function(_super) {
     }
     view = this.getView(controller);
     if (this.controller !== controller || this.view !== view) {
-      outro = transitions.outro[this.view] || ((_ref1 = this.controller) != null ? _ref1.outro : void 0) || null;
+      outro = transitions.outro[this.view] || ((_ref = this.controller) != null ? _ref.outro : void 0) || null;
       this.controller = controller;
       this.view = view;
       callback = (function(_this) {

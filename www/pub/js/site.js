@@ -1,7 +1,6 @@
 (function() {
   define(function(require) {
-    var NavData, Recoil, SiteController;
-    Recoil = require('./recoil');
+    var NavData, SiteController;
     NavData = require('./data/nav');
     return SiteController = (function() {
       SiteController.prototype.view = 'site';

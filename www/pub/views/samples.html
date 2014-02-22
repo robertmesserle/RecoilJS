@@ -23,7 +23,7 @@
       </div>
       <div class="field">
         <label>Results for "#{ searchTerm }"</label>
-        <ul class="input disabled" data-for="keyword in Recoil.events when keyword.indexOf( searchTerm ) + 1">
+        <ul class="input disabled" data-for="keyword in selectOptions when keyword.indexOf( searchTerm ) + 1">
           <li data-html="getHighlightedTerm keyword"></li>
         </ul>
       </div>
